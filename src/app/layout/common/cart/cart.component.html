@@ -1,0 +1,93 @@
+<!-- Button -->
+<!-- <button
+    mat-icon-button
+    [matMenuTriggerFor]="userActions"> -->
+<button
+    [routerLink]="'/carts'"
+    class="cursor-pointer"
+    mat-icon-button>
+    <span class="relative">
+        <!-- <img
+            class="w-7 h-7 rounded-full"
+            *ngIf="showAvatar && user.avatar"
+            [src]="user.avatar"> -->
+        <!-- <input
+            id="shopping-cart-button"
+            class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+            type="button"
+            [routerLink]="'/checkout'"
+            mat-icon-button> -->
+        <!-- <input
+            id="shopping-cart-button"
+            class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+            type="button"
+            [routerLink]="'/orders'"
+            mat-icon-button> -->
+        <ng-container *ngIf="totalCartList > 0">
+            <span matTooltip="Number of cart" class="absolute top-0 right-0 flex items-center justify-center h-4">
+                <span class="flex items-center justify-center flex-shrink-0 min-w-4 h-4 px-1 rounded-full bg-primary text-white text-xs font-medium">
+                    {{totalCartList}}
+                </span>
+            </span>
+        </ng-container>
+        <label 
+            for="shopping-cart-button"
+            class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-default group"
+            matRipple>
+            <mat-icon
+                class="icon-size-5 cursor-pointer text-primary"
+                [svgIcon]="'heroicons_solid:shopping-cart'"></mat-icon>
+        </label>
+
+        <!-- <span
+            class="absolute right-0 bottom-0 w-2 h-2 rounded-full"
+            [ngClass]="{'mr-px mb-px': !showAvatar || !user.avatar,
+                          'bg-green-500': user.status === 'online',
+                          'bg-amber-500': user.status === 'away',
+                          'bg-red-500': user.status === 'busy',
+                          'bg-gray-400': user.status === 'not-visible'}"></span> -->
+    </span>
+</button>
+
+<!-- <mat-menu
+    class="max-w-60 overflow-hidden"
+    [ngClass]="seeMoreCarts === true ? 'h-auto' : 'max-h-[179px]'"
+    [xPosition]="'before'"
+    #cartMenu="matMenu">
+    <ng-container *ngIf="carts.length > 0, else noCarts">
+
+        <div class="border-t"></div>
+
+        <ng-container *ngFor="let cart of carts">
+            <div 
+                (click)="redirectToStore(cart.store, cart.id)"
+                class="p-4 cursor-pointer grid grid-cols-4 gap-2 justify-between hover:bg-primary-50">
+
+                <div class="flex items-center justify-center">
+                    <img
+                        class="w-5"
+                        [src]="displayStoreLogo(cart.store)"
+                        alt="Logo image">
+                </div>
+                <span class="col-span-3 truncate">
+                    {{cart.store.name}}
+                </span>
+            </div>
+
+            <div class="border-t"></div>
+        </ng-container>
+
+        <ng-container *ngIf="seeMoreCarts">
+            <div [routerLink]="'/carts'" class="flex justify-center p-2 font-semibold bg-gray-100 hover:bg-primary-50 cursor-pointer hover:text-primary-500">
+                View More Carts
+            </div>
+
+            <div class="border-t"></div>
+        </ng-container>
+    </ng-container>
+
+    <ng-template #noCarts>
+        <div [routerLink]="'/carts'" class="flex justify-center items-center h-full font-medium hover:bg-gray-100 cursor-pointer p-3 mt-[1px] tracking-tight">Cart is empty</div>
+    </ng-template>
+</mat-menu> -->
+

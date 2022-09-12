@@ -1,0 +1,20 @@
+<div class="flex flex-col items-center bg-card w-full p-2 sm:p-4 sm:pt-0 h-full">
+    <!-- Search -->
+    <!-- <search class="w-full sm:mt-4"></search> -->
+    <search class="w-full mb-2 sm:mt-2 sm:mb-4"></search>
+    <!-- Featured Products -->
+    <featured-products class="w-full" [products]="productsDetails" [title]="productsDetailsTitle"></featured-products>
+    <!-- Pagination -->
+    <ng-container *ngIf="productsDetailsPagination">
+        <div class="flex w-full my-4 items-center justify-center">
+            <pagination 
+                *ngIf="productsDetailsPagination.length > productsDetailsPagination.size"
+                [itemLength]="productsDetailsPagination.length" 
+                [initialPage]="productsDetailsPagination.page + 1"
+                [pageSize]="productsDetailsPagination.size"
+                (changePage)="onChangePage($event)"
+                (click)="scrollToTop()"
+                #productsPaginator></pagination>
+        </div>
+    </ng-container>
+</div>

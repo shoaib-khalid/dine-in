@@ -1,0 +1,20 @@
+<ng-container *ngIf="promoBig">
+    <div class="z-99 w-full h-full flex flex-row fixed justify-center items-center" (click)="backdropClick()">
+        <div class="relative w-[75%] sm:w-100">
+            <img
+                (click)="uponClicked(promoBig[0].id); $event.stopPropagation()"
+                class="object-cover object-center cursor-pointer"
+                [src]="promoBig[0].popupUrl"
+                alt="Logo image">
+            <div class="absolute bg-white rounded-full h-6 w-6 bg-opacity-70 top-0 right-0">
+                <span 
+                    (click)="closeMessage(); $event.stopPropagation()"
+                    class="cursor-pointer">
+                    <mat-icon 
+                        class="text-black"
+                        [svgIcon]="'heroicons_solid:x'"></mat-icon>
+                </span>
+            </div>
+        </div>
+    </div>
+</ng-container>

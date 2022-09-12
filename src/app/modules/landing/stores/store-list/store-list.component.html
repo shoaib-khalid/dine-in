@@ -1,0 +1,20 @@
+<div class="flex flex-col items-center bg-card w-full h-full">
+    <!-- Search -->
+    <!-- <search *ngIf="!currentScreenSize.includes('md')" class="w-full sm:mt-4"></search> -->
+    <search class="w-full mb-2 sm:mt-2 sm:mb-4"></search>
+    <!-- Featured Stores -->
+    <featured-stores class="w-full" [stores]="storesDetails" [title]="storesDetailsTitle"></featured-stores>
+    <!-- Pagination -->
+    <ng-container *ngIf="storesDetailsPagination">
+        <div class="flex w-full my-4 items-center justify-center">
+            <pagination 
+                *ngIf="storesDetailsPagination.length > storesDetailsPagination.size"
+                [itemLength]="storesDetailsPagination.length" 
+                [initialPage]="storesDetailsPagination.page + 1"
+                [pageSize]="storesDetailsPagination.size"
+                (changePage)="onChangePage($event)"
+                (click)="scrollToTop()"
+                #storesPaginator></pagination>
+        </div>
+    </ng-container>
+</div>

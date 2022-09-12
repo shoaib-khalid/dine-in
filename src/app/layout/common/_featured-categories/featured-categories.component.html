@@ -1,0 +1,82 @@
+<ng-container *ngIf="!swiper">
+    <ng-container *ngIf="categories && categories.length">
+        <div class="flex flex-col w-full mt-2 sm:mt-4">
+            <div class="flex flex-row w-full items-center justify-between py-4">
+                <h2 class="font-semibold text-xl">{{title}}</h2>
+                <span *ngIf="showViewAll" (click)="viewAll()" class="font-semibold text-primary cursor-pointer hover:text-primary-600">View All</span>
+            </div>
+            <div class="grid grid-cols-4 gap-2 md:gap-3 items-start w-full justify-between mt-2 sm:mt-4">
+                <ng-container *ngFor="let category of categories">
+                    <div class="flex flex-col w-full items-center cursor-pointer group" 
+                        (click)="chooseCategory(category.parentId, location)">
+                        <img
+                            class="w-16 sm:w-20 sm:h-20 object-contain group-hover:border-1 group-hover:p-0.5 items-start justify-start bg-stone-200 rounded-full shadow"
+                            [src]="category.parentThumbnailUrl ? category.parentThumbnailUrl : platform.logo">
+                        <span class="w-full text-center group-hover:text-primary text-sm sm:text-md mt-2 font-semibold text-ellipsis overflow-hidden">{{category.parentName}}</span>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </ng-container>
+</ng-container>
+
+<!-- Swiper  -->
+<ng-container *ngIf="swiper">
+    <ng-container *ngIf="categories && categories.length">
+        <div class="flex flex-col w-full">
+            <div class="flex flex-row w-full items-center justify-between">
+                <h2 class="font-semibold text-xl">{{title}}</h2>
+                <span *ngIf="showViewAll" (click)="viewAll()" class="font-semibold text-primary cursor-pointer hover:text-primary-600">View All</span>
+            </div>
+
+            <div class="relative cursor-pointer mt-2 sm:mt-4">
+                <!-- Navigation left -->
+                <ng-container *ngIf="categories.length > numberOfCols">
+                    <div 
+                        class="absolute left-0 md:bottom-[40%] bottom-[43%] z-20 flex items-center h-20 w-6 md:w-12 bg-black bg-opacity-10 hover:bg-opacity-20 duration-150 justify-center cursor-pointer"
+                        (click)="swipePrev()"
+                        >
+                        <mat-icon
+                            class="text-white icon-size-8 md:icon-size-12"
+                            [svgIcon]="'feather:chevron-left'"></mat-icon>
+                    </div>
+                </ng-container>
+                <swiper
+                    [slidesPerView]="numberOfCols"
+                    [slidesPerGroup]="4"
+                    [grid]="{
+                        rows: 2,
+                        fill: 'row'
+                        }"
+                    [spaceBetween]="30"
+                    [loopFillGroupWithBlank]="true"
+                    class="mySwiper"
+                    >
+                    <ng-container *ngFor="let category of categories">
+                        <ng-template swiperSlide>
+                            <div class="flex flex-col w-full items-center cursor-pointer group" 
+                                (click)="chooseCategory(category.parentId, location)">
+                                <img
+                                    class="w-16 sm:w-20 sm:h-20 object-contain duration-100 group-hover:border-1 group-hover:p-0.5 items-start justify-start bg-stone-200 rounded-full shadow"
+                                    [src]="category.parentThumbnailUrl ? category.parentThumbnailUrl : platform.logo">
+                                <span [ngClass]="category.parentId === selectedCategoryId  ? 'text-primary font-extrabold' : text-black"
+                                      class="w-full text-center duration-100 group-hover:text-primary text-sm sm:text-md mt-2 font-semibold text-ellipsis overflow-hidden">{{category.parentName}}</span>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </swiper>
+                <!-- Navigation right -->
+                <ng-container *ngIf="categories.length > numberOfCols">
+                    <div 
+                        class="absolute right-0 md:bottom-[40%] bottom-[43%] z-20 flex items-center h-20 w-6 md:w-12 bg-black bg-opacity-10 hover:bg-opacity-20 duration-150 justify-center cursor-pointer"
+                        (click)="swipeNext()"
+                        >
+                        <mat-icon
+                            class="text-white icon-size-8 md:icon-size-12"
+                            [svgIcon]="'feather:chevron-right'"></mat-icon>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </ng-container>
+</ng-container>

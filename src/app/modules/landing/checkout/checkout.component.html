@@ -1,0 +1,471 @@
+<!-- Voucher List -->
+<div class="relative flex flex-col items-center bg-card w-full h-full">
+    <div class="flex flex-col md:flex-row w-full h-full">
+        <!-- Carts -->
+        <ng-container *ngIf="carts && carts.length; else noCarts">
+            <!-- Delivery Address (xs) -->
+            <div class="block md:hidden w-full flex flex-col justify-center items-start border rounded-lg p-2 mb-2">
+                <!-- Header -->
+                <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
+                    <mat-icon 
+                        class="icon-size-5 text-primary" 
+                        [svgIcon]="'mat_solid:location_on'"></mat-icon>
+                    <span class="ml-2 font-bold">Delivery Address</span>
+                </div>
+                <ng-container *ngIf="customerAddress; else noAddress">
+                    <div class="flex flex-col m-2 font-medium gap-1">
+                        <span class="">{{customerAddress.name}}</span>
+                        <span class="">{{customerAddress.phoneNumber}}</span>
+                        <span class="">{{customerAddress.address}}, {{customerAddress.postCode}}, {{customerAddress.city}}, {{customerAddress.state}}</span>
+                    </div>
+                    <!-- <div class="flex w-full justify-center items-center">
+                        <button
+                            [routerLink]="['/address']"
+                            [queryParams]="{origin: 'carts'}"
+                            class="my-2 w-full font-semibold p-1 rounded-md bg-primary"                            >
+                            <span class="text-white">Change</span>
+                        </button>
+                    </div> -->
+                </ng-container>
+                <ng-template #noAddress>
+                    <!-- Enter Address -->
+                    <span class="flex mt-2 text-center">Add your delivery address</span>
+                    <!-- Button -->
+                    <div class="flex w-full justify-center items-center mt-2">
+                        <button 
+                            [routerLink]="'/address'"
+                            class="my-2 w-1/2 bg-primary rounded-md flex flex-row items-center justify-center p-1"
+                        >
+                            <mat-icon 
+                                class="icon-size-5 text-white" 
+                                [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+                            <span class="ml-1 font-semibold text-white">Add</span>
+                        </button>
+                    </div>
+                </ng-template>
+            </div>
+            <!-- Store pickup info (MOBILE)  -->
+            <ng-container *ngIf="selfPickupInfo && hasSelfPickup">
+                <div class="block md:hidden flex flex-col justify-center items-center border rounded-lg p-2 mb-2">
+                    <!-- Header -->
+                    <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
+                        <mat-icon 
+                            class="icon-size-5 text-primary" 
+                            [svgIcon]="'mat_solid:contact_phone'"></mat-icon>
+                        <span class="ml-2 font-bold">Contact Info for Self Collect</span>
+                    </div>
+                    <div class="w-full flex flex-col rounded">
+                        <div class="flex flex-row p-2 font-medium gap-1 items-center justify-between w-full">
+                            <!-- Address  -->
+                            <div class="flex flex-col font-medium gap-1">
+                                <span class="">{{selfPickupInfo.name}}</span>
+                                <span class="">{{selfPickupInfo.phoneNumber}}</span>
+                                <span class="">{{selfPickupInfo.email}}</span>
+                            </div>
+                        </div>
+                        <!-- Button -->
+                        <!-- <div class="flex w-full justify-center items-center mt-1">
+                            <button 
+                                (click)="addRequiredInfo(0, true)"
+                                class="my-2 w-full bg-primary rounded-md flex flex-row items-center justify-center p-1"
+                            >
+                                <mat-icon 
+                                    class="icon-size-4 text-white" 
+                                    [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
+                                <span class="ml-1 font-semibold text-white">Edit</span>
+                            </button>
+                        </div> -->
+                    </div>
+                </div>
+            </ng-container>
+            
+            <!-- Carts Details -->
+            <div class="flex flex-col w-full items-center">
+                <div class="grid w-full">
+                    <!-- Title -->
+                    <span class="text-lg sm:text-3xl font-semibold mb-2">Checkout</span>
+                    <!-- Header -->
+                    <div class="hidden lg:grid checkout-grid w-full sticky py-2 border-b border-gray-600 tracking-tight">
+                        <!-- Checkbox all carts -->
+                        <!-- <div class="flex items-center justify-center w-full">
+                            <input type="checkbox" [(ngModel)]="selectedCart.selected" (click)="selectCart(carts,null,null,$event.target.checked)"/>
+                        </div> -->
+                        <span></span>
+                        <span class="font-semibold text-left">Product</span>
+                        <span class="font-semibold text-center">Unit Price</span>
+                        <span class="font-semibold text-center">Quantity</span>
+                        <span class="font-semibold text-center">Total Price</span>
+                        <span></span>
+                    </div>
+                    <ng-container *ngFor="let cart of carts; let i = index">
+                        <div class="w-full border lg:border-0 lg:border-b lg:last:border-b-0 lg:border-gray-600 rounded-lg lg:rounded-none px-2 lg:px-0 py-4 mb-4 last:mb-0">
+                            <!-- Cart Header -->
+                            <div class="checkout-title-grid grid w-full sticky pb-2 border-b">
+                                <!-- Checkbox all in cart -->
+                                <!-- <div class="flex items-start justify-center mt-2 w-full">
+                                    <input [(ngModel)]="selectedCart.carts[i + pagination.startIndex].selected" type="checkbox" (click)="selectCart(null,cart,null,$event.target.checked)">
+                                </div> -->
+                                <span></span>
+                                <div class="flex flex-col justify-start">
+                                    <span (click)="redirect('store', cart.store, null)" class="text-md sm:text-xl font-semibold hover:cursor-pointer">{{cart.store.name}}</span>
+                                    <!-- <span class="text-sm sm:text-sm text-secondary">Cart ID: {{cart.id}}</span> -->
+                                    <!-- <span class="text-sm sm:text-sm text-secondary">Last Updated: {{cart.updated | date:'MMM dd, h:mm a'}}</span> -->
+                                </div>
+                            </div>
+                            <!-- Cart Items -->
+                            <ng-container *ngIf="cart.cartItems && cart.cartItems.length; else noCartItem">
+                                <ng-container *ngFor="let cartItem of cart.cartItems; let j = index">
+                                    <div class="w-full sticky mt-4" [ngClass]="currentScreenSize.includes('lg') ?  'checkout-grid grid' : 'flex flex-row justify-between'">
+                                        <!-- Checkbox each item -->
+                                        <!-- <div class="flex flex-none items-center lg:justify-center mt-2 w-auto lg:w-full px-1 lg:px-0">
+                                            <input [(ngModel)]="selectedCart.carts[i + pagination.startIndex].cartItem[j + pagination.startIndex].selected" type="checkbox">
+                                        </div> -->
+                                        <span></span>
+                                        <!-- Image, Title, Variants -->
+                                        <div class="flex flex-row grow items-center justify-start">                                            
+                                            <img class="w-14 max-w-14 max-h-14 min-h-14 sm:w-18 sm:max-w-18 sm:h-18 sm:max-h-18 shadow rounded" [src]="cartItem.productAsset ? cartItem.productAsset.url : cartItem.productInventory.product.thumbnailUrl ? cartItem.productInventory.product.thumbnailUrl : displayStoreLogo(cart.store)">
+                                            <div class="flex flex-col ml-2 items-start justify-start sm:justify-center gap-1">
+                                                <span (click)="redirect('product', cart.store, cartItem.productInventory.product.seoNameMarketplace)" class="text-md sm:text-md font-semibold line-clamp-2 hover:cursor-pointer">{{cartItem.productName}}</span>
+                                                <div class="flex flex-row items-center">
+                                                    <!-- Display variants -->
+                                                    <ng-container *ngIf="cartItem.productInventory.productInventoryItems.length > 0">
+                                                        <ng-container *ngFor="let variant of cartItem.productInventory.productInventoryItems">
+                                                            <span class="leading-tight text-xs lg:text-sm text-secondary flex flex-wrap">{{variant.productVariantAvailable.productVariant.name}}: {{variant.productVariantAvailable.value}}</span>
+                                                            <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                    <!-- Display Combo -->
+                                                    <ng-container *ngIf="cartItem.cartSubItem.length > 0">
+                                                        <ng-container  *ngFor="let combo of cartItem.cartSubItem">
+                                                            <span class="leading-tight text-xs lg:text-sm text-secondary flex flex-wrap">{{combo.productName}}</span>
+                                                            <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </div>
+                                                <!-- Display Special Instruction -->
+                                                <div *ngIf="cartItem.specialInstruction" class="flex flex-row items-center">
+                                                    <span class="leading-tight text-xs md:text-sm text-secondary flex flex-wrap">Instruction: {{cartItem.specialInstruction}}</span>
+                                                    <!-- <span class="leading-tight text-xs text-secondary flex flex-wrap">{{cartItem.specialInstruction}}</span> -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Unit Price -->
+                                        <div class="hidden sm:flex flex-col justify-center items-center text-center px-1 min-w-15">
+                                            <span class="text-xs md:text-sm line-through">{{cartItem.normalPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                            <span class="font-semibold text-sm md:text-md">{{cartItem.productPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                        </div>
+                                        <!-- Quantity -->
+                                        <div class="hidden sm:flex flex-col text-sm md:text-md justify-center items-center mx-2 min-w-15">
+                                            <span> x {{cartItem.quantity}}</span>
+                                        </div>
+                                        <!-- Total Price -->
+                                        <span class="hidden sm:flex justify-center items-center font-semibold text-center text-sm md:text-md truncate min-w-15">{{cartItem.price | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                        <!-- Remove Item -->
+                                        <span></span>
+                                        <!-- Total Price , Unit Price , Remove button for sm-->
+                                        <div class="flex flex-col sm:hidden items-end justify-between">
+                                            <div class="flex flex-col w-26 justify-end items-end">
+                                                <!-- Unit Price -->
+                                                <div class="flex flex-col justify-center items-end text-center px-1">
+                                                    <span class="text-xs md:text-sm line-through">{{cartItem.normalPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                                    <span class="text-sm md:text-xs">{{cartItem.quantity}} x {{cartItem.productPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                                </div>
+                                                <!-- Total Price -->
+                                                <span class="flex justify-center items-center font-semibold text-center text-sm md:text-md px-1">{{cartItem.price | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <!-- Additional Info -->
+                                <div class="flex flex-col mt-4">
+                                    <span class="text-secondary">Additional Information</span>
+                                    <div class="flex flex-row gap-1 mt-2 items-center text-sm sm:text-md">
+                                        <span class="">Order Notes:</span>
+                                        <span class="text-gray-500">{{cart.orderNote}}</span>
+                                    </div>
+                                    <!-- Additional info -->
+                                    <!-- <mat-form-field class="w-full mt-2" floatLabel="always">
+                                        <textarea
+                                            matInput
+                                            readonly
+                                            [placeholder]='cart.orderNote'
+                                            [rows]="full"
+                                            maxlength="100"
+                                            class="h-5"
+                                            autocomplete="disabled"
+                                            matTextareaAutosize></textarea>
+                                    </mat-form-field> -->
+                                </div>
+                                <!-- Shipping Fee & Total Items -->
+                                <div class="flex flex-row justify-between items-center mt-2">
+                                    <div class="flex flex-col sm:flex-row sm:min-w-44 gap-0 sm:gap-1">
+                                        <!-- <span class="font-semibold text-xs sm:text-sm">{{ (getDeliveryFee(cart.id) ? getDeliveryFee(cart.id).deliveryFee : 0) | currency: cart.store.regionCountry.currencySymbol }}</span> -->
+                                        <span class="text-sm sm:text-md">Delivery Fee:</span>
+                                        <ng-container *ngIf="getDeliveryFee(cart.id)">
+                                            <div class="flex flex-col">
+                                                <ng-container *ngIf="getDeliveryFee(cart.id).deliveryType !== 'PICKUP'; else selfPickup">
+                                                    <div class="flex flex-row gap-1 items-end">
+                                                        <!-- Ori Price  -->
+                                                        <span 
+                                                            [ngClass]="getDeliveryFee(cart.id).deliveryPrice.discountAmount !== 0 && getDeliveryFee(cart.id).deliveryPrice.discountAmount ? 
+                                                                'line-through font-normal text-xs' : 'text-sm font-semibold'"
+                                                            class="tracking-tight leading-tight md:leading-normal">{{(getDeliveryFee(cart.id).deliveryPrice.deliveryFee) | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                                        <!-- Discounted price  -->
+                                                        <span *ngIf="getDeliveryFee(cart.id).deliveryPrice.discountAmount !== 0 && getDeliveryFee(cart.id).deliveryPrice.discountAmount"
+                                                            class="font-semibold text-sm tracking-tight leading-tight md:leading-normal">{{(getDeliveryFee(cart.id).deliveryPrice.discountedPrice) | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                                        <!-- Combined shipping  -->
+                                                        <span *ngIf="checkCombineShipping(cart.id)"
+                                                            class="text-xs md:text-sm tracking-tighter">
+                                                            (Shared for Same Address)
+                                                        </span>
+                                                    </div>
+                                                    <!-- Off  -->
+                                                    <span *ngIf="getDeliveryFee(cart.id).deliveryPrice.discountAmount !== 0 && getDeliveryFee(cart.id).deliveryPrice.discountAmount" 
+                                                        class="-mt-[0.15rem] text-xs tracking-tight">(save {{(getDeliveryFee(cart.id).deliveryPrice.discountAmount) | currency: cart.store.regionCountry.currencySymbol}})</span>
+                                                </ng-container>
+                                                <ng-template #selfPickup>
+                                                    <div class="font-semibold text-sm tracking-tight">
+                                                        Self Collect
+                                                    </div>
+                                                </ng-template>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:min-w-auto gap-0 sm:gap-x-1">
+                                        <span class="text-sm sm:text-md mr-1 sm:mr-0">Total Items ({{cart.cartItems ? cart.cartItems.length : 0}}):</span>
+                                        <span class="font-semibold text-sm sm:text-sm">{{ getCartItemsTotal(cart.cartItems) | currency: cart.store.regionCountry.currencySymbol }}</span>
+                                    </div>
+                                </div>
+                                <!-- Store Address for self pickup  -->
+                                <ng-container *ngIf="getDeliveryFee(cart.id).deliveryType === 'PICKUP'">
+                                    <div class="flex flex-col gap-1 w-full mt-2">
+                                        <div class="rounded border w-full flex flex-col p-3 gap-1 bg-primary-100">
+                                            <span class="font-medium text-base">Store Address</span>
+                                            <div class="flex flex-row font-base gap-1 items-center justify-between w-full">
+                                                <!-- Address  -->
+                                                <div class="flex flex-col text-sm gap-1">
+                                                    <span class="">{{cart.store.name}}</span>
+                                                    <span class="">{{cart.store.phoneNumber}}</span>
+                                                    <span class="">{{cart.store.address}}, {{cart.store.postcode}}, {{cart.store.city}}, {{cart.store.regionCountryStateId}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                            <ng-template #noCartItem>
+                                <!-- Main -->
+                                <div class="relative flex justify-center items-center w-full h-full md:h-96">
+                                    <error-background class="absolute z-0 inset-0 w-full opacity-50"></error-background>
+                                    <div class="flex flex-col w-full h-full items-center justify-center z-10">
+                                        <span class="mt-2 text-4xl md:text-5xl font-semibold tracking-tight leading-tight md:leading-none text-center">Cart is empty!</span>
+                                        <span class="mt-4 max-w-120 text-lg md:text-xl font-medium tracking-tight text-center text-secondary">Shop now at {{cart.store.name}}</span>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </ng-container>
+                </div>
+                <!-- Pagination -->
+                <pagination 
+                    *ngIf="pagination.length > pagination.size"
+                    class="mt-4"
+                    [itemLength]="pagination.length" 
+                    [initialPage]="pagination.page + 1"
+                    [pageSize]="pagination.size"
+                    (click)="scrollToTop()"
+                    (changePage)="onChangePage($event)"></pagination>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="flex flex-col w-full md:w-140 md:ml-6 md:mt-8 mt-4">
+                <!-- Cart Summary -->
+                <div class="flex flex-col border rounded-lg p-2">
+                    <!-- Header -->
+                    <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
+                        <mat-icon 
+                            class="icon-size-5 text-primary" 
+                            [svgIcon]="'mat_solid:add_shopping_cart'"></mat-icon>
+                        <span class="ml-2 font-bold">Cart Summary</span>
+                    </div>
+                    <!-- Summary -->
+                    <!-- Sub Total -->
+                    <div class="flex flex-row justify-between mt-2">
+                        <span class="text-md text-secondary">Sub Total <small *ngIf="totalSelectedCartItem > 0">({{totalSelectedCartItem}} items)</small></span>
+                        <span class="text-md font-semibold">{{paymentDetails.cartSubTotal | currency: platform.currency}}</span>
+                    </div>
+                    <!-- Order Discount -->
+                    <ng-container *ngIf="paymentDetails.subTotalDiscount !== 0">
+                        <div class="flex flex-row w-full justify-between  mt-2">
+                            <div class="flex flex-col">
+                                <div class="text-md text-secondary">
+                                    <span>Order Discount</span>
+                                    <span *ngIf="paymentDetails.subTotalDiscountDescription">&nbsp;({{paymentDetails.subTotalDiscountDescription}})</span>
+                                </div>
+                                <span class="text-xs text-gray-500" *ngIf="paymentDetails.discountMaxAmount && paymentDetails.discountMaxAmount != 0 && paymentDetails.subTotalDiscount >= paymentDetails.discountMaxAmount && paymentDetails.subTotalDiscount != 0">
+                                    Capped at {{paymentDetails.discountMaxAmount | currency: platform.currency }}
+                                </span>
+                            </div>
+                            <span class="font-semibold">-{{paymentDetails.subTotalDiscount | currency: platform.currency}}</span>
+                        </div>
+                    </ng-container>
+                    <!-- Service Charges -->
+                    <ng-container *ngIf="paymentDetails.storeServiceCharge !== 0">
+                        <div class="flex flex-row justify-between mt-2">
+                            <span class="text-md text-secondary">Service Charge</span> 
+                            <span class="text-md font-semibold">{{paymentDetails.storeServiceCharge | currency: platform.currency}}</span>
+                        </div>
+                    </ng-container>
+                    <!-- Delivery Fee -->
+                    <div class="flex flex-row justify-between mt-2">
+                        <span class="text-md text-secondary">Delivery Fee</span>
+                        <span class="text-md font-semibold">{{paymentDetails.deliveryCharges | currency: platform.currency}}</span>
+                    </div>
+                    <!-- Delivery Discount -->
+                    <!-- <ng-container *ngIf="paymentDetails.deliveryDiscount !== 0">
+                        <div class="flex flex-row w-full justify-between py-1">
+                            <div class="flex flex-col">
+                                <div class="text-md text-secondary mt-2">
+                                    <span>Delivery Discount</span>
+                                    <span *ngIf="paymentDetails.deliveryDiscountDescription">&nbsp;({{paymentDetails.deliveryDiscountDescription}})</span>
+                                </div>
+                                <span class="text-xs text-gray-500" *ngIf="paymentDetails.deliveryDiscountMaxAmount != 0 && paymentDetails.deliveryDiscount >= paymentDetails.deliveryDiscountMaxAmount && paymentDetails.deliveryDiscount != 0">
+                                    Capped at {{paymentDetails.deliveryDiscountMaxAmount | currency: platform.currency }}
+                                </span>
+                            </div>
+                            <span class="font-semibold">-{{paymentDetails.deliveryDiscount | currency: platform.currency}}</span>
+                        </div>
+                    </ng-container> -->
+
+                    <ng-container *ngIf="paymentDetails.deliveryDiscount != 0">
+                        <div class="flex flex-row justify-between mt-2">
+                            <span class="text-md text-secondary">Delivery Fee Discount</span>
+                            <span class="text-md font-semibold">-{{paymentDetails.deliveryDiscount | currency: platform.currency}}</span>
+                        </div>
+                    </ng-container>
+
+                    <div *ngIf="paymentDetails.platformVoucherDeliveryDiscount && paymentDetails.platformVoucherDeliveryDiscount !== 0" class="flex flex-row justify-between mt-2">
+                        <span class="text-md text-secondary">Deliverin Shipping Discount</span>
+                        <span class="text-md font-semibold">-{{paymentDetails.platformVoucherDeliveryDiscount | currency: platform.currency}}</span>
+                    </div>
+                    
+                    <div *ngIf="paymentDetails.platformVoucherSubTotalDiscount && paymentDetails.platformVoucherSubTotalDiscount !== 0" class="flex flex-row justify-between mt-2">
+                        <span class="text-md text-secondary">Deliverin Promo Code/Voucher</span>
+                        <span class="text-md font-semibold">-{{paymentDetails.platformVoucherSubTotalDiscount | currency: platform.currency}}</span>
+                    </div>
+
+                    <!-- Separator -->
+                    <div class="border-b w-full my-2"></div>
+
+                    <!-- Grand Total -->
+                    <div class="flex flex-row justify-between mt-2">
+                        <span class="text-md text-secondary">Grand Total</span>
+                        <span class="text-md font-semibold">{{paymentDetails.cartGrandTotal | currency: platform.currency}}</span>
+                    </div>
+
+                    <!-- Checkout -->
+                    <button 
+                        [disabled]="false"
+                        class="bg-primary text-white py-2 px-4 rounded w-full mt-2"
+                        [ngClass]="{ 'cursor-wait bg-gray-400' : isLoading, 
+                                     'cursor-pointer bg-primary' : !isLoading}"
+                        (click)="onlinePay()">
+                        Pay Now
+                    </button>
+                </div>
+                <!-- Delivery Address (md) -->
+                <div class="hidden md:block flex flex-col justify-center items-center border rounded-lg p-2 mt-4">
+                    <!-- Header -->
+                    <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
+                        <mat-icon 
+                            class="icon-size-5 text-primary" 
+                            [svgIcon]="'mat_solid:location_on'"></mat-icon>
+                        <span class="ml-2 font-bold">Delivery Address</span>
+                    </div>
+                    <ng-container *ngIf="customerAddress; else noAddress">
+                        <!-- <ng-container *ngFor="let address of customerAddresses"> -->
+                            <!-- <ng-container *ngIf="customerAddress.isDefault"> -->
+                                <div class="flex flex-col m-2 font-medium gap-1">
+                                    <span class="">{{customerAddress.name}}</span>
+                                    <span class="">{{customerAddress.phoneNumber}}</span>
+                                    <span class="">{{customerAddress.address}}, {{customerAddress.postCode}}, {{customerAddress.city}}, {{customerAddress.state}}</span>
+                                </div>
+                                <!-- <div class="flex w-full justify-center items-center">
+                                    <button
+                                        [routerLink]="'/address'"
+                                        [queryParams]="{origin: 'carts'}"
+                                        class="my-2 w-1/2 font-semibold p-1 rounded-md bg-primary"                            >
+                                        <span class="text-white">Change</span>
+                                    </button>
+                                </div> -->
+                            <!-- </ng-container> -->
+                        <!-- </ng-container> -->
+                    </ng-container>
+                    <ng-template #noAddress>
+                        <!-- Enter Address -->
+                        <span class="flex mt-2 text-center">Add your delivery address</span>
+                        <!-- Button -->
+                        <div class="flex w-full justify-center items-center mt-2">
+                            <button 
+                                [routerLink]="'/address'"
+                                class="my-2 w-1/2 bg-primary rounded-md flex flex-row items-center justify-center p-1"
+                            >
+                                <mat-icon 
+                                    class="icon-size-5 text-white" 
+                                    [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+                                <span class="ml-1 font-semibold text-white">Add</span>
+                            </button>
+                        </div>
+                    </ng-template>
+                </div>
+                <!-- Store pickup info (md)  -->
+                <ng-container *ngIf="selfPickupInfo && hasSelfPickup">
+                    <div class="hidden md:block flex flex-col justify-center items-center border rounded-lg p-2 mt-4">
+                        <!-- Header -->
+                        <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
+                            <mat-icon 
+                                class="icon-size-5 text-primary" 
+                                [svgIcon]="'mat_solid:contact_phone'"></mat-icon>
+                            <span class="ml-2 font-bold">Contact Info for Self Collect</span>
+                        </div>
+                        <div class="w-full flex flex-col rounded">
+                            <div class="flex flex-row p-2 font-medium gap-1 items-center justify-between w-full">
+                                <!-- Address  -->
+                                <div class="flex flex-col font-medium gap-1">
+                                    <span class="">{{selfPickupInfo.name}}</span>
+                                    <span class="">{{selfPickupInfo.phoneNumber}}</span>
+                                    <span class="">{{selfPickupInfo.email}}</span>
+                                </div>
+                            </div>
+                            <!-- Button -->
+                            <!-- <div class="flex w-full justify-center items-center mt-1">
+                                <button 
+                                    (click)="addRequiredInfo(0, true)"
+                                    class="my-2 w-1/2 bg-primary rounded-md flex flex-row items-center justify-center p-1"
+                                >
+                                    <mat-icon 
+                                        class="icon-size-4 text-white" 
+                                        [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
+                                    <span class="ml-1 font-semibold text-white">Edit</span>
+                                </button>
+                            </div> -->
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>    
+
+        <!-- No Carts -->
+        <ng-template #noCarts>
+            <!-- Main -->
+            <div class="relative flex justify-center items-center w-full h-full md:h-96">
+                <error-background class="absolute z-0 inset-0 w-full opacity-50"></error-background>
+                <div class="flex flex-col w-full h-full items-center justify-center z-10">
+                    <span class="mt-2 text-4xl md:text-5xl font-semibold tracking-tight leading-tight md:leading-none text-center">Cart is empty!</span>
+                    <span class="mt-4 max-w-120 text-lg md:text-xl font-medium tracking-tight text-center text-secondary">Shop now at our stores</span>
+                </div>
+            </div>
+        </ng-template>
+
+    </div>
+</div>

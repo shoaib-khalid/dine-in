@@ -1,0 +1,259 @@
+<!-- Order Details -->
+<div class="relative flex flex-col items-center bg-card w-full h-full">
+    <!-- Main menu -->
+    <div class="flex flex-col items-center w-full h-auto">
+        <!-- Container -->
+        <div class="flex flex-col md:flex-row w-full">
+            <!-- Order Details -->
+            <div class="flex flex-col w-full">
+                <ng-container *ngIf="orderDetails">
+                    <div class="flex flex-col w-full border border-gray-300 rounded-lg p-2 sm:p-4 mb-4">
+                        <!-- Header -->
+                        <div class="flex flex-row justify-between items-center pb-2 sm:pb-4">
+                            <h3 class="font-semibold items-center">Order ID : {{orderDetails.invoiceId}}</h3>
+                            <!-- Progress Status Icon -->
+                            <div *ngIf="displayStatus(orderDetails.completionStatus)" 
+                                class="flex flex-row items-center justify-center min-w-24 border border-primary p-1 sm:p-2 rounded">
+                                <!-- Progress Status Icon -->
+                                <mat-icon 
+                                    [class]="displayStatus(orderDetails.completionStatus)?.class" 
+                                    [svgIcon]="displayStatus(orderDetails.completionStatus)?.icon">
+                                </mat-icon>
+
+                                <!-- Progress Status -->
+                                <span 
+                                    class="font-semibold text-sm items-center pl-2">{{displayStatus(orderDetails.completionStatus)?.label}}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Border -->
+                        <div class="border-t w-full"></div>
+
+                        <!-- Details -->
+                        <div class="flex flex-col w-full py-2">
+                            <div class="flex flex-row">
+                                <mat-icon class="text-primary" svgIcon="mat_solid:storefront"></mat-icon>
+                                <div class="flex flex-col pl-2">
+                                    <h3 class="font-bold cursor-pointer" (click)="redirectToStore(orderDetails.store.domain)">{{orderDetails.store.name}}</h3>
+                                    <h3 class="font-medium text-gray-400 text-xs sm:text-sm">Order Placed : {{convertDate(orderDetails.orderTimeConverted) | date:'MMM dd yyyy, h:mm a' }}</h3>
+                                </div>
+                            </div>
+                            <div class="flex flex-row pt-2">
+                                <mat-icon class="text-primary" svgIcon="mat_outline:location_on"></mat-icon>
+                                <div class="flex flex-col pl-2">
+                                    <h3 class="font-semibold text-primary">Delivery Address</h3>
+                                    <h3 class="font-medium text-md">Name : {{orderDetails.orderShipmentDetail.receiverName}}</h3>
+                                    <h3 class="font-medium text-md">Contact : {{orderDetails.orderShipmentDetail.phoneNumber}}</h3>
+                                    <h3 class="font-medium text-md">Address : {{orderDetails.orderShipmentDetail.address}}, {{orderDetails.orderShipmentDetail.zipcode}}, {{orderDetails.orderShipmentDetail.city}}, {{orderDetails.orderShipmentDetail.state}}</h3>
+                                </div>
+                            </div>
+                            <div class="flex flex-row pt-2">
+                                <svg class="h-6 w-6 text-primary" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" 
+                                    stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" 
+                                    d="M0 0h24v24H0z"/>  <circle cx="7" cy="17" r="2" />  <circle cx="17" cy="17" r="2" />  <path 
+                                    d="M5 17h-2v-4m-1 -8h11v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5" />  <line x1="3" y1="9" x2="7" y2="9" /></svg>
+                                <div class="flex flex-col pl-2">
+                                    <h3 class="font-semibold text-primary">Delivery Option</h3>
+                                    <h3 class="font-medium pt-2 text-md">{{orderDetails.orderShipmentDetail.deliveryPeriodDetails?orderDetails.orderShipmentDetail.deliveryPeriodDetails.id:'-'}}</h3>
+                                </div>
+                            </div>
+                            
+                            <!-- Tracking Number -->
+                            <ng-container *ngIf="deliveryRiderDetails && (deliveryRiderDetails.trackingUrl || deliveryRiderDetails.orderNumber)">
+                                <div class="flex flex-row pt-4">
+                                    <svg class="h-6 w-6 text-primary"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" 
+                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" 
+                                        d="M0 0h24v24H0z"/>  <circle cx="7" cy="17" r="2" />  <circle cx="17" cy="17" r="2" />  <path 
+                                        d="M5 17h-2v-11a1 1 0 0 1 1 -1h9v6h-5l2 2m0 -4l-2 2" />  <path d="M9 17h6" />  <path d="M13 6h5l3 5v6h-2" /></svg>
+                                    <div class="flex flex-col pl-2">
+                                        <span class="font-semibold text-primary">Tracking Number</span>
+                                        <div class="flex flex-row w-full pt-2">
+                                            <span *ngIf="deliveryRiderDetails.provider" class="font-medium text-md">{{deliveryRiderDetails.provider.name}} : &nbsp;</span>
+                                            <span class="font-medium text-md"
+                                                [ngClass]="deliveryRiderDetails.trackingUrl ? 'cursor-pointer hover:text-primary underline' : ''" 
+                                                (click)="deliveryRiderDetails.trackingUrl ? goToExternalUrl(deliveryRiderDetails.trackingUrl, true) : ''">
+                                                {{deliveryRiderDetails.orderNumber}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                            <!-- Trackign Delviery-->
+                            <ng-container *ngIf="deliveryOrderStatuses && deliveryOrderStatuses.length">
+                                <div class="mt-2 pl-2 sm:pl-6 mb-4">
+                                    <ol>
+                                        <ng-container *ngFor="let deliveryOrderStatus of deliveryOrderStatuses; let i = index; let first = first; let last = last; trackBy: trackByFn">
+                                            <li *ngIf="first" class="relative flex py-2">
+                                                <div *ngIf="first" class="absolute top-7 left-5 w-0.5 h-full -ml-px bg-gray-500"></div>
+                                                <div class="relative flex flex-auto">
+                                                    <div class="flex flex-shrink-0 items-center justify-center w-7 h-7 ml-1.5 mr-4 rounded-full bg-green-500">
+                                                        <mat-icon
+                                                            class="icon-size-5 text-white"
+                                                            [svgIcon]="'heroicons_solid:badge-check'">
+                                                        </mat-icon>
+                                                    </div>
+                                                    <div class="flex flex-col flex-auto items-start">
+                                                        <div class="text-secondary">
+                                                            {{convertDate(deliveryOrderStatus.orderTimeConverted) | date:'MMM dd yyy, h:mm a'}}
+                                                        </div>
+                                                        <span *ngIf="first" class="font-semibold text-sm tracking-tight">Order created from store {{orderDetails.store.name}}</span>
+                                                        <!-- <span *ngIf="last" class="font-semibold">Order completed</span> -->
+                                                    </div>
+                                                </div>
+                                            </li>
+    
+                                            <li *ngIf="!first && !last" class="relative flex py-2">
+                                                <div class="absolute top-7 left-5 w-0.5 h-full -ml-px bg-gray-500"></div>        
+                                                <div class="relative flex flex-auto">
+                                                    <div class="flex flex-shrink-0 items-center justify-center w-7 h-7 ml-1.5 mr-4 rounded-full bg-green-500">
+                                                        <mat-icon
+                                                            class="icon-size-5 text-white"
+                                                            [svgIcon]="'heroicons_solid:badge-check'">
+                                                        </mat-icon>
+                                                    </div>
+                                                    <div class="flex flex-col flex-auto items-start">
+                                                        <div class="text-secondary">
+                                                            {{convertDate(deliveryOrderStatus.orderTimeConverted) | date:'MMM dd yyy, h:mm a'}}
+                                                        </div>
+                                                        <div class="mt-1 p-2 text-sm rounded-lg bg-gray-200 dark:bg-gray-800 tracking-tight">
+                                                            {{deliveryOrderStatus.deliverySpStatus.providerStatusDescription}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+    
+                                            <li *ngIf="last" class="relative flex py-2">
+                                                <div class="relative flex flex-auto">
+                                                    <div class="flex flex-shrink-0 items-center justify-center w-7 h-7 ml-1.5 mr-4 rounded-full bg-green-500">
+                                                        <mat-icon
+                                                            class="icon-size-5 text-white"
+                                                            [svgIcon]="'heroicons_solid:badge-check'">
+                                                        </mat-icon>
+                                                    </div>
+                                                    <div class="flex flex-col flex-auto items-start">
+                                                        <div class="text-secondary">
+                                                            {{convertDate(deliveryOrderStatus.orderTimeConverted) | date:'MMM dd yyy, h:mm a'}}
+                                                        </div>
+                                                        <div class="mt-1 p-2 text-sm rounded-lg bg-gray-200 dark:bg-gray-800 tracking-tight">
+                                                            {{deliveryOrderStatus.deliverySpStatus.providerStatusDescription}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ng-container>
+                                    </ol>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <!-- Border -->
+                        <div class="border-t w-full"></div>
+
+                        <!-- Items -->
+                        <div class="flex flex-col my-3 items-center justify-between w-full pt-2">
+                            <ng-container *ngFor="let orderItem of orderDetails.orderItemWithDetails">
+                                <div class="flex flex-row justify-between items-center w-full py-2 gap-2">
+                                    <div class="w-16">
+                                        <div class="relative flex flex-0 items-center justify-center w-16 h-16 mr-4 rounded overflow-hidden border">
+                                            <img
+                                                class="w-32"
+                                                [alt]="'Product thumbnail image of ' + orderItem.productName"
+                                                [src]=
+                                                    "orderItem.itemAssetDetails ? orderItem.itemAssetDetails.url 
+                                                    : orderItem.product.thumbnailUrl ? orderItem.product.thumbnailUrl 
+                                                    : orderDetails.store.storeLogoUrl ? orderDetails.store.storeLogoUrl
+                                                    : platform.logoSquare">
+                                            <div
+                                                class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-full">
+                                        <h3 class="line-clamp-3 font-semibold text-md sm:text-base">{{orderItem.productName}}</h3>
+                                        <h3 class="font-medium text-md sm:text-base text-gray-400">{{orderItem.productVariant}}</h3>
+                                    </div>
+                                    <div class="items-center justify-end sm:justify-center">
+                                        <h3 class="text-gray-400">x{{orderItem.quantity}}</h3>
+                                    </div>
+                                    <div class="items-end w-1/2 flex flex-col">
+                                        <span *ngIf="orderItem.normalPrice !== orderItem.price" class="text-gray-400 items-start text-left text-sm line-through">{{orderItem.normalPrice | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
+                                        <span class="font-semibold text-md sm:text-base text-primary">{{orderItem.price | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <!-- Border -->
+                        <div class="border-t w-full"></div>
+
+                        <!-- Footer -->
+                        <div class="flex flex-col pt-2 gap-1">
+                            <!-- Sub Total -->
+                            <div class="flex flex-row justify-between w-full">
+                                <h3 class="font-semibold text-md sm:text-base text-gray-500">Sub Total</h3>
+                                <p class="items-center font-semibold text-md sm:text-base text-gray-400">{{orderDetails.subTotal | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                            </div>
+                            <!-- Order Discount -->
+                            <ng-container *ngIf="orderDetails.appliedDiscount !== 0">
+                                <div class="flex flex-row justify-between w-full">
+                                    <p class="font-semibold text-md sm:text-base text-gray-500">
+                                        <span>Order Discount</span>
+                                        <span *ngIf="orderDetails.appliedDiscountDescription">&nbsp;({{orderDetails.appliedDiscountDescription}})</span>
+                                        <span class="text-xs text-gray-500" *ngIf="orderDetails.discountMaxAmount && orderDetails.discountMaxAmount != 0 && orderDetails.appliedDiscount >= orderDetails.discountMaxAmount && orderDetails.appliedDiscount != 0">
+                                            Capped at {{orderDetails.discountMaxAmount | currency: orderDetails.store.regionCountry.currencySymbol }}
+                                        </span>
+                                    </p>
+                                    <p class="items-center font-semibold text-gray-400">-{{orderDetails.appliedDiscount | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                                </div>
+                            </ng-container>
+                            <!-- Service Charges -->
+                            <ng-container *ngIf="orderDetails.storeServiceCharges !== 0">
+                                <div class="flex flex-row justify-between w-full">
+                                    <h3 class="font-semibold text-md sm:text-base text-gray-500">Service Charges ({{orderDetails.store.serviceChargesPercentage | number}}%)</h3>
+                                    <p class="items-center font-semibold text-md sm:text-base text-gray-400">{{orderDetails.storeServiceCharges | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                                </div>
+                            </ng-container>
+                            <!-- Delivery Charges -->
+                            <div class="flex flex-row justify-between w-full">
+                                <div class="flex flex-row items-center gap-1">
+                                    <span class="font-semibold text-md sm:text-base text-gray-500 ">Delivery Fee</span>
+                                    <span class="text-left text-gray-500 text-sm">{{(orderDetails.orderPaymentDetail.isCombinedDelivery) ? '(combined)' : ''}}</span>
+                                </div>
+                                <p class="items-center font-semibold text-md sm:text-base text-gray-400">{{orderDetails.deliveryCharges | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                            </div>
+                            <!-- Delivery Discount -->
+                            <ng-container *ngIf="orderDetails.deliveryDiscount !== 0">
+                                <div class="flex flex-row justify-between w-full">
+                                    <p class="font-semibold text-md sm:text-base text-gray-500">
+                                        <span>Delivery Discount</span>
+                                        <span *ngIf="orderDetails.deliveryDiscountDescription">&nbsp;({{orderDetails.deliveryDiscountDescription}})</span>
+                                        <span class="text-xs text-gray-500 " *ngIf="orderDetails.deliveryDiscountMaxAmount != 0 && orderDetails.deliveryDiscount >= orderDetails.deliveryDiscountMaxAmount && orderDetails.deliveryDiscount != 0">
+                                            Capped at {{orderDetails.deliveryDiscountMaxAmount | currency: orderDetails.store.regionCountry.currencySymbol }}
+                                        </span>
+                                    </p>
+                                    <p class="items-center font-semibold text-md sm:text-base text-gray-400">-{{orderDetails.deliveryDiscount | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                                </div>
+                            </ng-container>
+                            <!-- Voucher Discount -->
+                            <ng-container *ngIf="orderDetails.voucherDiscount !== 0 && orderDetails.voucherDiscount !== null">
+                                <div class="flex flex-row justify-between w-full">
+                                    <p class="font-semibold text-md sm:text-base text-gray-500">
+                                        <span>Voucher Discount</span>
+                                    </p>
+                                    <p class="items-center font-semibold text-md sm:text-base text-gray-400">-{{orderDetails.voucherDiscount | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                                </div>
+                            </ng-container>
+                            <!-- Total Amount -->
+                            <div class="flex flex-row justify-between w-full border-t pt-2">
+                                <h3 class="font-semibold text-md sm:text-base">Total Amount</h3>
+                                <p class="items-center font-semibold text-md sm:text-base">Total Order ({{orderDetails.orderItemWithDetails.length}}): {{orderDetails.total | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

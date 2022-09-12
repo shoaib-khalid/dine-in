@@ -1,0 +1,22 @@
+<ng-container *ngIf="locations && locations.length">
+    <div class="flex flex-col w-full">
+        <!-- See More -->
+        <div class="flex flex-row w-full items-center justify-between">
+            <h2 class="font-semibold text-xl">{{title}}</h2>
+            <span *ngIf="showViewAll" (click)="viewAll()" class="font-semibold cursor-pointer text-primary hover:text-primary-600">View All</span>
+        </div>
+        <!-- Locations -->
+        <div class="flex flex-nowrap items-center justify-start overflow-x-auto scrollbar-hide w-full mt-2 sm:mt-4">
+            <div class="grid grid-flow-col grid-rows-1 gap-1 sm:gap-4">
+                <ng-container *ngFor="let location of locations">
+                    <fuse-card class="flex flex-col h-30 w-40 filter-article cursor-pointer shadow rounded-lg mb-2 ml-2" (click)="chooseLocation(location.cityId, category)">
+                        <img
+                            class="object-cover h-24 rounded-t-lg"
+                            [src]="location.imageUrl ? location.imageUrl : platform.logo">
+                        <span class="m-1 text-sm text-center font-semibold">{{location.cityDetails.name}}</span>
+                    </fuse-card>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-container>

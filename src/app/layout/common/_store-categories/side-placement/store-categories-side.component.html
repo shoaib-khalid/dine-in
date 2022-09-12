@@ -1,0 +1,46 @@
+<div class="border border-gray-300 rounded-lg py-2 px-3 md:w-[210px] lg:w-[240px] xl:w-[320px] 2xl:w-[340px]">
+    <div class="flex flex-col">
+        <div class="flex flex-row items-center justify-between cursor-pointer w-full"
+            (click)="collapseCategory = !collapseCategory">
+            <h3 class="font-semibold pl-2">Categories</h3>
+            <input
+                id="collapse-category-button"
+                type="button"
+                (click)="collapseCategory = !collapseCategory"
+                class="h-0 w-0 opacity-0 invisible pointer-events-none"
+                mat-button>
+            <label 
+                class="flex items-center justify-center cursor-pointer h-10"
+                for="collapse-category-button"
+                matRipple>
+                <mat-icon
+                    class="icon-size-5 text-primary"
+                    [svgIcon]="collapseCategory ? 'heroicons_outline:chevron-up' : 'heroicons_outline:chevron-down'"></mat-icon>
+            </label>
+        </div>
+        <div @expandCollapse *ngIf="!collapseCategory">
+            <div class="border-t w-full"></div>
+            <mat-checkbox
+                [checked]="catalogueSlug === 'all-products' ? true : false"
+                value="all-products"
+                [disabled]="catalogueSlug === 'all-products' ? true : false"
+                (change)="changeCatalogue($event.source.value)"
+                class="flex items-center h-10 min-h-10 px-4"
+                [color]="'primary'">
+                All
+            </mat-checkbox>
+            <ng-container *ngFor="let _category of categories">
+                <mat-checkbox
+                    [checked]="catalogueSlug === getCategorySlug(_category.name) ? true : false"
+                    [value]="getCategorySlug(_category.name)"
+                    [disabled]="catalogueSlug === getCategorySlug(_category.name) ? true : false"
+                    (change)="changeCatalogue($event.source.value)"
+                    class="flex items-center line-clamp-2 h-10 min-h-10 px-4"
+                    [color]="'primary'">
+                    {{textTruncate(_category.name, 32)}}
+                </mat-checkbox>
+            </ng-container>
+        </div>
+    </div>
+</div>
+

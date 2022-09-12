@@ -1,0 +1,19 @@
+
+<ng-container *ngIf="image">
+    <div class="z-99 bottom-20 md:bottom-0 right-0 flex flex-row justify-end px-4 py-3 fixed">
+        <span 
+            (click)="closeMessage(); $event.stopPropagation()"
+            class="absolute cursor-pointer bg-white rounded-full h-6 w-6 bg-opacity-70">
+            <mat-icon 
+                class="text-black"
+                [svgIcon]="'heroicons_solid:x'"></mat-icon>
+        </span>
+        <div class="flex flex-col w-full items-end" >
+            <img
+                (click)="uponClicked(); $event.stopPropagation()"
+                class="object-cover object-center w-24 md:w-26 cursor-pointer"
+                [src]="image"
+                alt="Logo image">
+        </div>
+    </div>
+</ng-container>

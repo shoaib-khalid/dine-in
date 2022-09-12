@@ -1,0 +1,43 @@
+<!-- Background - @formatter:off -->
+<ng-container *ngIf="pageType ==='signIn'">
+    <img class="absolute brightness-75 inset-0 w-full h-full pointer-events-none object-cover" [src]="'assets/branding/deliverin/signIn-page.png'" [alt]="">
+</ng-container>
+
+<ng-container *ngIf="pageType ==='signUp'">
+    <img class="absolute brightness-75 inset-0 w-full h-full pointer-events-none object-cover" [src]="'assets/branding/deliverin/signUp-2.png'" [alt]="">
+</ng-container>
+
+<ng-container *ngIf="pageType ==='forgotPassword'">
+    <img class="absolute brightness-75 inset-0 w-full h-full pointer-events-none object-cover" [src]="'assets/branding/deliverin/forgotPassword.png'" [alt]="">
+</ng-container>
+
+<!-- @formatter:on -->
+<!-- Content -->
+<ng-container *ngIf="platform">
+    <div class="z-10 relative w-full max-w-2xl">
+        <div class="text-7xl font-bold leading-none text-gray-100">
+            <div>Welcome to</div>
+            <div>{{platform.name}}</div>
+        </div>
+        <div class="mt-6 text-lg font-medium tracking-tight leading-6 text-gray-100">
+            Let's start your journey with us to explore more goodies around you!
+        </div>
+        <!-- <div class="flex items-center mt-8">
+            <div class="flex flex-0 items-center -space-x-1.5">
+                <img
+                    class="flex-0 w-10 h-10 rounded-full ring-4 ring-offset-1 ring-gray-800 ring-offset-gray-800 object-cover"
+                    src="assets/images/avatars/female-18.jpg">
+                <img
+                    class="flex-0 w-10 h-10 rounded-full ring-4 ring-offset-1 ring-gray-800 ring-offset-gray-800 object-cover"
+                    src="assets/images/avatars/female-11.jpg">
+                <img
+                    class="flex-0 w-10 h-10 rounded-full ring-4 ring-offset-1 ring-gray-800 ring-offset-gray-800 object-cover"
+                    src="assets/images/avatars/male-09.jpg">
+                <img
+                    class="flex-0 w-10 h-10 rounded-full ring-4 ring-offset-1 ring-gray-800 ring-offset-gray-800 object-cover"
+                    src="assets/images/avatars/male-16.jpg">
+            </div>
+            <div class="ml-4 font-medium tracking-tight text-gray-100">More than 17k people joined us, it's your turn</div>
+        </div> -->
+    </div>
+</ng-container>

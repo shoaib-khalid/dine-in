@@ -1,0 +1,141 @@
+<div class="flex flex-col items-center bg-card w-full h-full">
+    <div class="w-full">
+        <!-- Maps & Addresses-->
+        <div class="w-full flex flex-col">
+            <!-- <input
+                id="pac-input"
+                class="pac-controls w-full sm:w-1/2 rounded-lg border border-gray-300"
+                type="text"
+                (keydown.enter)="$event.preventDefault()"
+                placeholder="Search Location"/> -->
+            <!-- <div class="map w-full h-64 md:h-80 sm:rounded-lg" id="map"></div> -->
+            <!-- Maps Display -->
+            <div class="mapouter">
+                <div class="gmap_canvas">
+                    <iframe class="w-full h-56 md:h-80 md:rounded-lg" id="gmap_canvas" [src]="url" frameborder="0" scrolling="yes" marginheight="0" marginwidth="0"></iframe>
+                </div>
+            </div>
+            <div 
+                class="w-full flex flex-row py-2 px-1 items-center border-b hover:bg-primary-50 cursor-pointer"
+                (click)="addAddress()">
+                <mat-icon class="text-primary" svgIcon="heroicons_outline:plus-sm"></mat-icon>
+                <span class="font-semibold text-primary">Add a new address</span>
+            </div>
+            <!-- Addresses list -->
+            <ng-container *ngIf="customersAddresses" >
+                <div class="flex flex-col">
+                    <ng-container *ngFor="let customersAddress of customersAddresses;let i = index;">
+                        <div [ngClass]="selectedAddress && selectedAddress.id === customersAddress.id ? 'bg-primary-50' : ''" class="flex flex-row justify-between border-b rounded-sm p-2 bg-card min-h-[87px]">
+                            <ng-container *ngIf="selectedAddress && selectedAddress.id !== customersAddress.id">
+                                <input
+                                [id]="'select-address-button-' + customersAddress.id"
+                                class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                                type="button"
+                                (click)="selectAddress(customersAddress.id)"
+                                mat-icon-button>
+                                <label 
+                                    class="flex items-center justify-start cursor-pointer hover:font-bold"
+                                    [for]="'select-address-button-' + customersAddress.id"
+                                    matRipple>
+                                    <mat-icon
+                                        class="text-primary pr-2"
+                                        [svgIcon]="'radio_button_unchecked'"></mat-icon>
+                                </label>
+                            </ng-container>
+                            <ng-container *ngIf="selectedAddress && selectedAddress.id === customersAddress.id">
+                                <input
+                                    id="'selected-address-button-' + customersAddress.id"
+                                    class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                                    type="button"
+                                    mat-icon-button>
+                                <label 
+                                    class="flex items-center justify-start cursor-pointer text-primary font-bold"
+                                    for="'selected-address-button-' + customersAddress.id">
+                                    <mat-icon
+                                        class="text-primary pr-2"
+                                        [svgIcon]="'radio_button_checked'"></mat-icon>
+                                </label>
+                            </ng-container>  
+                            <!-- Details -->
+                            <div class="flex flex-col w-full">
+                                <div class="flex flex-col">
+                                    <span class="font-medium text-primary text-lg">{{customersAddress.name}}</span>
+                                    <span class="font-medium text-secondary text-sm">({{customersAddress.phoneNumber}})</span>
+                                </div>
+                                <span class="font-semibold text-md">{{customersAddress.address}}, {{customersAddress.postCode}}, {{customersAddress.city}}</span>
+                                <span class="text-sm text-gray-400">{{customersAddress.state}}, {{customersAddress.country}}</span>
+                            </div>
+                            <!-- Action -->
+                            <div class="text-secondary items-center">
+                                <div class="flex flex-col w-26">
+                                    <!-- Edit Button -->
+                                    <input
+                                        [id]="'edit-address-button-' + customersAddress.id"
+                                        class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                                        type="button"
+                                        (click)="editAddress(customersAddress)"
+                                        mat-icon-button>
+                                    <label 
+                                        class="flex items-center justify-start cursor-pointer group hover:font-bold hover:text-blue-500"
+                                        [for]="'edit-address-button-' + customersAddress.id"
+                                        matRipple>
+                                        <mat-icon
+                                            class="pr-2 group-hover:text-blue-500"
+                                            [svgIcon]="'heroicons_outline:pencil-alt'"></mat-icon>
+                                            Edit
+                                    </label>
+                                    <!-- default -->
+                                    <ng-container *ngIf="customersAddress.isDefault">
+                                        <div class="flex flex-row items-center">
+                                            <mat-icon class="pr-2 text-primary" svgIcon="heroicons_outline:badge-check"></mat-icon>
+                                            <span class="text-primary font-semibold">Default</span>
+                                        </div>
+                                    </ng-container>
+    
+                                    <!-- Delete Button -->
+                                    <ng-container *ngIf="!customersAddress.isDefault">
+                                        <input
+                                            [id]="'delete-address-button-' + customersAddress.id"
+                                            class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                                            type="button"
+                                            (click)="deleteAddress(customersAddress.id)"
+                                            mat-icon-button>
+                                        <label 
+                                            class="flex items-center justify-start cursor-pointer group hover:font-bold hover:text-red-500"
+                                            [for]="'delete-address-button-' + customersAddress.id"
+                                            matRipple>
+                                            <mat-icon
+                                                class="pr-2 group-hover:text-red-500"
+                                                [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                                                Delete
+                                        </label>
+                                        <!-- Set as Default Button -->
+                                        <input
+                                            [id]="'default-address-button-' + customersAddress.id"
+                                            class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                                            type="button"
+                                            (click)="setAsDefault(customersAddress)"
+                                            mat-icon-button>
+                                        <label 
+                                            class="flex items-center justify-start cursor-pointer group hover:font-bold hover:text-primary"
+                                            [for]="'default-address-button-' + customersAddress.id"
+                                            matRipple>
+                                                Set as Default
+                                        </label>        
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+                <div 
+                    *ngIf="originUrl"
+                    class="w-full flex flex-row py-2 px-1 items-center border-b group hover:bg-primary-600 bg-primary-500 cursor-pointer mb-2"
+                    (click)="backClicked()">
+                    <!-- <mat-icon class="text-primary" svgIcon="heroicons_outline:plus-sm"></mat-icon> -->
+                    <span class="font-semibold flex w-full justify-center text-white">Confirm</span>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

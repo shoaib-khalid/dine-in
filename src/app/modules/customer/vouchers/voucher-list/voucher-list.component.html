@@ -1,0 +1,220 @@
+<!-- Voucher List -->
+<div class="relative flex flex-col items-center bg-card w-full h-full">
+    <!-- Main menu -->
+    <div class="flex flex-col items-center w-full h-auto">
+        <mat-tab-group [color]="'primary'" mat-stretch-tabs mat-align-tabs="center" class="w-full justify-between">
+            <!-- Current -->
+            <mat-tab label="Current"> 
+                <!--  Voucher Input -->
+                <div class="flex flex-col w-full">
+
+                    <!-- Input Promo Code -->
+                    <div class="flex flex-col w-full pt-4">
+                        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript w-full">
+                            <mat-icon class="text-primary" [svgIcon]="'heroicons_outline:ticket'"></mat-icon>
+                            <input
+                                class="pl-4"
+                                matInput
+                                [autocomplete]="'off'"
+                                [(ngModel)] ="inputPromoCode"
+                                [placeholder]="'Enter Promo Code '">
+                            <!-- Add Promo button -->
+                            <div class="hidden sm:block w-36 py-2">
+                                <input
+                                    id="add-voucher-button"
+                                    type="button"
+                                    class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                                    mat-button
+                                    >
+                                <label 
+                                    class="flex items-center justify-center h-9 rounded-lg bg-primary hover:bg-primary-700 cursor-pointer"
+                                    for="add-voucher-button"
+                                    (click)="enterPromoCode()"
+                                    matRipple>
+                                    <mat-icon class="text-white font-bold" svgIcon="add"></mat-icon>
+                                    <span class="pl-2 font-semibold text-white">Add</span>
+                                </label>
+                            </div>
+                        </mat-form-field>
+                        <h3 class="text-xs pt-2 text-gray-400">Redeem your voucher if you received any Promo Code</h3>
+                    </div>
+
+                    <!-- Add Promo button for xs view-->
+                    <div class="w-full sm:hidden py-2 sm:py-0">
+                        <input
+                            id="add-voucher-button"
+                            type="button"
+                            class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                            mat-button
+                            >
+                        <label 
+                            class="flex items-center justify-center h-10 px-2 rounded-lg bg-primary hover:bg-primary-700 cursor-pointer"
+                            for="add-voucher-button"
+                            (click)="enterPromoCode()"
+                            matRipple>
+                            <span class="text-sm font-semibold text-white">Add</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- active voucher list -->
+                <div class="flex flex-col w-full my-1">
+                    <div class="flex flex-row my-2">
+                        <div class="pr-2">
+                            <mat-icon class="text-primary" [svgIcon]="'mat_outline:card_membership'"></mat-icon>
+                        </div>
+                        <span class="font-bold">My Vouchers</span> 
+                    </div>
+                    <!-- display if there's no voucher-->
+                    <ng-container *ngIf="customerVoucher.length < 1">
+                        <div class="flex flex-row border border-gray-300 rounded-lg cursor-pointer p-2">
+                            <div class="w-11 h-11 border border-gray-400 rounded mr-2">
+                                <div class="pl-3 pt-3">
+                                    <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16.868 0.289551H2.13117C1.1088 0.289551 0.289062
+                                            1.10929 0.289062 2.13166V12.2632C0.289062 13.2856 1.1088 
+                                            14.1053 2.13117 14.1053H5.81538V18.7106L9.49959 16.8685L13.1838 
+                                            18.7106V14.1053H16.868C17.8904 14.1053 18.7101 13.2856 18.7101 
+                                            12.2632V2.13166C18.7101 1.10929 17.8904 0.289551 16.868 
+                                            0.289551ZM16.868 12.2632H2.13117V10.4211H16.868V12.2632ZM16.868 
+                                            7.65797H2.13117V2.13166H16.868V7.65797Z" fill="#AAAAAA"/>
+                                    </svg>     
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <h3 class="text-gray-400">You don't have any vouchers yet.</h3>
+                                <h3 class="text-xs text-gray-400">Redeem your voucher if you received any Promo Code</h3>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <!-- display current active voucher -->
+                    <div class="grid grid-cols-4 gap-1 w-full">
+                        <ng-container *ngFor="let voucher of customerVoucher">
+                            <div class="col-span-4 sm:col-span-2 pt-2 sm:px-1">
+                                <div class="w-full flex flex-col border border-primary rounded-lg group hover:bg-primary cursor-pointer p-2"
+                                    (click)="openVoucherModal('mat_solid:info','Voucher\'s Terms & Conditions', null, voucher)" >
+                                    <div class="w-full flex flex-row pb-2 border-dashed border-b border-gray-300">
+                                        <div class="relative w-12 h-11 rounded mr-2">
+                                            <img 
+                                                class="w-full h-full rounded object-contain shadow p-0.5 bg-white"
+                                                [src]="platform.logo" 
+                                                alt="">
+                                        </div>
+                                        <div class="flex flex-col w-full">
+                                            <h3 class="text-primary group-hover:text-white">{{voucher.voucher.name}}</h3>
+                                            <div class="flex flex-row justify-between w-full">
+                                                <div *ngIf="voucher.voucher.maxDiscountAmount > 0" class="flex flex-row">
+                                                    <h3 class="text-xs pl-0.5 pt-0.5 text-gray-400 group-hover:text-black">Capped at&nbsp;</h3>
+                                                    <h3 class="text-sm text-gray-400 group-hover:text-black">{{voucher.voucher.maxDiscountAmount | currency: voucher.voucher.currencyLabel}}</h3>
+                                                </div>
+                                                <div *ngIf="voucher.voucher.maxDiscountAmount === 0 || voucher.voucher.maxDiscountAmount === null" class="flex flex-row">
+                                                    <h3 class="text-xs pl-0.5 pt-0.5 text-gray-400 group-hover:text-black">No Capped Amount</h3>
+                                                </div>
+                                                <div class="flex flex-row sm:flex-col text-right">
+                                                    <h3 class="text-xs pr-0.5 pt-0.5 text-gray-400 group-hover:text-black">Valid Until</h3>
+                                                    <h3 class="text-sm text-gray-400 group-hover:text-black">{{voucher.voucher.endDate | date:'dd-MM-yyyy' }}</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="pt-1 text-right text-primary font-semibold group-hover:text-white">T&C Applied</span>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="flex flex-row w-full mt-4 items-center justify-center">
+                        <pagination
+                            *ngIf="customerVoucherPagination"
+                            [itemLength]="customerVoucherPagination.length" 
+                            [initialPage]="customerVoucherPagination.page + 1"
+                            [pageSize]="customerVoucherPagination.size"
+                            (changePage)="onChangePage($event)"
+                            #customerVoucher></pagination>
+                    </div>
+                </div> 
+            </mat-tab>
+
+            <mat-tab label="Past"> 
+                <!-- past voucher list -->
+                <div class="flex flex-col w-full my-1">
+                    <div class="flex flex-row my-2">
+                        <div class="pr-2">
+                            <mat-icon class="text-primary" [svgIcon]="'mat_outline:card_membership'"></mat-icon>   
+                        </div>
+                        <span class="font-bold">My Used Vouchers</span> 
+                    </div>
+                    <!-- display if there's no history used voucher-->
+                    <ng-container *ngIf="usedCustomerVoucher.length < 1 && usedCustomerVoucherPagination">
+                        <div class="flex flex-row border border-gray-300 rounded-lg cursor-pointer p-2">
+                            <div class="w-11 h-11 border border-gray-400 rounded mr-2">
+                                <div class="pl-3 pt-3">
+                                    <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16.868 0.289551H2.13117C1.1088 0.289551 0.289062
+                                            1.10929 0.289062 2.13166V12.2632C0.289062 13.2856 1.1088 
+                                            14.1053 2.13117 14.1053H5.81538V18.7106L9.49959 16.8685L13.1838 
+                                            18.7106V14.1053H16.868C17.8904 14.1053 18.7101 13.2856 18.7101 
+                                            12.2632V2.13166C18.7101 1.10929 17.8904 0.289551 16.868 
+                                            0.289551ZM16.868 12.2632H2.13117V10.4211H16.868V12.2632ZM16.868 
+                                            7.65797H2.13117V2.13166H16.868V7.65797Z" fill="#AAAAAA"/>
+                                    </svg>     
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <h3 class="text-gray-400">There's no history of used voucher.</h3>
+                                <h3 class="text-xs text-gray-400">Redeem your voucher if you received any Promo Code</h3>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <!-- display past used voucher -->
+                    <div class="grid grid-cols-4 gap-1 w-full">
+                        <ng-container *ngFor="let usedVoucher of usedCustomerVoucher">
+                            <div class="col-span-4 sm:col-span-2 pt-2 sm:px-1">
+                                <div class="w-full flex flex-col border border-primary rounded-lg group hover:bg-primary cursor-pointer p-2"
+                                    (click)="openVoucherModal('mat_solid:info','Voucher\'s Terms & Conditions', null, usedVoucher)">
+                                    <div class="w-full flex flex-row pb-2 border-dashed border-b border-gray-300">
+                                        <div class="relative w-12 h-11 rounded mr-2">
+                                            <img 
+                                                class="w-full h-full rounded object-contain shadow p-0.5 bg-white"
+                                                [src]="platform.logo" 
+                                                alt="">
+                                        </div>
+                                        <div class="flex flex-col w-full">
+                                            <h3 *ngIf="usedVoucher.voucher.calculationType === 'FIX'" class="text-primary group-hover:text-white">{{usedVoucher.voucher.discountValue | currency: usedVoucher.voucher.currencyLabel}} off on {{usedVoucher.voucher.name}}</h3>
+                                            <h3 *ngIf="usedVoucher.voucher.calculationType === 'PERCENT'" class="text-primary group-hover:text-white">{{usedVoucher.voucher.discountValue}}% off on {{usedVoucher.voucher.name}}</h3>
+                                            <div class="flex flex-row justify-between w-full">
+                                                <div *ngIf="usedVoucher.voucher.maxDiscountAmount > 0" class="flex flex-row">
+                                                    <h3 class="text-xs pl-0.5 pt-0.5 text-gray-400 group-hover:text-black">Capped at&nbsp;</h3>
+                                                    <h3 class="text-sm text-gray-400 group-hover:text-black">{{usedVoucher.voucher.maxDiscountAmount | currency: usedVoucher.voucher.currencyLabel}}</h3>
+                                                </div>
+                                                <div *ngIf="usedVoucher.voucher.maxDiscountAmount === 0 || usedVoucher.voucher.maxDiscountAmount === null" class="flex flex-row">
+                                                    <h3 class="text-xs pl-0.5 pt-0.5 text-gray-400 group-hover:text-black">No Capped Amount</h3>
+                                                </div>
+                                                <div class="flex flex-row sm:flex-col text-right">
+                                                    <h3 class="text-xs pr-0.5 pt-0.5 text-gray-400 group-hover:text-black">Valid Until</h3>
+                                                    <h3 class="text-sm text-gray-400 group-hover:text-black">{{usedVoucher.voucher.endDate | date:'dd-MM-yyyy' }}</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span 
+                                        class="pt-1 text-right text-primary font-semibold group-hover:text-white">T&C Applied</span>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="flex w-full mt-4 items-center justify-center">
+                        <pagination
+                            *ngIf="usedCustomerVoucherPagination"
+                            [itemLength]="usedCustomerVoucherPagination.length" 
+                            [initialPage]="usedCustomerVoucherPagination.page + 1"
+                            [pageSize]="usedCustomerVoucherPagination.size"
+                            (changePage)="onChangePage($event)"
+                            #usedCustomerVoucher></pagination>
+                    </div>
+                </div> 
+            </mat-tab>
+
+        </mat-tab-group>
+        
+    </div>
+</div>

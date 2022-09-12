@@ -1,0 +1,89 @@
+<div class="flex flex-col w-full">
+    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-emphasized-affix w-full" #autocompleteField>
+        <mat-icon class="text-primary" svgIcon="heroicons_outline:search"></mat-icon>
+        <input
+            #searchInput
+            id="inputElement"
+            class="pl-4 text-sm"
+            matInput
+            [formControl]="searchControl"
+            [autocomplete]="'off'"
+            [placeholder]="placeholder"
+            [matAutocomplete]="matAutocomplete"
+            (keypress)="onKeypress($event)"
+            (keydown.enter)="goToSearch($event.target.value)">
+        <!-- Search button -->
+        <div *ngIf="currentScreenSize.includes('sm')" class="text-white font-semibold" matSuffix>
+            <button class="p-2.5 font-bold" (click)="goToSearch(searchControl.value);">Search</button>
+        </div>
+    </mat-form-field>
+    <mat-autocomplete
+        class="max-h-128 mt-1 rounded"
+        [disableRipple]="true"
+        #matAutocomplete="matAutocomplete">
+        <!-- <mat-option
+            class="py-0 px-6 text-md pointer-events-none text-secondary bg-transparent"
+            *ngIf="(autoCompleteList && !autoCompleteList.length) && resultSets.length > 0">
+            No results found!
+        </mat-option> -->
+        <ng-container *ngFor="let result of autoCompleteList; trackBy: trackByFn">
+            <!-- {{resultSet | json}} -->
+            <!-- <mat-optgroup class="flex items-center mt-2 px-2">
+                <span class="text-sm font-semibold tracking-wider text-secondary">{{ result.storeId ? result.storeId : "No Store" }}</span>
+            </mat-optgroup> -->
+            <mat-option
+                class="group relative mb-1 py-0 px-6 text-md rounded-md hover:bg-gray-100 dark:hover:bg-hover"
+            >
+                <ng-container *ngTemplateOutlet="historyResult; context: {$implicit: result}"></ng-container>
+            </mat-option>
+        </ng-container>
+    </mat-autocomplete>
+    <ng-container *ngIf="tags && tags.length">
+        <div class="flex flex-row w-full mt-0.5">
+            <ng-container *ngFor="let tag of tags">
+                <span class="text-sm mr-2 text-gray-500 hover:text-primary cursor-pointer" (click)="goToTags(tag.keyword)">#{{tag.keyword}}</span>
+            </ng-container>
+        </div>
+    </ng-container>
+</div>
+
+<!-- Contact result template -->
+<ng-template
+    #historyResult
+    let-result>
+    <div class="flex flex-row items-center">
+
+        <div class="flex items-center justify-between w-full"
+            (click)="selectResult(result); blurInput()">
+            <div class="flex flex-row items-center">
+                <div class="flex shrink-0 items-center justify-center w-8 h-8 rounded-full overflow-hidden bg-primary-100 dark:bg-primary-800">
+                    <img
+                        class="object-cover"
+                        *ngIf="result.image"
+                        [src]="result.image">
+                    <img
+                        class="p-0.5"
+                        *ngIf="!result.image && platform"
+                        [src]="platform.logoSquare">
+                </div>
+                <div class="ml-6 truncate">
+                    <span [innerHTML]="result.searchText"></span>
+                </div>
+            </div>
+        </div>
+        <ng-container *ngIf="customer">
+            <button mat-icon-button (click)="deleteSelectedResult(result.id);blurInput()">
+                <mat-icon
+                    class="m-0 icon-size-5 text-primary dark:text-primary-400"
+                    [svgIcon]="'feather:x-circle'"></mat-icon>
+            </button>
+        </ng-container>
+        <ng-container *ngIf="!customer">
+            <button mat-icon-button (click)="deleteGuestSelectedResult(result.searchText);blurInput()">
+                <mat-icon
+                    class="m-0 icon-size-5 text-primary dark:text-primary-400"
+                    [svgIcon]="'feather:x-circle'"></mat-icon>
+            </button>
+        </ng-container>
+    </div>
+</ng-template>

@@ -1,0 +1,88 @@
+<div class="w-full max-w-3xl">
+
+    <!-- Form -->
+    <form [formGroup]="accountForm">
+
+        <!-- Section -->
+        <div class="w-full">
+            <div class="text-xl">Personal Information</div>
+            <div class="text-secondary">Communication details in case we want to connect with you. These will be kept private.</div>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-1 w-full mt-8">
+            <!-- Email -->
+            <div class="sm:col-span-4">
+                <mat-form-field class="fuse-mat-emphasized-affix w-full">
+                    <mat-label>Email</mat-label>
+                    <mat-icon
+                        class="icon-size-5 text-white"
+                        [svgIcon]="'heroicons_solid:mail'"
+                        matPrefix></mat-icon>
+                    <input
+                        
+                        [formControlName]="'email'"
+                        matInput>
+                </mat-form-field>
+            </div>
+
+            <!-- Username -->
+            <div class="sm:col-span-4">
+            <mat-form-field class="fuse-mat-emphasized-affix w-full">
+                <mat-label>Username</mat-label>
+                <mat-icon
+                    class="icon-size-5 text-white"
+                    [svgIcon]="'heroicons_solid:user'"
+                    matPrefix></mat-icon>
+                <input
+                    
+                    [formControlName]="'username'"
+                    matInput>
+            </mat-form-field>
+            </div>
+            <!-- Name -->
+            <div class="sm:col-span-4">
+                <mat-form-field class="fuse-mat-emphasized-affix w-full">
+                    <mat-label>Name</mat-label>
+                    <mat-icon
+                        class="icon-size-5 text-white"
+                        [svgIcon]="'heroicons_solid:user'"
+                        matPrefix></mat-icon>
+                    <input
+                        [formControlName]="'name'"
+                        matInput>
+                </mat-form-field>
+            </div>
+            <!-- Phone Number -->
+            <div class="sm:col-span-4">
+                <mat-form-field class="fuse-mat-emphasized-affix w-full">
+                    <mat-label>Phone Number</mat-label>
+                    <mat-icon
+                        class="icon-size-5 text-white"
+                        [svgIcon]="'heroicons_solid:phone'"
+                        matPrefix></mat-icon>
+                    <input
+                        [formControlName]="'phoneNumber'"
+                        matInput>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end pt-4">
+            <!-- <button
+                class="ml-4"
+                mat-flat-button
+                type="button"
+                (click)="closeDialog()">
+                Cancel
+            </button> -->
+            <button
+                class="ml-4"
+                mat-flat-button
+                type="button"
+                (click)="updateClientProfile()"
+                [color]="'primary'">Save
+            </button>
+        </div>
+    </form>
+
+</div>

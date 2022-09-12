@@ -1,0 +1,54 @@
+<div class="flex flex-col max-w-110 md:min-w-110 ">
+
+    <div class="flex justify-end">
+        <button class="bg-white hover:bg-white"(click)="cancelButton()">    
+            <mat-icon
+            class="items-center text-gray-400 icon-size-6"
+            [svgIcon]="'heroicons_outline:x'">
+            </mat-icon>
+        </button>
+    </div>
+    
+    <div class="flex flex-col flex-auto w-full px-6">
+        
+        <div class="flex flex-row items-center justify-center mt-6">
+            <div class="rounded-full bg-primary w-24 h-24">
+                <mat-icon
+                class="items-center text-gray-400 icon-size-24"
+                [svgIcon]="'heroicons_solid:shopping-cart'"></mat-icon>
+            </div>
+        </div>
+
+        <div class="flex flex-row items-center justify-center py-2">
+            <h1 class="text-2xl font-bold">Delete Item</h1>
+        </div>
+
+        <div class="flex flex-col">
+            <div class="flex flex-row items-center justify-center py-2">
+                <h1 class="flex flex-col text-lg">Are you sure you want to delete this item?</h1>
+            </div>
+
+        </div>
+        <!-- Actions -->
+        <div class="flex flex-row w-full items-center justify-between mt-6 mb-6">
+
+            <!-- Send -->
+            <button
+                class=" p-3 px-6 border rounded-lg border-primary-300 cursor-pointer"
+                (click)="cancelButton()"
+                >
+                Cancel
+            </button>
+
+            <button
+                class="p-3 px-6 border rounded-lg border-primary-300 bg-primary hover:border-primary-500 cursor-pointer"
+                (click)="deleteButton()"
+                >
+                Delete
+            </button>
+            
+        </div>
+
+
+    </div>
+</div>

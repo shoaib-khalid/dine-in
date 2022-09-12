@@ -1,0 +1,9 @@
+<ng-container *ngIf="banners && banners.length">
+    <ng-container *ngFor="let banner of banners">
+        <div class="w-full mt-4 h-30 sm:h-40 md:h-[16rem] rounded-lg"
+            [ngClass]="banner.redirectUrl ? 'cursor-pointer' : 'cursor-default'"
+            (click)="redirectToUrl(banner.redirectUrl)">
+            <img class="w-full h-full object-cover rounded-lg" [src]="banner.bannerUrl" alt="">
+        </div>
+    </ng-container>
+</ng-container>

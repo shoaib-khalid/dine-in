@@ -1,0 +1,379 @@
+<div class="flex flex-col items-center bg-card w-full h-full">            
+    <ng-container *ngIf="store">
+        <!-- Search -->
+        <!-- <search *ngIf="!currentScreenSize.includes('md')" class="w-full" [storeId]="store.id" [store]="storeDetails"></search> -->
+        <search class="w-full mb-2 sm:mt-2 sm:mb-4" [storeId]="store.id" [store]="storeDetails"></search>
+        <!-- Store Header -->
+        <fuse-card class="relative flex flex-row h-30 sm:h-40 w-full border border-primary rounded-lg filter-article"
+            (click)="!currentScreenSize.includes('md') ? chooseStore(store.domain) : ''">
+            <div *ngIf="isStoreClose(store.id)" 
+                class="absolute bg-black bg-opacity-60 z-10 w-full h-full flex flex-col items-center justify-center rounded-lg lg:rounded gap-2">
+                <div class="flex flex-col rounded-lg bg-red-500 text-white items-center p-3 leading-none uppercase">
+                    <span class="text-white text-base lg:text-2xl font-medium">{{notificationMessageTitle}}</span>
+                    <span class="text-white text-3xl lg:text-5xl font-semibold">CLOSED</span>
+                </div>
+                <span class="w-3/4 text-center text-white text-md lg:text-lg font-medium tracking-tight">{{notificationMessage}}</span>
+            </div>
+            <!-- Store Image -->
+            <div class="flex-0 w-30 sm:w-44 h-full">
+                <img
+                class="w-full shadow h-full object-cover"
+                [src]="displayStoreLogo(store.storeAssets)"
+                [alt]="'Card cover image'">
+            </div>
+            <div class="relative flex flex-col flex-auto p-2 sm:p-3 justify-between">
+                <!-- Store Details  -->
+                <div class="flex flex-col">
+                    <!-- Store Name -->
+                    <div class="md:text-2xl text-lg font-semibold leading-tight">{{store.name}}</div>
+                    <!-- Store Description -->
+                    <p class="flex flex-row text-black overflow-hidden text-ellipsis text-xs sm:text-sm md:text-base break-all line-clamp-2" [innerHTML]="store.storeDescription"></p>
+                </div>
+                <!-- Saparator -->
+                <div class="w-full border-t border-primary-200"></div>
+                <!-- Contact -->
+                <div class="flex flex-col">
+                    <!-- Address  -->
+                    <div class="w-full flex flex-row gap-x-1">
+                        <mat-icon class="block sm:hidden icon-size-3 text-primary pt-0.5" [svgIcon]="'mat_solid:location_on'"></mat-icon>
+                        <span class="hidden sm:block text-xs sm:text-sm md:text-base">Address:</span>
+                        <span class="text-xs sm:text-sm md:text-base line-clamp-2 font-medium">{{store.address}}</span>
+                    </div>
+                    <!-- Contact & Product -->
+                    <div class="flex flex-row justify-between gap-x-2">
+                        <div class="flex flex-row gap-x-1">
+                            <mat-icon class="block sm:hidden icon-size-3 text-primary" [svgIcon]="'mat_solid:phone'"></mat-icon>
+                            <span class="hidden sm:block text-xs sm:text-sm md:text-base">Contact Us:</span>
+                            <a [href]="'tel:' + store.phoneNumber" class="text-xs sm:text-sm md:text-base font-medium underline">{{store.phoneNumber}}</a>
+                        </div>
+                        <div class="flex flex-row gap-x-1">
+                            <mat-icon class="block sm:hidden icon-size-3 text-primary" [svgIcon]="'mat_solid:shopping_bag'"></mat-icon>
+                            <span class="hidden sm:block text-xs sm:text-sm md:text-base">Products:</span>
+                            <span class="text-xs sm:text-sm md:text-base font-medium">{{pagination?.length}}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- View Home -->
+                <div class="hidden md:flex flex-row group justify-end w-full">
+                    <div class="flex flex-row md:absolute top-2 right-2 justify-center items-center border rounded-md border-primary md:py-1 md:px-2 group-hover:bg-primary w-full sm:w-32 cursor-pointer" (click)="chooseStore(store.domain)">
+                        <mat-icon class="icon-size-4 md:icon-size-5 text-primary group-hover:text-white sm:icon-size-6" svgIcon="mat_outline:storefront"></mat-icon>
+                        <span class="text-xs sm:text-sm md:text-base font-semibold group-hover:text-white text-primary pl-2 tracking-tight">View Store</span>
+                    </div>
+                </div>
+            </div>
+        </fuse-card>
+        <!-- Products -->
+        <ng-container *ngIf="product;else noProduct">
+            <div class="flex flex-col md:flex-row justify-between w-full mt-3 md:mt-6">
+
+                <!-- Product Assets -->
+                <div class="flex justify-center w-full md:w-140 md:pr-6 lg:w-1/2 md:max-h-120 md:min-h-120">
+                    <ngx-gallery 
+                        (previewOpen)="openPreview = true"
+                        (previewClose)="openPreview = false"
+                        class="shadow w-full md:h-full" 
+                        [ngClass]="openPreview ? 'z-50' : 'z-30'"
+                        style="border-radius: 15px;" 
+                        [options]="galleryOptions" 
+                        [images]="galleryImages"></ngx-gallery>
+                </div>
+                
+                <!-- Product Details -->
+                <div class="flex flex-col w-full md:w-1/2 ">
+                    <!-- Title -->
+                    <div class="justify-start items-center mt-6 md:mt-0">
+                        <span class="text-2xl md:text-3xl font-semibold leading-none items-center">{{product.name}}</span>
+                        <!-- <span *ngIf="displayedProduct.discountAmount>0" class="mb-2 py-1 px-3 rounded text-sm font-semibold mx-2 items-center" [ngClass]="'text-primary-100 bg-red-600'">      
+                            {{displayedProduct.discountAmount}}% Off
+                        </span> -->
+                    </div>
+                    <!-- Product Rating -->
+                    <!-- <div class="flex items-center leading-none mt-2 -ml-1">
+                        <div class="flex items-center">
+                            <mat-icon
+                                class="text-yellow-400 icon-size-5"
+                                [svgIcon]="'mat_outline:star'"></mat-icon>
+                            <mat-icon
+                                class="text-yellow-400 icon-size-5"
+                                [svgIcon]="'mat_outline:star'"></mat-icon>
+                            <mat-icon
+                                class="text-yellow-400 icon-size-5"
+                                [svgIcon]="'mat_outline:star'"></mat-icon>
+                            <mat-icon
+                                class="text-yellow-400 icon-size-5"
+                                [svgIcon]="'mat_outline:star'"></mat-icon>
+                            <mat-icon
+                                class="text-yellow-400 icon-size-5"
+                                [svgIcon]="'mat_outline:star_half'"></mat-icon>
+                        </div>
+                        <div class="text-secondary ml-2">4.5</div>
+                        <div class="text-secondary mx-2">&bull;</div>
+                        <div class="text-secondary">98 reviews</div>
+                    </div> -->
+                    <!-- Price -->
+                    <div class="mt-2">
+                        <ng-container *ngIf="displayedProduct.discountAmount>0;else noItemDiscount" >
+                            <p class="font-semibold items-center">Price: &nbsp; 
+                                <span style="text-decoration: line-through;" class="px-2">{{displayedProduct.price | currency: store.regionCountry.currencySymbol}}</span> 
+                                <span class="text-xl font-semibold text-primary px-2 ">{{displayedProduct.discountedPrice | currency: store.regionCountry.currencySymbol}}</span> 
+                                <span class="mb-2 py-1 px-3 rounded text-sm font-semibold mx-2 items-center" [ngClass]="'text-primary-100 bg-red-600'">{{displayedProduct.discountAmount}}% Off</span> 
+                            </p>
+                        </ng-container>
+                        <ng-template #noItemDiscount>
+                            <p class="font-semibold">Price: &nbsp; <span class="text-xl font-semibold text-primary px-2">{{displayedProduct.price | currency: store.regionCountry.currencySymbol}}</span> </p>
+                        </ng-template>
+                    </div>
+                    <!-- Details -->
+                    <div class="flex flex-col">
+                        <span class="font-semibold">Details:</span> 
+                        <div class="md:overflow-y-auto h-auto md:max-h-32">
+                            <span class="text-sm font-normal text-gray-400" [innerHTML]="product.description"></span>
+                        </div>
+                    </div>
+                    <!-- Variants / Combo -->
+                    <ng-container *ngIf="!product.isPackage; else comboProduct">
+                        <!-- Variants -->
+                        <fieldset 
+                            [id]="variant.name" 
+                            *ngFor="let variant of product.productVariants; let i = index;"
+                            class="py-1">
+                            <label class="font-semibold" for="{{variant.name}}">{{variant.name | titlecase }} : </label>
+                            <ul class="grid grid-cols-2 my-2">
+                                <li *ngFor="let option of variant.productVariantsAvailable; let i = index;" class="flex items-center">
+                                    <input type="radio"
+                                        class=""
+                                        id="{{variant.name + i}}" 
+                                        value="{{option.value}}" 
+                                        name="{{variant.name}}" 
+                                        [checked]="selectedVariants.indexOf(option.id) > -1"
+                                        (change)="onChangeVariant(option.id, variant.name, option.productId)"
+                                    >
+                                    <label class="pl-2" for="{{variant.name + i}}">{{option.value}}</label>
+                                    <!-- <label for="{{variant.name + i}}">{{option.value}} / {{ selectedVariants.indexOf(option.id) }} / {{option.id}}</label> -->
+                                </li>
+                            </ul>
+                        </fieldset>
+                    </ng-container>
+                    <ng-template #comboProduct>
+                        <!-- Combo -->
+                        <fieldset 
+                            [id]="combo.title" 
+                            *ngFor="let combo of combos; let i = index;"
+                            class="py-1">
+                            <label class="font-semibold" for="{{combo.title}}">{{combo.title | uppercase}} : (Select {{ combo.totalAllow }} of {{ combo.productPackageOptionDetail.length }})</label>
+                            <ul class="grid grid-cols-2">
+                                <li *ngFor="let option of combo.productPackageOptionDetail; let i = index;" class="flex items-center">
+                                    <input type="checkbox" 
+                                        [id]="'combo-checkbox-' + combo.id + '-' + option.productId"
+                                        [value]="option.productId" 
+                                        [name]="'combo-checkbox-' + combo.id + '-' + option.productId"
+                                        [checked]="selectedCombo[combo.id].indexOf(option.productId) > -1"
+                                        (change)="onChangeCombo(combo.id, option.productId, $event)"
+                                    >
+                                    <label class="pl-2" [for]="'combo-checkbox-' + combo.id + '-' + option.productId">{{option.product.name}}</label>
+                                    <!-- <label for="{{variant.name + i}}">{{option.value}} / {{ selectedVariants.indexOf(option.id) }} / {{option.id}}</label> -->
+                                </li>
+                            </ul>
+                        </fieldset>
+                    </ng-template>
+
+                    <!-- Quantity -->
+                    <!-- <div class="flex flex-row justify-between items-center mt-4">
+                        <span class="font-semibold">Quantity:</span> 
+                        <div class="flex flex-row h-8 w-20 rounded-md relative bg-primary">
+                            <button (click)="checkQuantity('decrement')" class="text-white hover:bg-white hover:text-primary border border-primary h-full w-20 rounded-l-md cursor-pointer outline-none pb-2">
+                                <span class="text-2xl">−</span>
+                            </button>
+                            <input [(ngModel)]="quantity" (change)="checkQuantity()" type="number" class="focus:outline-none text-center w-full font-semibold text-md text-white focus:text-white md:text-basecursor-default flex items-center outline-none" name="custom-input-number" value="0"/>
+                            <button (click)="checkQuantity('increment')" class="text-white hover:bg-white hover:text-primary border border-primary h-full w-20 rounded-r-md cursor-pointer pb-2">
+                                <span class="text-2xl">+</span>
+                            </button>
+                        </div>
+                    </div> -->
+                    <!-- Quantity -->
+                    <div class="flex flex-row justify-between items-center gap-2 mt-4">
+                        <div class="flex flex-row h-6 w-16 rounded ring-1 ring-primary relative bg-white">
+                            <button (click)="checkQuantity('decrement', product.id); $event.stopPropagation()" 
+                                class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                <mat-icon 
+                                    class="icon-size-4 text-black group-hover:text-white" 
+                                    [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
+                            </button>
+                            <input [(ngModel)]="quantity" (change)="checkQuantity()" type="number" 
+                                class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/>
+                            <button (click)="checkQuantity('increment', product.id); $event.stopPropagation()" 
+                                class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                <mat-icon 
+                                    class="icon-size-4 text-black group-hover:text-white" 
+                                    [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Special Instruction -->
+                    <form [formGroup]="specialInstructionForm">
+                        <div class="w-full mt-2">
+                            <span class="font-semibold">Special Instruction{{ product.isNoteOptional === false ? ' (required)' : ''}}:</span> 
+                            <mat-form-field class="mt-2 fuse-mat-textarea w-full" floatLabel="always">
+                                <!-- [(ngModel)]="specialInstruction" -->
+                                <textarea
+                                    [ngClass]="'border border-red-600'"
+                                    matInput
+                                    [formControlName]="'specialInstructionValue'"
+                                    maxlength="500"
+                                    [rows]="3"
+                                    [placeholder]="product.customNote ? product.customNote : 'Make it special'"
+                                    [required]="product.isNoteOptional === false"
+                                    matTextareaAutosize></textarea>
+                                    <mat-error *ngIf="specialInstructionForm.get('specialInstructionValue').hasError('required')">
+                                        Oops! The special instruction is required for this item
+                                    </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                    </form>
+
+                    <div class="flex flex-row w-full justify-between mb-2">
+                        <p class="font-semibold">Total:</p> 
+                        <ng-container *ngIf="displayedProduct.discountAmount>0;else noItemDiscountSubTotal">
+                            <span class="text-xl font-semibold px-2 ">{{(displayedProduct.discountedPrice * quantity) | currency: store.regionCountry.currencySymbol}}</span>
+                        </ng-container>
+                        <ng-template #noItemDiscountSubTotal>
+                            <span class="text-xl font-semibold px-2 ">{{(displayedProduct.price * quantity) | currency: store.regionCountry.currencySymbol}}</span>
+                        </ng-template>
+                    </div>
+
+                    <!-- Add to cart / checkoout -->
+                    <div class="w-full flex flex-row justify-between items-center">
+                        <!-- Add to cart -->
+                        <!-- [disabled]="!specialInstruction && product.isNoteOptional === false" -->
+                        <!-- [ngClass]="!specialInstruction && product.isNoteOptional === false ? 'cursor-default bg-gray-200' : 'cursor-pointer border-primary-300 bg-primary hover:border-primary-500'" -->
+                        <input
+                            id="add-to-cart-button"
+                            type="button"
+                            class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                            (click)="addToCart()"
+                            mat-button>
+                        <label 
+                            class="flex items-center justify-center w-5/12 sm:w-2/5 h-10 px-2 rounded-lg cursor-pointer bg-primary group hover:bg-primary-600"
+                            for="add-to-cart-button"
+                            matRipple>
+                            <span class="text-sm font-semibold text-white group-hover:text-black">Add to Cart</span>
+                            <mat-icon
+                                class="pl-1 text-white transform scale-75 group-hover:text-black"
+                                [svgIcon]="'heroicons_solid:shopping-cart'"></mat-icon>
+                        </label>
+
+                        <!-- Checkout -->
+                        <input
+                            id="go-checkout-button"
+                            type="button"
+                            class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                            [routerLink]="['/carts']"
+                            mat-button>
+                        <label 
+                            class="flex items-center justify-center w-5/12 sm:w-2/5 h-10 px-2 rounded-lg bg-green-500 cursor-pointer group hover:bg-green-600"
+                            for="go-checkout-button"
+                            matRipple>
+                            <span class="text-sm font-semibold text-white group-hover:text-black">Checkout</span>
+                            <mat-icon
+                                class="pl-1 text-white transform scale-75 group-hover:text-black"
+                                [svgIcon]="'heroicons_solid:shopping-bag'"></mat-icon>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <!-- No Product -->
+        <ng-template #noProduct>
+            <div class="relative w-full h-100">
+                <error-background class="w-full static"></error-background>
+                <div class="absolute flex flex-col inset-0 justify-center items-center">
+                    <svg class="z-10 " version="1.0" xmlns="http://www.w3.org/2000/svg"
+                        width="100px" height="100px" viewBox="0 0 535.000000 480.000000"
+                        preserveAspectRatio="xMidYMid meet">
+    
+                        <g transform="translate(0.000000,480.000000) scale(0.100000,-0.100000)" fill="var(--fuse-primary-800)" stroke="none">
+                            <path d="M638 4152 l-618 -617 0 -1717 0 -1716 26 -31 26 -31 1788 0 1788 0
+                            26 31 26 31 0 514 0 514 -100 0 -100 0 0 -450 0 -450 -1640 0 -1640 0 0 1585
+                            0 1585 564 0 564 0 26 31 26 31 0 559 0 559 1050 0 1050 0 0 -435 0 -435 100
+                            0 100 0 0 499 0 499 -26 31 -26 31 -1196 0 -1197 0 -617 -618z m562 -142 l0
+                            -420 -422 0 -423 0 420 420 c231 231 421 420 422 420 2 0 3 -189 3 -420z"/>
+                            <path d="M3495 3569 c-465 -55 -862 -401 -982 -856 -34 -132 -44 -374 -19
+                            -506 44 -230 141 -420 305 -590 139 -145 276 -234 455 -296 122 -43 236 -61
+                            386 -61 205 0 360 38 543 133 l98 51 292 -292 c193 -192 305 -296 329 -307 46
+                            -19 108 -19 151 -1 50 21 262 243 277 290 13 42 8 102 -15 145 -7 15 -153 163
+                            -324 330 l-309 302 24 56 c38 86 73 226 85 345 21 202 -19 426 -111 614 -216
+                            445 -690 702 -1185 643z m370 -214 c366 -99 619 -353 711 -715 15 -59 19 -108
+                            18 -230 -1 -137 -4 -165 -27 -245 -15 -49 -50 -135 -77 -190 l-51 -100 351
+                            -345 352 -345 -81 -80 -81 -80 -338 338 c-185 185 -341 337 -346 337 -5 0 -27
+                            -15 -50 -33 -101 -82 -257 -157 -404 -194 -100 -25 -331 -23 -433 5 -423 114
+                            -713 465 -736 892 -25 475 306 896 783 995 89 19 324 13 409 -10z"/>
+                            <path d="M521 2814 c-26 -22 -31 -33 -31 -70 0 -34 6 -51 25 -69 l24 -25 714
+                            0 714 0 27 26 c38 38 36 95 -3 135 l-29 29 -705 0 -705 0 -31 -26z"/>
+                            <path d="M529 2371 c-39 -40 -40 -93 -2 -133 l27 -28 614 0 614 0 29 29 c40
+                            41 40 91 0 132 l-29 29 -612 0 -612 0 -29 -29z"/>
+                            <path d="M521 1944 c-25 -21 -31 -33 -31 -66 0 -52 14 -77 55 -94 51 -21 1369
+                            -21 1420 0 63 27 76 106 26 157 l-29 29 -705 0 -705 0 -31 -26z"/>
+                            <path d="M544 1090 c-56 -22 -72 -108 -30 -157 l24 -28 286 0 286 0 27 28 c41
+                            40 39 99 -5 138 l-32 29 -268 -1 c-147 0 -277 -4 -288 -9z"/>
+                            <path d="M938 3 c507 -2 1337 -2 1845 0 507 1 92 2 -923 2 -1015 0 -1430 -1
+                            -922 -2z"/>
+                        </g>
+                    </svg>
+                    <div class="mt-6 text-2xl font-semibold tracking-tight text-primary-800 z-10">No result found.</div>
+                </div>
+            </div>
+
+        </ng-template>
+
+        <div class="mt-8 mb-4 border-t border-gray-300 items-center w-full"></div>
+
+        <!-- Popular products  -->
+        <ng-container *ngIf="products && products.length > 0">
+            <span class="flex font-semibold text-xl w-full">Popular Products from {{store.name}}</span>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 w-full mt-2 sm:my-4">
+                <ng-container *ngFor="let product of products">
+                    <!-- need to do this because featuredProducts and productDetails have different response -->
+                    <ng-container *ngTemplateOutlet="productResult; context: {$implicit: product.productDetails ? product.productDetails : product}">
+                    </ng-container>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <!-- Contact result template -->
+        <ng-template
+            #productResult
+            let-product>
+            <fuse-card
+                (click)="redirectToProduct(product.seoNameMarketplace); scrollToTop()"
+                class="flex flex-col rounded-lg border border-gray-300 h-[210px] md:h-[220px] cursor-pointer filter-article">
+                <div class="relative w-full">
+                    <ng-container *ngIf="!product.thumbnailUrl" >
+                        <div class="leading-tight tracking-tight absolute flex flex-col gap-1 w-full justify-center items-center left-0 right-0 top-0 bottom-0 bg-black bg-opacity-40 rounded-t-lg">
+                            <span class="text-white font-semibold text-sm md:text-lg text-center opacity-100">{{product.storeCategory ? product.storeCategory.parentCategory.parentName : "Product category not available"}}</span>
+                            <span class="text-white text-center text-sm md:text-base opacity-100">Product image not available</span>
+                        </div>
+                    </ng-container>
+                    <img
+                        class="object-cover w-full h-[8.5rem] rounded-t-lg shadow"
+                        [src]="product.thumbnailUrl ? product.thumbnailUrl : product.storeCategory.parentCategory.parentThumbnailUrl">
+                </div>
+                <div class="flex flex-col justify-between h-full py-2 mx-2 mt-1">
+                    <div class="flex flex-col">
+                        <span class="text-base md:text-lg font-semibold line-clamp-1">{{product.name}}</span>
+                    </div>
+                    <div class="flex flex-row items-end justify-between">
+                        <ng-container *ngIf="product.productInventories[0] && product.productInventories[0].itemDiscount; else noDiscount">
+                            <span class="line-through text-sm font-semibold">{{product.productInventories[0].itemDiscount.normalPrice | currency: platform.currency}}</span>
+                            <span class="text-lg font-semibold">{{product.productInventories[0].itemDiscount.discountedPrice | currency: platform.currency}}</span>
+                        </ng-container>
+                        <ng-template #noDiscount>
+                            <span class="text-lg font-semibold">{{product.productInventories[0].price | currency: platform.currency}}</span>
+                        </ng-template>
+                    </div>
+                </div>
+            </fuse-card>
+        </ng-template>
+    </ng-container>
+</div>

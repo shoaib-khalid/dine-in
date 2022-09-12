@@ -1,0 +1,159 @@
+<!-- <ul class="flex flex-row items-center">       
+    
+    <li 
+        class="bg-card h-10 w-10 flex justify-center items-center cursor-pointer rounded-full page-item" 
+        [ngClass]="isFirstPage ? 'bg-disabled cursor-default' : 'bg-card cursor-pointer group hover:bg-primary'"
+        (click)="isFirstPage ? '' : checkPagination('previous',currentPageIndex)">
+        <mat-icon
+            class="icon-size-4"
+            [ngClass]="isFirstPage ? '' : 'text-primary group-hover:text-white'"
+            [svgIcon]="'heroicons_outline:chevron-double-left'"></mat-icon>
+    </li>
+    
+    <li 
+        class="bg-card h-10 w-10 flex justify-center items-center cursor-pointer rounded-full page-item" 
+        [ngClass]="isFirstPage ? 'bg-disabled cursor-default' : 'bg-card cursor-pointer group hover:bg-primary'"
+        (click)="isFirstPage ? '' : checkPagination('previous',currentPageIndex)">
+        <mat-icon
+            class="icon-size-4"
+            [ngClass]="isFirstPage ? '' : 'text-primary group-hover:text-white'"
+            [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
+    </li>
+
+    <ng-container *ngFor="let a of paginationDisplaySize; let index = index">
+        <li 
+            class="flex justify-center items-center select-none page-item active h-10 w-10 cursor-pointer rounded mx-2"
+            [ngClass]="index + paginationCurrentPage === currentPage ? 'bg-primary' : 'bg-card hover:bg-hover'" 
+            (click)="checkPagination(null,index)">
+            <span 
+                class="p-2"
+                [ngClass]="index + paginationCurrentPage === currentPage ? 'text-white' : ''"
+            >{{ index + paginationCurrentPage}}</span>
+        </li>
+    </ng-container>
+
+    <li 
+        class="bg-card h-10 w-10 flex justify-center items-center cursor-pointer rounded-full page-item" 
+        [ngClass]="isLastPage ? 'bg-disabled cursor-default' : 'bg-card cursor-pointer group hover:bg-primary'"
+        (click)="isLastPage ? '' : checkPagination('next',currentPageIndex)">
+        <mat-icon
+            class="icon-size-4"
+            [ngClass]="isLastPage ? '' : 'text-primary group-hover:text-white'"
+            [svgIcon]="'heroicons_outline:chevron-right'"></mat-icon>
+    </li>
+
+    <li 
+        class="bg-card h-10 w-10 flex justify-center items-center cursor-pointer rounded-full page-item" 
+        [ngClass]="isLastPage ? 'bg-disabled cursor-default' : 'bg-card cursor-pointer group hover:bg-primary'"
+        (click)="isLastPage ? '' : checkPagination('next',currentPageIndex)">
+        <mat-icon
+            class="icon-size-4"
+            [ngClass]="isLastPage ? '' : 'text-primary group-hover:text-white'"
+            [svgIcon]="'heroicons_outline:chevron-double-right'"></mat-icon>
+    </li>
+</ul> -->
+
+<ul *ngIf="pager.pages && pager.pages.length" class="pagination flex flex-row items-center text-sm">
+    <!-- Go to First Page -->
+    <li 
+        (click)="setPage(1)"
+        class="bg-card h-8 w-8 flex justify-center items-center cursor-pointer rounded-full page-item first-item pt-[6px]" 
+        [ngClass]="pager.currentPage === 1 ? 'disabled bg-disabled cursor-default' : 'bg-card cursor-pointer group hover:bg-primary'"
+    >
+        <a class="page-link">
+            <mat-icon
+                class="icon-size-4"
+                [ngClass]="pager.currentPage === 1 ? '' : 'text-primary group-hover:text-white'"
+                [svgIcon]="'heroicons_outline:chevron-double-left'"></mat-icon>
+        </a>
+    </li>
+    <!-- Go to Previous Page -->
+    <li 
+        (click)="setPage(pager.currentPage - 1)"
+        class="bg-card h-8 w-8 flex justify-center items-center cursor-pointer rounded-full page-item previous-item pt-[6px]" 
+        [ngClass]="pager.currentPage === 1 ? 'disabled bg-disabled cursor-default' : 'bg-card cursor-pointer group hover:bg-primary'"
+    >
+        <a class="page-link">
+            <mat-icon
+                class="icon-size-4"
+                [ngClass]="pager.currentPage === 1 ? '' : 'text-primary group-hover:text-white'"
+                [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
+        </a>
+    </li>
+    <!-- First page -->
+    <li
+        *ngIf="pager.totalPages > maxPages && (pager.pages.includes(pager.totalPages))"
+        (click)="setPage(1)"
+        class="flex justify-center items-center select-none active h-8 w-8 cursor-pointer rounded mx-2 page-item number-item"
+        [ngClass]="pager.currentPage === page ? 'active bg-primary' : 'bg-card hover:bg-hover'">
+        <a>
+            1
+        </a>
+    </li>
+    <!-- Dot dot dot before-->
+    <li
+        *ngIf="pager.totalPages > maxPages && (pager.pages.includes(pager.totalPages))"
+        class="bg-card h-8 w-8 flex justify-center items-center rounded-full page-item next-item pt-[6px]">
+        <a>
+            ...
+        </a>
+    </li>
+    <!-- Pages -->
+    <ng-container *ngFor="let page of pager.pages">
+        <li
+            (click)="setPage(page)"
+            class="flex justify-center items-center select-none active h-8 w-8 cursor-pointer rounded mx-2 page-item number-item"
+            [ngClass]="pager.currentPage === page ? 'active bg-primary' : 'bg-card hover:bg-hover'" 
+        >
+            <a 
+                class="p-2 page-link"
+                [ngClass]="pager.currentPage === page ? 'text-white' : ''"    
+            >{{page}}</a>
+        </li>
+    </ng-container>
+    <!-- Dot dot dot after-->
+    <li
+        *ngIf="pager.totalPages > maxPages && !(pager.pages.includes(pager.totalPages))"
+        class="bg-card h-8 w-8 flex justify-center items-center rounded-full page-item next-item pt-[6px]">
+        <a>
+            ...
+        </a>
+    </li>
+    <!-- Number of pages -->
+    <li
+        *ngIf="!(pager.pages.includes(pager.totalPages))"
+        (click)="setPage(pager.totalPages)"
+        class="flex justify-center items-center select-none active h-8 w-8 cursor-pointer rounded mx-2 page-item number-item"
+        [ngClass]="pager.currentPage === page ? 'active bg-primary' : 'bg-card hover:bg-hover'">
+        <a>
+            {{pager.totalPages}}
+        </a>
+    </li>
+
+    <!-- Go to Next Page -->
+    <li 
+        (click)="setPage(pager.currentPage + 1)"
+        class="bg-card h-8 w-8 flex justify-center items-center cursor-pointer rounded-full page-item next-item pt-[6px]" 
+        [ngClass]="pager.currentPage === pager.totalPages ? 'disabled bg-disabled cursor-default' : 'bg-card cursor-pointer group hover:bg-primary'"
+    >
+        <a class="page-link">
+            <mat-icon
+                class="icon-size-4"
+                [ngClass]="pager.currentPage === pager.totalPages ? '' : 'text-primary group-hover:text-white'"
+                [svgIcon]="'heroicons_outline:chevron-right'"></mat-icon>
+        </a>
+    </li>
+    <!-- Go to Last Page -->
+    <li 
+        (click)="setPage(pager.totalPages)"
+        class="bg-card h-8 w-8 flex justify-center items-center cursor-pointer rounded-full page-item last-item pt-[6px]" 
+        [ngClass]="pager.currentPage === pager.totalPages ? 'disabled bg-disabled cursor-default' : 'bg-card cursor-pointer group hover:bg-primary'"
+    >
+        <a class="page-link">
+            <mat-icon
+                class="icon-size-4"
+                [ngClass]="pager.currentPage === pager.totalPages ? '' : 'text-primary group-hover:text-white'"
+                [svgIcon]="'heroicons_outline:chevron-double-right'"></mat-icon>
+        </a>
+    </li>
+</ul>

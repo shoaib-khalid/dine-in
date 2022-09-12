@@ -1,0 +1,72 @@
+affinity: {}
+autoscaling:
+  enabled: false
+  maxReplicas: 100
+  minReplicas: 1
+  targetCPUUtilizationPercentage: 80
+configProdJson:
+  configmap:
+    config.prod.json: |
+      {
+          "env": {
+              "name": "staging"
+          },
+          "apiServer": {
+              "flowBuilderService"  : "https://api.symplified.it/flow-builder/v1",
+              "userService"         : "https://api.dev-my.symplified.ai/user-service/v1",
+              "productService"      : "https://api.symplified.it/product-service/v1",
+              "orderService"        : "https://api.symplified.it/order-service/v1",
+              "reportService"       : "https://api.symplified.it/report-service/v1",
+              "deliveryService"     : "https://api.symplified.it/delivery-service/v1",
+              "paymentService"      : "https://api.symplified.it/payment-service/v1",
+              "locationService"     : "https://api.symplified.it/location-service/v1",
+              "analyticService"     : "https://api.symplified.it/analytic-service/v1" 
+          },
+          "storeFrontDomain"          : ".dev-my.symplified.ai",
+          "marketplaceDomain"         : "dev-my.symplified.ai",
+          "merchantPortalDomain"      : "merchant.dev-my.symplified.ai",
+          "logging": 0
+      }
+  volumeMount:
+  - mountPath: /usr/local/apache2/htdocs/assets/config/config.prod.json
+    name: marketplace-vol
+    subPath: config.prod.json
+  volumes:
+  - configMap:
+      name: marketplace-cm
+    name: marketplace-vol
+fullnameOverride: ""
+image:
+  pullPolicy: Always
+  repository: kalsym/marketplace
+  tag: 2.6.5
+imagePullSecrets:
+- name: kalsym-docker-hub
+ingress:
+  annotations: {}
+  className: ""
+  enabled: false
+  hosts:
+  - host: dev-my.symplified.ai
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - dev-my.symplified.ai
+    secretName: secret-tls-ai
+nameOverride: ""
+nodeSelector: {}
+podAnnotations: {}
+podSecurityContext: {}
+replicaCount: 1
+resources: {}
+securityContext: {}
+service:
+  port: 80
+  type: ClusterIP
+serviceAccount:
+  annotations: {}
+  create: false
+  name: ""
+tolerations: []

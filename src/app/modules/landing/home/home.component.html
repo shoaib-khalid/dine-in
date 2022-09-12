@@ -1,0 +1,27 @@
+<div class="flex flex-col items-center bg-card w-full h-full">
+    <!-- Search -->
+    <!-- <search *ngIf="!currentScreenSize.includes('md')" class="w-full"></search> -->
+    <search class="w-full mb-2 sm:mt-2 sm:mb-4"></search>
+    <!-- Promotion Banner -->
+    <div class="w-full">
+        <!-- Banner  -->
+        <div class="flex flex-col relative items-center w-full bg-no-repeat bg-cover bg-center overflow-hidden rounded-xl">
+            <swiper-banner class="w-full"></swiper-banner>
+        </div>
+    </div>
+    <!-- Locations -->
+    <featured-locations class="w-full mt-4" [locations]="locations" [showViewAll]="false" [title]="'Locations'"></featured-locations>
+    <!-- Categories -->
+    <featured-categories class="w-full mt-4 sm:mt-8" [categories]="categories" [showViewAll]="false" [title]="'Categories'"></featured-categories>
+    <!-- Stores Details -->
+    <ng-container *ngIf="storesDetails && storesDetails.length">
+        <featured-stores 
+            id="storesDetailsContainer" 
+            class="w-full mt-4 sm:mt-8" 
+            [stores]="storesDetails" 
+            [showViewAll]="storesDetailsPagination && storesDetailsPagination.length > storesDetailsPagination.size ? true : false" 
+            [title]="storesDetailsTitle"></featured-stores>
+    </ng-container>
+    <!-- Ads Banner -->
+    <ads-banner class="w-full sm:mb-2" [banners]="ads"></ads-banner>
+</div>

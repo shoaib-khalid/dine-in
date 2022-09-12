@@ -1,0 +1,280 @@
+<div class="flex flex-col max-h-[90vh] h-full sm:h-[90vh] max-w-120 sm:min-w-160 overflow-y-auto">
+    <div class="flex flex-col flex-auto overflow-y-auto w-full">
+        <!-- Header new address -->
+        <div class="flex items-center justify-center flex-auto pb-2 w-full">
+            <span class="text-center text-2xl font-bold text-primary">Delivery Address</span> <br>
+        </div>
+        <form 
+            class="w-full"
+            [formGroup]="addressForm">
+
+            <div class="flex flex-col w-full">
+                <!-- Address Form -->
+                <div class="w-full flex flex-col sm:flex-row sm:mb-0 pt-2">
+                    <mat-form-field [ngClass]="user ? 'w-full' : 'sm:w-1/2'" class="fuse-mat-emphasized-affix sm:pr-1" floatLabel="always">
+                        <mat-label>Name</mat-label>
+                        <input
+                            [formControlName]="'name'"
+                            placeholder="Enter your name"
+                            matInput>
+                            <mat-error *ngIf="addressForm.get('name').hasError('required')">
+                                Full name is required
+                            </mat-error>
+                    </mat-form-field>
+                    <ng-container *ngIf="!user">
+                        <mat-form-field class="fuse-mat-emphasized-affix w-full sm:w-1/2 sm:pl-1" floatLabel="always">
+                            <mat-label>Email</mat-label>
+                            <input
+                                [formControlName]="'email'"
+                                placeholder="Enter your email"
+                                matInput>
+                        </mat-form-field>
+                    </ng-container>
+                </div>
+    
+                <!-- Phone Number, State -->
+                <div class="w-full flex flex-col sm:flex-row sm:mb-0">
+                    <mat-form-field class="fuse-mat-emphasized-affix w-full sm:w-1/2 sm:pr-1" floatLabel="always">
+                        <mat-label>Phone Number</mat-label>
+                        <input
+                            [formControlName]="'phoneNumber'"
+                            [placeholder]="dialingCode + '123456789'"
+                            [required]="true"
+                            (change)="addressForm.get('phoneNumber').patchValue(sanitizePhoneNumber(addressForm.get('phoneNumber').value))"
+                            matInput>
+                        <mat-error *ngIf="addressForm.get('phoneNumber').hasError('required')">
+                            Phone number is required
+                        </mat-error>
+                        <mat-error *ngIf="addressForm.get('phoneNumber').hasError('invalidPhonenumber')">
+                            Invalid phone number
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="fuse-mat-emphasized-affix w-full sm:w-1/2 sm:pl-1" floatLabel="always">
+                        <mat-label>State</mat-label>
+                        <mat-select 
+                            [formControlName]="'state'"
+                            [required]="true"
+                            [placeholder]="'Select state'"
+                            #stateSelector="matSelect">
+                            <mat-select-trigger>
+                                <span class="flex items-center">
+                                    <span>{{ stateSelector.triggerValue }}</span>
+                                </span>
+                            </mat-select-trigger>
+                            <div *ngFor="let state of storeStates">
+                                <mat-option [value]="state.id">{{state.name}}</mat-option>
+                            </div>
+                        </mat-select>
+                        <mat-error *ngIf="addressForm.get('state').hasError('required')">
+                            State is required
+                        </mat-error>
+                    </mat-form-field>
+                    
+                    
+                </div>
+ 
+                <!-- City, Postcode -->
+                <div class="w-full flex flex-col sm:flex-row sm:mb-0">
+                    <!-- city -->
+                    <mat-form-field class="fuse-mat-emphasized-affix w-full sm:w-1/2 sm:pr-1" floatLabel="always">
+                        <mat-label>City</mat-label>
+                        <mat-select 
+                            [formControlName]="'city'"
+                            [required]="true"
+                            [value]="'city'"
+                            [placeholder]="'Select State'"
+                            (selectionChange)="addressForm.get('city').patchValue($event.value);"
+                            #stateCitySelector="matSelect">
+                            <mat-select-trigger>
+                                <span class="flex items-center">
+                                    <span>{{ stateCitySelector.triggerValue }}</span>
+                                </span>
+                            </mat-select-trigger>
+                            <mat-option>
+                                <ngx-mat-select-search [placeholderLabel]="'Search City'" [noEntriesFoundLabel]="'No matching records found'" [formControl]="regionCountryStateCities"
+                                 ngDefaultControl></ngx-mat-select-search>
+                            </mat-option>
+                            <!-- <div *ngFor="let city of storeStateCities">
+                                <mat-option class="m-t" [value]="city.city">{{city.city}}</mat-option>
+                            </div> -->
+                            <mat-option class="m-t" *ngFor="let city of storeStateCities$ | async" [value]="city.id">
+                                {{city.name}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="addressForm.get('city').hasError('required')">
+                            City is required
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- postcode -->
+                    <mat-form-field class="fuse-mat-emphasized-affix w-full sm:w-1/2 sm:pl-1" floatLabel="always">
+                        <mat-label>Postcode</mat-label>
+                        <input
+                            [formControlName]="'postCode'"
+                            placeholder="Enter postcode"
+                            maxlength="5"
+                            matInput>
+                            <mat-error *ngIf="addressForm.get('postCode').hasError('required')">
+                                Postcode is required.
+                            </mat-error>
+                            <mat-error *ngIf="addressForm.get('postCode').hasError('invalidPostcode')">
+                                Invalid postcode{{addressForm.get('postCode').hasError('minlength') ? 
+                                '. Does not meet minimum length' : 
+                                addressForm.get('postCode').hasError('maxlength') ? '. Exceeded maximum length' : ''}}
+                            </mat-error>
+                            <mat-error *ngIf="!addressForm.get('postCode').hasError('invalidPostcode') && addressForm.get('postCode').hasError('minlength')">
+                                Does not meet minimum length
+                            </mat-error>
+                            <mat-error *ngIf="!addressForm.get('postCode').hasError('invalidPostcode') && addressForm.get('postCode').hasError('maxlength')">
+                                Exceeded maximum length
+                            </mat-error>
+                    </mat-form-field>
+                </div>
+                
+                <!-- Address -->
+                <div class="w-full items-center flex flex-col sm:flex-row sm:mb-0">
+                    <!-- Address -->
+                    <mat-form-field
+                        class="w-full" 
+                        floatLabel="always" 
+                        >
+                        <mat-label>Address</mat-label>
+                        <input
+                            matInput
+                            (input)="checkAddress($event.target.value)"
+                            [formControlName]="'address'"
+                            placeholder="Enter your address"
+                            autocomplete="disabled"
+                            [required]="true">
+                        <mat-error *ngIf="addressForm.get('address').hasError('required')">
+                            Address information is required
+                        </mat-error>
+                    </mat-form-field>
+                    <div class="py-2  sm:pl-2 w-full sm:w-auto">
+                        <button
+                            id="locate-button"
+                            mat-flat-button
+                            type="button"
+                            class="text-white items-center w-full"
+                            [color]="'primary'">Find
+                        </button>
+                    </div>
+                </div>
+                <fuse-alert
+                    class="w-full"
+                    *ngIf="isAddressValid === false"
+                    [appearance]="'outline'"
+                    [type]="'info'">
+                    Make sure you don't put state, city and postcode in address form.
+                </fuse-alert>
+
+                <!-- map display -->
+                <div class="relative w-full pb-2 mt-3">
+                    <!-- Custom Search and dropdown -->
+                    <!-- <div class="absolute z-10 left-2 top-2.5 w-4/5">
+                        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                            <input 
+                                [formControlName]="'locate'" 
+                                matInput
+                                [matAutocomplete]="matAutocomplete">
+                            <div class="text-white font-semibold" matSuffix>
+                                <button id="locate-button" class="items-center flex">
+                                    <mat-icon class="text-white" svgIcon="heroicons_outline:search"></mat-icon>
+                                </button>
+                            </div>
+                        </mat-form-field>
+                        <mat-autocomplete
+                            class="max-h-128 mt-1 rounded"
+                            [disableRipple]="true"
+                            #matAutocomplete="matAutocomplete">
+
+                            <ng-container *ngFor="let result of autoCompleteList; trackBy: trackByFn">
+
+                                <mat-option
+                                    class="group relative mb-1 py-0 px-6 text-md rounded-md hover:bg-gray-100 dark:hover:bg-hover"
+                                >
+                                    <ng-container *ngTemplateOutlet="historyResult; context: {$implicit: result}"></ng-container>
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                        <ng-template
+                            #historyResult
+                            let-result>
+                            <div class="flex flex-row items-center">
+
+                                <div class="flex items-center justify-between w-full"
+                                    (click)="selectedResult(result.place_id)">
+                                    <div class="flex flex-row items-center">
+                                        <div class="flex shrink-0 items-center justify-center w-8 h-8 rounded-full overflow-hidden bg-primary-100 dark:bg-primary-800">
+                                            <img
+                                                class="object-cover"
+                                                *ngIf="result.image"
+                                                [src]="result.image">
+                                            <img
+                                                class="p-0.5"
+                                                *ngIf="!result.image"
+                                                [src]="'https://symplified.it/store-assets/deliverin-logo.png'">
+                                        </div>
+                                        <div class="ml-6 truncate">
+                                            <span [innerHTML]="result.formatted_address"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div> -->
+                    <!-- <button id="locate-button" class="items-center bg-primary flex absolute z-10 top-2 left-2">
+                        <mat-icon class="text-white" svgIcon="heroicons_outline:search"></mat-icon>
+                    </button> -->
+                    <div class="map w-full h-64 md:h-80 rounded-lg" id="map"></div>
+                </div>
+    
+                <!-- Set default -->
+                <ng-container *ngIf ="data === 'create'; else editdata">
+                    <div  class="w-full">
+                        <mat-slide-toggle
+                        [formControlName]="'isDefault'"
+                        [color]="'primary'"
+                        class="pr-2"
+                        >Set as Default
+                        </mat-slide-toggle>
+                    </div>
+                </ng-container>
+                <ng-template #editdata>
+                    <div  class="w-full" *ngIf ="displayToogleNotDefault">
+                        <mat-slide-toggle
+                        [formControlName]="'isDefault'"
+                        [color]="'primary'"
+                        class="pr-2"
+                        >Set as Default
+                        </mat-slide-toggle>
+                    </div>
+                </ng-template>
+                
+                <div class="w-full justify-end flex flex-row items-center mt-2">
+                    <!-- Actions -->
+                    <div class="flex sm:flex-row items-end">
+                        <button
+                            class="hover:bg-gray-500 bg-gray-400"
+                            mat-flat-button
+                            type="button"
+                            [color]="'default'"
+                            (click)="closeDialog()"
+                            >
+                            Cancel
+                        </button>
+                        <span>&nbsp;&nbsp;</span>
+                        <button
+                            mat-flat-button
+                            [disabled]="addressForm.invalid"
+                            type="button"
+                            class="text-white"
+                            (click)="updateAddress()"
+                            [color]="'primary'">Save
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>

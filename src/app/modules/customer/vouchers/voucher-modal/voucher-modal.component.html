@@ -1,0 +1,95 @@
+<div class="flex flex-col max-w-110 md:min-w-110 ">
+
+    <div class="flex flex-row items-center justify-center mt-2">
+        <mat-icon
+        class="items-center text-primary icon-size-10"
+        [svgIcon]="icon"></mat-icon>
+    </div>
+    
+    <div class="flex flex-col flex-auto w-full">
+
+        <div class="flex flex-row items-center justify-center py-2">
+            <h1 class="text-lg text-center font-bold">{{title}}</h1>
+        </div>
+
+        <div class="w-full flex flex-col">
+            <!-- display for t&c if there is one -->
+            <ng-container *ngIf="voucher">
+                <div class="grid grid-cols-4 items-end">
+                    <div class="flex flex-row justify-between items-end text-md md:text-base">
+                        <span class="font-medium">Voucher Name</span>
+                        <span class="font-medium">:</span>
+                    </div>
+                    <div class="flex flex-row pt-0.5 col-span-3">
+                        <span class="text-sm sm:text-md font-medium text-primary pl-1">{{voucher.voucher.name}}</span>
+                    </div>
+                    <!-- <div class="flex flex-row">
+                    </div>
+                    <div class="flex flex-row w-full items-center justify-center">
+                        
+                    </div> -->
+                </div>
+                <div class="grid grid-cols-4  items-end">
+                    <div class="flex flex-row justify-between items-end text-md md:text-base">
+                        <span class="font-medium">Valid Date</span>
+                        <span class="font-medium">:</span>
+                    </div>
+                    <div class="flex flex-row pt-0.5 col-span-3 ">
+                        <span class="text-sm sm:text-md font-medium text-primary pl-1">{{voucher.voucher.startDate | date:'dd-MM-yyyy' }}</span>
+                        <span class="text-sm sm:text-md font-medium text-primary pl-1">to</span>
+                        <span class="text-sm sm:text-md font-medium text-primary pl-1">{{voucher.voucher.endDate | date:'dd-MM-yyyy' }}</span>
+                    </div>
+                </div>
+                <!-- Valid for  -->
+                <!-- <div class="flex flex-col">
+                    <span class="font-medium">Valid for:</span>
+                    <div class="flex flex-col">
+                        <li *ngIf="storeName === null" class="text-primary">
+                            <span class="text-gray-400">All {{voucher.voucher.verticalCode}} stores</span>
+                        </li>
+                        <li *ngIf='storeName != null' class="text-primary">
+                            <span class="text-gray-400">
+                                {{storeName}} only
+                            </span>
+                        </li>
+                    </div>
+                </div> -->
+                <!-- Terms and condition  -->
+                <div class="flex flex-col pt-2">
+                    <span *ngIf="voucher.voucher.voucherTerms.length > 0" class="font-semibold text-md md:text-base">Terms & Conditions</span>
+                    <div class="flex flex-col text-sm sm:text-md">
+                        <!-- <li *ngIf="storeName === null" class="text-primary">
+                            <span class="text-gray-400">Valid for all {{verticalList.join(', ')}} stores</span>
+                        </li> -->
+                        <li *ngIf='storeName != null' class="text-primary">
+                            <span class="text-gray-400">
+                                Valid for {{storeName}} only
+                            </span>
+                        </li>
+                        <ng-container *ngFor="let tnc of voucher.voucher.voucherTerms">
+                            <li class="text-primary">
+                                <span class="text-gray-400">
+                                    {{tnc.terms}}
+                                </span>
+                            </li>
+                        </ng-container>
+                    </div>
+                </div>
+                
+            </ng-container>
+            <!-- description -->
+            <span class="font-medium text-center">{{description}}</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-row w-full items-center justify-center mt-3">
+            <!-- Send -->
+            <button
+                class="p-2 px-8 rounded-lg bg-primary hover:bg-primary-700 font-medium text-black cursor-pointer"
+                (click)="okButton()"
+                >
+                OK
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="flex flex-col items-center bg-card w-full p-2 sm:p-4 h-full">
+
+    <!-- Search -->
+    <!-- <search *ngIf="!currentScreenSize.includes('md')" class="w-full"></search> -->
+    <!-- <search class="w-full pb-4"></search> -->
+
+    <!-- Categories -->
+    <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-8 items-center w-full justify-between mt-2 sm:mt-4 md:mt-0">
+        <ng-container *ngFor="let category of categories">
+            <fuse-card class="bg-primary-50 flex flex-col h-28 sm:h-52 w-full group-hover:border items-center cursor-pointer"
+            (click)="chooseCategory(category.parentId, locationId)">
+                <img
+                    class="object-cover sm:object-fit h-20 sm:h-40"
+                    [src]="category.parentThumbnailUrl ? category.parentThumbnailUrl : platform.logo">
+                <div class="flex items-center h-full group-hover:text-black text-sm sm:text-md text-primary text-center font-semibold">{{category.parentName}}</div>
+            </fuse-card>
+        </ng-container>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex w-full mt-8 items-center justify-center">
+        <pagination 
+            *ngIf="pagination"
+            [itemLength]="pagination.length" 
+            [initialPage]="pagination.page + 1"
+            [pageSize]="pagination.size"
+            (changePage)="onChangePage($event)"></pagination>
+    </div>
+
+    <!-- Ads banner -->
+    <ads-banner class="w-full" [banners]="ads"></ads-banner>
+    
+</div>

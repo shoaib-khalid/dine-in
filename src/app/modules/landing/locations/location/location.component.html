@@ -1,0 +1,74 @@
+<ng-container *ngIf="location && (storesDetails && storesDetails.length > 0); else noStoreProductAvailable">
+    <div class="flex flex-col items-center bg-card w-full h-full">
+        <!-- Header -->
+        <div class="w-full relative flex p-2 sm:p-4 overflow-hidden bg-white h-52 sm:h-70 lg:h-100 justify-center items-center">
+            <!-- Background -->
+            <div class="absolute inset-0 pointer-events-none">
+                <img class="object-cover w-full h-full" [src]="location.imageUrl ? location.imageUrl : platform.logo" alt="">
+            </div>
+            <!-- Black filter  -->
+            <div class="absolute inset-0 pointer-events-none bg-black opacity-70"></div>
+            <!-- Back button  -->
+            <div class="absolute top-0 left-0 text-white cursor-pointer p-4 flex flex-row gap-x-1" (click)="backClicked()">
+                <mat-icon
+                    class="icon-size-5 text-white"
+                    [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
+                <span class="pr-2">Back</span>
+            </div>
+            <!-- Text  -->
+            <div class="z-10 relative flex flex-col items-center tracking-wide">
+                <h2 class="text-xl text-white sm:text-2xl">{{location.cityDetails.name}}</h2>
+                <h2 *ngIf="category" class="text-lg text-white sm:text-xl">{{category.parentName}}</h2>
+                <div class="border-t w-40 border-white"></div>
+                <div class="max-w-2xl mt-2 sm:text-xl text-center text-white">
+                    <span>
+                        {{ storesDetailsPagination && storesDetailsPagination.length > 0 ? (storesDetailsPagination.length === 1 ? storesDetailsPagination.length + ' store' : storesDetailsPagination.length + ' stores') : '' }} 
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- Content -->
+        <div class="flex flex-col bg-card w-full pb-4">
+            <!-- Featured Categories -->
+            <featured-categories class="w-full mt-2 sm:mt-4" [selectedCategoryId]="categoryId" [categories]="categories" [showViewAll]="false" [location]="locationId" [redirectURL]="redirectUrl" [title]="'Categories'" [swiper]="true"></featured-categories>
+            <!-- Stores Details -->
+            <ng-container *ngIf="storesDetails && storesDetails.length">
+                <featured-stores 
+                    class="w-full mt-4 sm:mt-8" 
+                    [stores]="storesDetails" 
+                    [showViewAll]="(storesDetailsPagination && storesDetailsPagination.length > storesDetailsPagination.size) ? true : false" 
+                    [redirectURL]="redirectUrl" 
+                    [title]="storesDetailsTitle"></featured-stores>
+            </ng-container>
+        </div>
+    </div>
+</ng-container>
+<ng-template #noStoreProductAvailable>
+    <ng-container *ngIf="isLoading; else noResult">
+        <div class="flex flex-auto h-96 flex-col items-center justify-center rounded-lg border border-gray-300 dark:bg-transparent">
+            <img class="w-20" src="assets/gif/loading.gif" alt="loading">
+            <div class="mt-6 text-2xl font-semibold tracking-tight text-secondary">Loading Products</div>
+        </div>
+        <div class="mb-12"></div>
+    </ng-container>
+    <ng-template #noResult>
+        <div class="flex flex-auto justify-center w-full h-full p-6 sm:p-10">
+            <error-background class="absolute z-0 inset-0 w-full opacity-50"></error-background>
+            <div class="items-center justify-center z-10">
+                <div class="mt-2 text-4xl md:text-6xl font-extrabold tracking-tight leading-tight md:leading-none text-center">Oops!</div>
+                <div class="mt-2 text-4xl md:text-8xl font-semibold tracking-tight leading-tight md:leading-none text-primary text-center">404</div>
+                <div class="mt-2 text-4xl md:text-5xl font-semibold tracking-tight leading-tight md:leading-none text-center">No available product</div>
+                <div class="mt-4 max-w-120 text-lg md:text-xl font-medium tracking-tight text-center text-secondary">The product you are looking for might have been removed, had its name changed or is temporarily unavailable.</div>
+                <!-- <a
+                    class="flex flex-row items-center mt-12 font-medium bg-primary-500 py-2 px-4 rounded"
+                    [routerLink]="['/catalogue/' + 'all-products']">
+                    <mat-icon
+                        class="icon-size-5 text-black"
+                        [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
+                    <span class="pr-2">Go Back</span>
+                </a> -->
+            </div>
+        </div>
+    </ng-template>
+</ng-template>
+

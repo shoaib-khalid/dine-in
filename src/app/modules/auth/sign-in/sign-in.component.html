@@ -1,0 +1,159 @@
+<div class="flex flex-col sm:flex-row items-center md:items-start sm:justify-center md:justify-start flex-auto min-w-0 md:bg-card">
+    <!-- Forms -->
+    <div class="z-20 w-auto h-full md:w-1/2 flex flex-col items-center justify-center pt-4">
+        <div class="py-8 px-4 sm:p-12 md:p-0 rounded-2xl sm:shadow md:shadow-none bg-card">
+            <div class="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
+                <!-- Logo , Title , Description-->
+                <app-shared-logo [titleText]="titleText" [descriptionText]="descriptionText"></app-shared-logo>
+    
+                <!-- Alert -->
+                <fuse-alert
+                    class="mt-8 -mb-4"
+                    *ngIf="showAlert"
+                    [appearance]="'outline'"
+                    [showIcon]="false"
+                    [type]="alert.type"
+                    [@shake]="alert.type === 'error'">
+                    {{alert.message}}
+                </fuse-alert>
+    
+                <!-- Sign in form -->
+                <form
+                    class="mt-8"
+                    [formGroup]="signInForm"
+                    #signInNgForm="ngForm">
+    
+                    <!-- Email field -->
+                    <mat-form-field class="w-full" floatLabel="always">
+                        <mat-icon svgIcon="mat_outline:email" class="text-gray-300"></mat-icon>
+                        <input
+                            id="email"
+                            matInput
+                            [formControlName]="'email'"
+                            placeholder="Email" class="px-2" >
+                        <mat-error *ngIf="signInForm.get('email').hasError('required')">
+                            Email address is required
+                        </mat-error>
+                        <mat-error *ngIf="signInForm.get('email').hasError('email')">
+                            Please enter a valid email address
+                        </mat-error>
+                    </mat-form-field>
+    
+                    <!-- Password field -->
+                    <mat-form-field class="w-full">
+                        <mat-icon svgIcon="mat_outline:lock" class="text-gray-300"></mat-icon>
+                        <input
+                            id="password"
+                            matInput
+                            type="password"
+                            [formControlName]="'password'"
+                            placeholder="Password"
+                            class="px-2"
+                            #passwordField>
+                        <button
+                            mat-icon-button
+                            type="button"
+                            (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'"
+                            matSuffix>
+                            <mat-icon
+                                class="icon-size-5"
+                                *ngIf="passwordField.type === 'password'"
+                                [svgIcon]="'mat_outline:visibility'"
+                                class="text-gray-300"></mat-icon>
+                            <mat-icon
+                                class="icon-size-5"
+                                *ngIf="passwordField.type === 'text'"
+                                [svgIcon]="'mat_outline:visibility_off'"
+                                class="text-gray-300"></mat-icon>
+                        </button>
+                        <mat-error>
+                            Password is required
+                        </mat-error>
+                    </mat-form-field>
+    
+                    <!-- Actions -->
+                    <div class="inline-flex items-end justify-between w-full mt-1.5">
+                        <mat-checkbox
+                            [color]="'primary'"
+                            [formControlName]="'rememberMe'">
+                            <p class="text-gray-400">
+                                Remember me
+                            </p>
+                           
+                        </mat-checkbox>
+                        <a
+                            class="text-md font-medium hover:underline"
+                            [routerLink]="['/forgot-password']">Forgot password?
+                        </a>
+                    </div>
+    
+                    <!-- Submit button -->
+                    <button
+                        class="w-full mt-6 font-semibold p-2 rounded h-10"
+                        mat-flat-button
+                        [color]="'primary'"
+                        [disabled]="signInForm.disabled"
+                        (click)="signIn()">
+                        <span class="text-white" *ngIf="!signInForm.disabled">
+                            Sign in
+                        </span>
+                        <mat-progress-spinner
+                            *ngIf="signInForm.disabled"
+                            [diameter]="24"
+                            [mode]="'indeterminate'"></mat-progress-spinner>
+                    </button>
+
+                    <!-- Sign-up -->
+                    <div class="flex flex-row mt-4 sm:mt-8 w-full justify-center">
+                        <div>Don't have an account?</div>
+                        <a
+                            class="ml-1 text-primary-500 hover:underline"
+                            [routerLink]="['/sign-up']"
+                            >Sign up
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <ng-container *ngIf="countryCode === 'MYS'">
+            <div class="w-full md:max-w-80">
+                <!-- Separator -->
+                <div class="flex items-center mt-8">
+                    <div class="flex-auto border-gray-300 mt-px border-t"></div>
+                    <div class="mx-2 text-gray-400">Or continue with</div>
+                    <div class="flex-auto border-gray-300 mt-px border-t"></div>
+                </div>
+    
+                <!-- Single sign-on buttons -->
+                <div class="flex flex-row justify-center w-full items-center my-4 space-x-4">
+                    <div class="flex justify-center">
+                        <div class="mr-4">
+                            <button mat-fab type="button" color="" (click)="signInWithGoogle()">
+                                <img src = "assets/social-media/google-svgrepo.svg" style="width: 25px;height: 25px;" />
+                            </button>
+                        </div>
+                        <div class="mr-4">
+                            <button mat-fab type="button" color="" (click)="signInWithFB()">
+                                <img src = "assets/social-media/facebook-svgrepo.svg" style="width: 25px;height: 25px;" />
+                            </button>
+                        </div>
+                        <div class="">
+                            <button mat-fab type="button" color="" (click)="signInWithApple()">
+                                <img src = "assets/social-media/apple-svgrepo.svg" style="width: 25px;height: 25px;" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </ng-container>
+    </div>
+    <!-- Shared background -->
+    <div class="relative hidden md:flex flex-auto items-center justify-center w-1/2 h-full p-16 lg:px-28 overflow-hidden bg-primary dark:border-l">
+        <app-shared-background [pageType]="'signIn'"></app-shared-background>
+    </div>
+
+    <!-- Mobile background -->
+    <div class="md:hidden absolute w-full h-60 top-0 left-0 right-0 z-10 bg-primary">         
+    </div>
+</div>
