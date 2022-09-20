@@ -142,7 +142,9 @@ export class CategoryComponent implements OnInit
                             sortingOrder    : 'DESC', 
                             regionCountryId : this.platform.country,
                             cityId          : this.adjacentLocationIds, 
-                            parentCategoryId: this.categoryId
+                            parentCategoryId: this.categoryId,
+                            isDelivery      : false,
+                            isDineIn        : true
                         })
                         .subscribe((storesDetails: StoresDetails[])=>{
                         });
@@ -244,7 +246,9 @@ export class CategoryComponent implements OnInit
                             cityId          : this.adjacentLocationIds,
                             parentCategoryId: this.categoryId,
                             latitude        : currentLat,
-                            longitude       : currentLong
+                            longitude       : currentLong,
+                            isDelivery      : false,
+                            isDineIn        : true
                         })
                         .subscribe((storesDetails: StoresDetails[])=>{
                         });

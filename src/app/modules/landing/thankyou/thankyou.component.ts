@@ -2,12 +2,13 @@ import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angula
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { CartService } from 'app/core/cart/cart.service';
-import { Cart } from 'app/core/cart/cart.types';
+import { Cart, CartItem } from 'app/core/cart/cart.types';
 import { JwtService } from 'app/core/jwt/jwt.service';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
 import { StoresService } from 'app/core/store/store.service';
 import { Store, StoreAssets } from 'app/core/store/store.types';
+import { rest } from 'lodash';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -61,7 +62,7 @@ export class LandingThankyouComponent
         //     storeId: this._storesService.storeId$,
         // }
         
-        if(this.completionStatus === "Payment_was_successful" || this.completionStatus === "ORDER_CONFIRMED") {
+        if(this.completionStatus === "Payment_was_successful" || this.completionStatus === "ORDER_CONFIRMED" || this.completionStatus === "ORDER_PLACED") {
             // this._cartService.deleteCartbyId(currentCartId).subscribe((response) => {
             // });
             
@@ -74,6 +75,8 @@ export class LandingThankyouComponent
             //         this.getCartItems(this.cartId);
             //     }
             // });
+
+            this._cartService.cartsHeaderWithDetails = [];
         }
         // Get the store info
         // this._storesService.store$
@@ -110,7 +113,7 @@ export class LandingThankyouComponent
         if (storeAssetsIndex > -1) {
             return storeAssets[storeAssetsIndex].assetUrl;
         } else {
-            return this.platform.logo;
+            return this.platform.logo + "?original=true";
         }
     }
 }

@@ -4,59 +4,6 @@
     <div class="flex flex-col md:flex-row w-full h-full">
         <!-- Carts -->
         <ng-container *ngIf="carts && (carts.length > 0); else noCarts">
-            <!-- Delivery Address (xs) -->
-            <div class="block md:hidden w-full flex flex-col justify-center items-start border rounded-lg p-2 mb-2">
-                <!-- Header -->
-                <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
-                    <mat-icon 
-                        class="icon-size-5 text-primary" 
-                        [svgIcon]="'mat_solid:location_on'"></mat-icon>
-                    <span class="ml-2 font-bold">Delivery Address</span>
-                </div>
-                <ng-container *ngIf="customerAddress; else noAddress">
-                    <div class="flex flex-row p-2 font-medium gap-1 items-center justify-between w-full">
-                        <!-- Address  -->
-                        <div class="flex flex-col font-medium gap-1">
-                            <span class="">{{customerAddress.name}}</span>
-                            <span class="">{{customerAddress.phoneNumber}}</span>
-                            <span class="">{{customerAddress.address}}, {{customerAddress.postCode}}, {{customerAddress.city}}, {{customerAddress.state}}</span>
-                        </div>
-                        <!-- Remove Address -->
-                        <div *ngIf="!customerId">
-                            <span class="flex justify-center items-center text-center px-1 cursor-pointer">
-                                <mat-icon 
-                                    (click)="deleteGuestAddress()"
-                                    class="icon-size-4" 
-                                    [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="flex w-full justify-center items-center">
-                        <button
-                            [routerLink]="['/address']"
-                            [queryParams]="{origin: 'carts'}"
-                            class="my-2 w-full font-semibold p-1 rounded-md bg-primary hover:bg-primary-600"                            >
-                            <span class="text-white">Change</span>
-                        </button>
-                    </div>
-                </ng-container>
-                <ng-template #noAddress>
-                    <!-- Enter Address -->
-                    <span class="flex mt-2 text-center">Add your delivery address</span>
-                    <!-- Button -->
-                    <div class="flex w-full justify-center items-center mt-2">
-                        <button 
-                            (click)="addAddressPopup()"
-                            class="my-2 w-full bg-primary-500 hover:bg-primary-600 rounded-md flex flex-row items-center justify-center p-1"
-                        >
-                            <mat-icon 
-                                class="icon-size-5 text-white" 
-                                [svgIcon]="'heroicons_solid:plus'"></mat-icon>
-                            <span class="ml-1 font-semibold text-white">Add</span>
-                        </button>
-                    </div>
-                </ng-template>
-            </div>
             <!-- Store pickup info (MOBILE)  -->
             <ng-container *ngIf="hasSelfPickup">
                 <div class="block md:hidden w-full flex flex-col justify-center items-start border rounded-lg p-2 mb-2">
@@ -115,24 +62,13 @@
                 <div class="grid w-full">
                     <!-- Title -->
                     <span class="text-lg sm:text-3xl font-semibold mb-2">Your Cart</span>
-
-                    <!-- Checkbox all carts MOBILE -->
+                    <!-- Header -->
                     <div class="lg:hidden cart-title-grid grid w-full pb-2 px-2 border border-white">
-                        <!-- Checkbox all in cart -->
-                        <div class="flex items-start justify-center items-center w-full">
-                            <input type="checkbox" [disabled]="selectedCart.disabled || isGettingDeliveryPrices" [(ngModel)]="selectedCart.selected" (change)="selectCart(carts,null,null,$event.target.checked)"/>
-                        </div>
                         <div class="flex flex-col justify-start ml-2">
                             <span class="font-medium text-base tracking-tight">Product</span>
                         </div>
                     </div>
-
-                    <!-- Header -->
                     <div class="hidden lg:grid cart-grid w-full sticky py-2 border-b border-gray-600 tracking-tight">
-                        <!-- Checkbox all carts DESKTOP-->
-                        <div class="flex items-center justify-center w-full">
-                            <input type="checkbox" [disabled]="selectedCart.disabled || isGettingDeliveryPrices" [(ngModel)]="selectedCart.selected" (change)="selectCart(carts,null,null,$event.target.checked)"/>
-                        </div>
                         <span class="font-semibold text-left ml-4">Product</span>
                         <span class="font-semibold text-center">Unit Price</span>
                         <span class="font-semibold text-center">Quantity</span>
@@ -166,15 +102,13 @@
                                 </div>
                                 <!-- Cart Header -->
                                 <div class="cart-title-grid grid w-full sticky border-b h-14 lg:h-16 items-center">
-                                    <!-- Checkbox all in cart -->
-                                    <div class="flex items-start justify-center items-center w-full">
-                                        <input 
-                                        [disabled]="selectedCart.carts[i + pagination.startIndex].disabled || isGettingDeliveryPrices" [(ngModel)]="selectedCart.carts[i + pagination.startIndex].selected" type="checkbox" (change)="selectCart(null,cart,null,$event.target.checked)">
-                                    </div>
                                     <div class="flex flex-col justify-start ml-2 md:ml-4">
                                         <div class="flex flex-row justify-between items-center">
-                                            <span (click)="redirect('store', cart.store, null)" class="text-md sm:text-xl font-semibold hover:cursor-pointer max-w-2/3">{{cart.store.name}}</span>
-                                            
+                                            <span 
+                                                class="text-md sm:text-xl font-semibold hover:cursor-pointer max-w-2/3"
+                                                (click)="redirect('store', cart.store, null)">
+                                                {{cart.store.name}}
+                                            </span>
                                             <div class="flex flex-row items-center gap-2">
                                                 <!-- Store timing DESKTOP -->
                                                 <div *ngIf="isStoreClose(cart.storeId)" 
@@ -221,11 +155,6 @@
                                 <ng-container *ngIf="cart.cartItems && cart.cartItems.length; else noCartItem">
                                     <ng-container *ngFor="let cartItem of cart.cartItems; let j = index">
                                         <div class="w-full sticky mt-4" [ngClass]="currentScreenSize.includes('lg') ?  'cart-grid grid' : 'flex flex-row justify-between'">
-                                            <!-- Checkbox each item -->
-                                            <div class="flex flex-none items-center lg:justify-center mt-2 w-auto lg:w-full px-1 lg:px-0">
-                                                <input
-                                                [disabled]="selectedCart.carts[i + pagination.startIndex].cartItem[j].disabled || isGettingDeliveryPrices" [(ngModel)]="selectedCart.carts[i + pagination.startIndex].cartItem[j].selected" type="checkbox" (change)="selectCart(null,cart,cartItem,$event.target.checked)">
-                                            </div>
                                             <!-- Image, Title, Variants -->
                                             <div class="flex flex-row grow items-center justify-start ml-3 md:ml-4">
                                                 <img class="w-14 max-w-14 max-h-14 min-h-14 sm:w-18 sm:max-w-18 sm:h-18 sm:max-h-18 shadow rounded" [src]="cartItem.productAsset ? cartItem.productAsset.url : cartItem.productInventory.product.thumbnailUrl ? cartItem.productInventory.product.thumbnailUrl : displayStoreLogo(cart.store)">
@@ -368,263 +297,6 @@
                                                 matTextareaAutosize></textarea>
                                         </mat-form-field>
                                     </div>
-                                    <!-- Select delivery type  -->
-                                    <ng-container *ngIf="cart.store.storeDeliveryDetail.allowsStorePickup">
-                                        <span class="text-sm">Delivery Type</span>
-                                        <div class="flex flex-row w-auto justify-between my-2 text-sm">
-                                            <mat-radio-group
-                                                class="flex flex-row gap-x-2"
-                                                [disabled]="isLoading" 
-                                                [ngClass]="isLoading ? 'cursor-wait' : ''"
-                                                [(ngModel)]="selectedCart.carts[i + pagination.startIndex].isSelfPickup"
-                                                [ngModelOptions]="{standalone: true}"
-                                                [color]="'primary'"
-                                                (change)="selectSelfPickup(cart.id, $event.value)"
-                                                >
-                                                <mat-radio-button
-                                                    class=""
-                                                    [value]="false">
-                                                    Delivery
-                                                </mat-radio-button>
-                                                <span>|</span>
-                                                <mat-radio-button
-                                                    class=""
-                                                    [value]="true">
-                                                    Self Collect
-                                                </mat-radio-button>
-                                            </mat-radio-group>
-                                            <!-- Total Items  -->
-                                            <div *ngIf="selectedCart.carts[i + pagination.startIndex].isSelfPickup === true" class="flex flex-col sm:flex-row items-center sm:min-w-auto gap-1 sm:gap-x-2">
-                                                <span class="text-sm">Total Items ({{cart.cartItems ? cart.cartItems.length : 0}}):</span>
-                                                <span class="font-semibold text-sm">{{ getCartItemsTotal(cart.cartItems) | currency: cart.store.regionCountry.currencySymbol }}</span>
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                    <span *ngIf="selectedCart.carts[i + pagination.startIndex].isSelfPickup === false" class="text-sm">Delivery Options</span>
-                                    <!-- Select Delivery Provider for DESKTOP-->
-                                    <ng-container *ngIf="currentScreenSize.includes('lg') && selectedCart.carts[i + pagination.startIndex].isSelfPickup === false">
-                                        <div class="flex flex-row justify-between items-center my-2 w-auto">
-                                            <!-- Shipping Info  -->
-                                            <div class="flex flex-row justify-between items-center w-auto gap-x-4">
-                                                <ng-container *ngIf="!selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage && selectedCart.carts[i + pagination.startIndex].deliveryQuotationId; else deliveryErrorDesktop">
-                                                    <div class="flex flex-row justify-between items-center w-[200px]">
-                                                        <div *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryType !== 'SELF'" class="flex flex-row w-full">
-                                                            <mat-form-field class="w-full rounded text-sm fuse-mat-no-subscript fuse-mat-dense">
-                                                                <mat-select
-                                                                    placeholder="Select a delivery provider"
-                                                                    (click)="openProviderSelection()"
-                                                                    (selectionChange)="changeDeliveryProvider(deliveryProviderSelector.value, i + pagination.startIndex);"
-                                                                    [(ngModel)]="selectedCart.carts[i + pagination.startIndex].deliveryProviderId"
-                                                                    [ngModelOptions]="{standalone: true}"
-                                                                    #deliveryProviderSelector="matSelect"
-                                                                    >
-                                                                    <mat-select-trigger>
-                                                                        <span class="flex items-center justify-between w-full">
-                                                                            <span>{{ selectedCart.carts[i + pagination.startIndex].deliveryProviderName }}</span>
-                                                                            <img
-                                                                                matSuffix
-                                                                                class="w-1/3 max-h-10"
-                                                                                *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryProviderImg"
-                                                                                [alt]="'Delivery provider image'"
-                                                                                [src]="selectedCart.carts[i + pagination.startIndex].deliveryProviderImg">
-                                                                        </span>
-                                                                    </mat-select-trigger>
-                                                                    <ng-container *ngFor="let deliveryProvider of selectedCart.carts[i + pagination.startIndex].deliveryQuotations">
-                                                                        <mat-option 
-                                                                            [value]="deliveryProvider.providerId">
-                                                                            <div class="flex flex-row justify-between items-center">
-                                                                                <span class="w-2/3">{{deliveryProvider.providerName}}</span>
-                                                                                <img
-                                                                                    matSuffix
-                                                                                    class="w-auto max-h-8 p-1"
-                                                                                    *ngIf="deliveryProvider.providerImage"
-                                                                                    [alt]="'Delivery provider image'"
-                                                                                    [src]="deliveryProvider.providerImage">
-                                                                            </div>
-                                                                        </mat-option>
-                                                                    </ng-container>
-                                                                </mat-select>
-                                                            </mat-form-field>
-                                                        </div>
-                                                        <div *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryType === 'SELF'" 
-                                                            class="flex flex-row w-full items-center">
-                                                            <mat-label class="flex w-full px-4 items-center h-10 rounded-md border border-gray-300 text-sm">
-                                                                Self Delivery</mat-label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex flex-col sm:flex-row sm:min-w-44 gap-x-1">
-                                                        <span class="text-sm">Delivery Fee:</span>
-                                                        <!-- <span class="font-semibold text-xs sm:text-sm tracking-tight">{{ getDeliveryChargesRange(i + pagination.startIndex) }}</span> -->
-                                                        <ng-container *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryPrice.selectedDeliveryPrice">
-                                                            <div class="flex flex-col">
-                                                                <div class="flex flex-row gap-1 items-end">
-                                                                    <!-- Ori Price  -->
-                                                                    <span 
-                                                                        [ngClass]="selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount !== 0 && selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount ? 
-                                                                            'line-through font-normal text-xs' : 'text-sm font-semibold'"
-                                                                        class="tracking-tight">{{selectedCart.carts[i + pagination.startIndex].deliveryPrice.selectedDeliveryPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
-                                                                    <!-- Discounted price  -->
-                                                                    <span *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount !== 0 && selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount"
-                                                                        class="font-semibold text-sm tracking-tight">{{selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountedPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
-                                                                    <!-- Combined shipping  -->
-                                                                    <span *ngIf="checkCombineShipping(i + pagination.startIndex)"
-                                                                        class="text-sm tracking-tighter">
-                                                                        (Shared for Same Address)
-                                                                    </span>
-                                                                </div>
-                                                                <!-- Off  -->
-                                                                <span *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount !== 0 && selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount" 
-                                                                    class="-mt-[0.15rem] text-xs tracking-tight">(save {{selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount | currency: cart.store.regionCountry.currencySymbol}})</span>
-                                                            </div>
-                                                        </ng-container>
-                                                    </div>
-                                                </ng-container>
-                                                <ng-template #deliveryErrorDesktop>
-                                                    <div>
-                                                        <span *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage" class="font-semibold text-sm tracking-tight" >{{ selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage }}</span>
-                                                        <ng-container *ngIf="!selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage && !validateCustomerInfo(i + pagination.startIndex)">
-                                                            <div class="text-sm">
-                                                                <span 
-                                                                    class="underline cursor-pointer text-primary tracking-tight" 
-                                                                    (click)="addAddressPopup()">
-                                                                    Add delivery address
-                                                                </span>
-                                                            </div>
-                                                        </ng-container>
-                                                        <ng-container *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage === 'Coordinates Not Found' && (!customerAddress.latitude && !customerAddress.longitude)">
-                                                            <div class="text-sm">
-                                                                <span 
-                                                                    class="underline cursor-pointer text-red-500 tracking-tight" 
-                                                                    [routerLink]="'/address'"
-                                                                    [queryParams]="{origin: 'carts'}">
-                                                                    Click here to update
-                                                                </span>
-                                                            </div>
-                                                        </ng-container>
-                                                    </div>
-                                                </ng-template>
-                                            </div>
-                                            <!-- Total Items  -->
-                                            <div class="flex flex-col sm:flex-row items-center sm:min-w-auto gap-1 sm:gap-x-1">
-                                                <span class="text-sm">Total Items ({{cart.cartItems ? cart.cartItems.length : 0}}):</span>
-                                                <span class="font-semibold text-sm">{{ getCartItemsTotal(cart.cartItems) | currency: cart.store.regionCountry.currencySymbol }}</span>
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                    <!-- Select Delivery Provider for MOBILE-->
-                                    <div *ngIf="!currentScreenSize.includes('lg') && selectedCart.carts[i + pagination.startIndex].isSelfPickup === false" class="mt-2 flex flex-col gap-y-2">
-                                        <ng-container *ngIf="!selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage && selectedCart.carts[i + pagination.startIndex].deliveryQuotationId">
-                                            <div class="flex flex-row justify-between items-center w-full">
-                                                <div *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryType !== 'SELF'" class="flex flex-row w-full">
-                                                    <mat-form-field class="w-full rounded text-sm fuse-mat-no-subscript fuse-mat-dense">
-                                                        <mat-select
-                                                            placeholder="Select a delivery provider"
-                                                            (click)="openProviderSelection()"
-                                                            (selectionChange)="changeDeliveryProvider(deliveryProviderSelector.value, i + pagination.startIndex)"
-                                                            [(ngModel)]="selectedCart.carts[i + pagination.startIndex].deliveryProviderId"
-                                                            [ngModelOptions]="{standalone: true}"
-                                                            #deliveryProviderSelector="matSelect"
-                                                            >
-                                                            <mat-select-trigger>
-                                                                <span class="flex items-center justify-between w-full">
-                                                                    <span>{{ selectedCart.carts[i + pagination.startIndex].deliveryProviderName }}</span>
-                                                                    <img
-                                                                        matSuffix
-                                                                        class="w-1/3 max-h-10"
-                                                                        *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryProviderImg"
-                                                                        [alt]="'Delivery provider image'"
-                                                                        [src]="selectedCart.carts[i + pagination.startIndex].deliveryProviderImg">
-                                                                </span>
-                                                            </mat-select-trigger>
-                                                            <ng-container *ngFor="let deliveryProvider of selectedCart.carts[i + pagination.startIndex].deliveryQuotations">
-                                                                <mat-option 
-                                                                    [value]="deliveryProvider.providerId">
-                                                                    <div class="flex flex-row justify-between items-center">
-                                                                        <span class="w-2/3">{{deliveryProvider.providerName}}</span>
-                                                                        <img
-                                                                            matSuffix
-                                                                            class="w-auto max-h-8 p-1"
-                                                                            *ngIf="deliveryProvider.providerImage"
-                                                                            [alt]="'Delivery provider image'"
-                                                                            [src]="deliveryProvider.providerImage">
-                                                                    </div>
-                                                                </mat-option>
-                                                            </ng-container>
-                                                        </mat-select>
-                                                    </mat-form-field>
-                                                </div>
-                                                <div *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryType === 'SELF'" class="flex flex-row w-full">
-                                                    <mat-label class="flex w-full px-4 items-center h-10 rounded-md border border-gray-300 text-sm">
-                                                        Self Delivery</mat-label>
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                        <div class="flex flex-row justify-between items-center">
-                                            <div class="flex flex-col sm:min-w-44">
-                                                <ng-container *ngIf="!selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage && selectedCart.carts[i + pagination.startIndex].deliveryQuotationId; else deliveryErrorMobile">
-                                                    <span class="text-sm">Delivery Fee:</span>
-                                                    <!-- <span class="font-semibold text-sm tracking-tight">{{ getDeliveryChargesRange(i + pagination.startIndex) }}</span> -->
-                                                    <ng-container *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryPrice.selectedDeliveryPrice">
-                                                        <div class="flex flex-col">
-                                                            <div class="flex flex-row gap-1 items-end">
-                                                                <!-- Ori Price  -->
-                                                                <span 
-                                                                    [ngClass]="selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount !== 0 && selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount ? 
-                                                                        'line-through font-normal text-xs' : 'text-sm font-semibold'"
-                                                                    class="tracking-tight leading-tight">{{selectedCart.carts[i + pagination.startIndex].deliveryPrice.selectedDeliveryPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
-                                                                <!-- Discounted price  -->
-                                                                <span *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount !== 0 && selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount"
-                                                                    class="font-semibold text-sm tracking-tight leading-tight">{{selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountedPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
-                                                                <!-- Combined shipping  -->
-                                                                <span *ngIf="checkCombineShipping(i + pagination.startIndex)"
-                                                                    class="text-xs tracking-tighter">
-                                                                    (Shared for Same Address)
-                                                                </span>
-                                                            </div>
-                                                            <!-- Off  -->
-                                                            <span *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount !== 0 && selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount" 
-                                                                class="-mt-[0.15rem] text-xs tracking-tight">(save {{selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount | currency: cart.store.regionCountry.currencySymbol}})</span>
-                                                        </div>
-                                                    </ng-container>
-                                                    <!-- <div class="flex flex-row gap-1">
-                                                        <span *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount === null"
-                                                            class="font-semibold text-sm tracking-tight">{{ selectedCart.carts[i + pagination.startIndex].deliveryPrice.selectedDeliveryPrice | currency: cart.store.regionCountry.currencySymbol }}</span>
-                                                        <span *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount !== 0 && selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountAmount" 
-                                                            class="text-sm line-through tracking-tight">{{selectedCart.carts[i + pagination.startIndex].deliveryPrice.selectedDeliveryPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
-                                                        <span class="font-semibold text-sm tracking-tight">{{selectedCart.carts[i + pagination.startIndex].deliveryPrice.discountedPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
-                                                    </div> -->
-                                                </ng-container>
-                                                <ng-template #deliveryErrorMobile>
-                                                    <div>
-                                                        <span *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage" class="font-semibold text-sm tracking-tight" >{{ selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage }}</span>
-                                                        <ng-container *ngIf="!selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage && !validateCustomerInfo(i + pagination.startIndex)">
-                                                            <div class="text-sm">
-                                                                <span 
-                                                                    class="underline cursor-pointer text-primary tracking-tight" 
-                                                                    (click)="addAddressPopup()">
-                                                                    Add delivery address
-                                                                </span>
-                                                            </div>
-                                                        </ng-container>
-                                                        <ng-container *ngIf="selectedCart.carts[i + pagination.startIndex].deliveryErrorMessage === 'Coordinates Not Found' && (!customerAddress.latitude && !customerAddress.longitude)">
-                                                            <div class="text-sm">
-                                                                <span 
-                                                                    class="underline cursor-pointer text-red-500 tracking-tight" 
-                                                                    [routerLink]="'/address'"
-                                                                    [queryParams]="{origin: 'carts'}">
-                                                                    Click here to update
-                                                                </span>
-                                                            </div>
-                                                        </ng-container>
-                                                    </div>
-                                                </ng-template>
-                                            </div>
-                                            <div class="flex flex-col">
-                                                <span class="text-sm mr-1">Total Items ({{cart.cartItems ? cart.cartItems.length : 0}}):</span>
-                                                <span class="font-semibold text-sm">{{ getCartItemsTotal(cart.cartItems) | currency: cart.store.regionCountry.currencySymbol }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <!-- Store Address for self pickup  -->
                                     <ng-container *ngIf="selectedCart.carts[i + pagination.startIndex].isSelfPickup">
                                         <div class="flex flex-col gap-1 w-full mt-1">
@@ -677,11 +349,18 @@
                 <!-- Cart Summary -->
                 <div class="flex flex-col border rounded-lg p-2">
                     <!-- Header -->
-                    <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
-                        <mat-icon 
-                            class="icon-size-5 text-primary" 
-                            [svgIcon]="'mat_solid:add_shopping_cart'"></mat-icon>
-                        <span class="ml-2 font-bold">Cart Summary</span>
+                    <div class="flex flex-row border-b justify-between items-center pb-2 w-full">
+                        <div class="flex flex-row j">
+                            <mat-icon 
+                                class="icon-size-5 text-primary" 
+                                [svgIcon]="'mat_solid:add_shopping_cart'"></mat-icon>
+                            <span class="ml-2 font-bold">Cart Summary</span>
+                        </div>
+                        <div class="flex flex-col text-center">
+                            <span class="font-semibold">Table No: #{{tableNumber}}</span>
+                            <span class="text-gray-500 text-xs">Wrong table number ?</span>
+                            <span class="text-gray-500 text-xs underline cursor-pointer">Change Here</span>
+                        </div>
                     </div>
                     <!-- Summary -->
                     <!-- Sub Total -->
@@ -894,115 +573,6 @@
                         Checkout Now
                     </button>
                 </div>
-                <!-- Delivery Address (md) -->
-                <div class="hidden md:block flex flex-col justify-center items-center border rounded-lg p-2 mt-4">
-                    <!-- Header -->
-                    <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
-                        <mat-icon 
-                            class="icon-size-5 text-primary" 
-                            [svgIcon]="'mat_solid:location_on'"></mat-icon>
-                        <span class="ml-2 font-bold">Delivery Address</span>
-                    </div>
-                    <ng-container *ngIf="customerAddress; else noAddress">
-                        <!-- <ng-container *ngFor="let address of customerAddresses"> -->
-                            <!-- <ng-container *ngIf="customerAddress.isDefault"> -->
-                                <div class="flex flex-row p-2 font-medium gap-1 items-center justify-between w-full">
-                                    <!-- Address  -->
-                                    <div class="flex flex-col font-medium gap-1">
-                                        <span class="">{{customerAddress.name}}</span>
-                                        <span class="">{{customerAddress.phoneNumber}}</span>
-                                        <span class="">{{customerAddress.address}}, {{customerAddress.postCode}}, {{customerAddress.city}}, {{customerAddress.state}}</span>
-                                    </div>
-                                    <!-- Remove Address -->
-                                    <div *ngIf="!customerId">
-                                        <span class="hidden sm:flex justify-center items-center text-center px-1 cursor-pointer">
-                                            <mat-icon 
-                                                (click)="deleteGuestAddress()"
-                                                class="icon-size-4" 
-                                                [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="flex w-full justify-center items-center">
-                                    <button
-                                        [routerLink]="'/address'"
-                                        [queryParams]="{origin: 'carts'}"
-                                        class="my-2 w-1/2 font-semibold p-1 rounded-md bg-primary hover:bg-primary-600"                            >
-                                        <span class="text-white">Change</span>
-                                    </button>
-                                </div>
-                            <!-- </ng-container> -->
-                        <!-- </ng-container> -->
-                    </ng-container>
-                    <ng-template #noAddress>
-                        <!-- Enter Address -->
-                        <span class="flex mt-2 text-center">Add your delivery address</span>
-                        <!-- Button -->
-                        <div class="flex w-full justify-center items-center mt-2">
-                            <button 
-                                (click)="addAddressPopup()"
-                                class="my-2 w-1/2 bg-primary-500 hover:bg-primary-600 rounded-md flex flex-row items-center justify-center p-1"
-                            >
-                                <mat-icon 
-                                    class="icon-size-5 text-white" 
-                                    [svgIcon]="'heroicons_solid:plus'"></mat-icon>
-                                <span class="ml-1 font-semibold text-white">Add</span>
-                            </button>
-                        </div>
-                    </ng-template>
-                </div>
-                <!-- Store pickup info (md)  -->
-                <ng-container *ngIf="hasSelfPickup">
-                    <div class="hidden md:block flex flex-col justify-center items-center border rounded-lg p-2 mt-4">
-                        <!-- Header -->
-                        <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
-                            <mat-icon 
-                                class="icon-size-5 text-primary" 
-                                [svgIcon]="'mat_solid:contact_phone'"></mat-icon>
-                            <span class="ml-2 font-bold">Contact Info for Self Collect</span>
-                        </div>
-                        <ng-container *ngIf="selfPickupInfo; else noSelfPickupInfo">
-                            <div class="w-full flex flex-col rounded">
-                                <div class="flex flex-row p-2 font-medium gap-1 items-center justify-between w-full">
-                                    <!-- Address  -->
-                                    <div class="flex flex-col font-medium gap-1">
-                                        <span class="">{{selfPickupInfo.name}}</span>
-                                        <span class="">{{selfPickupInfo.phoneNumber}}</span>
-                                        <span class="">{{selfPickupInfo.email}}</span>
-                                    </div>
-                                </div>
-                                <!-- Button -->
-                                <div class="flex w-full justify-center items-center">
-                                    <button 
-                                        (click)="addRequiredInfo(0, true)"
-                                        class="my-2 w-1/2 bg-primary-500 hover:bg-primary-600 rounded-md flex flex-row items-center justify-center p-1"
-                                    >
-                                        <mat-icon 
-                                            class="icon-size-4 text-white" 
-                                            [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
-                                        <span class="ml-1 font-semibold text-white">Edit</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </ng-container>
-                        <ng-template #noSelfPickupInfo>
-                            <!-- Enter contact info -->
-                            <span class="flex mt-2 text-center">Add your contact info</span>
-                            <!-- Button -->
-                            <div class="flex w-full justify-center items-center mt-2">
-                                <button 
-                                (click)="addRequiredInfo()"
-                                    class="my-2 w-1/2 bg-primary-500 hover:bg-primary-600 rounded-md flex flex-row items-center justify-center p-1"
-                                >
-                                    <mat-icon 
-                                        class="icon-size-5 text-white" 
-                                        [svgIcon]="'heroicons_solid:plus'"></mat-icon>
-                                    <span class="ml-1 font-semibold text-white">Add</span>
-                                </button>
-                            </div>
-                        </ng-template>
-                    </div>
-                </ng-container>
                 <!-- Store Address (md) -->
                 <ng-container *ngIf="false">
                     <div class="flex flex-col justify-center items-center border rounded-lg p-2 mt-4">
@@ -1036,8 +606,8 @@
                     </div>
                 </ng-container>
             </div>
-        </ng-container>    
-
+        </ng-container>
+        
         <!-- No Carts -->
         <ng-template #noCarts>
             <!-- Main -->

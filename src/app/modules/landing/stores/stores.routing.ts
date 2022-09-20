@@ -18,9 +18,6 @@ export const landingStoresRoutes: Route[] = [
             headerTitle: 'All Stores',
             breadcrumb: ''
         },
-        // resolve  : {
-        //     stores: StoresResolver,
-        // },
         component: LandingStoresComponent
     },
     {
@@ -42,10 +39,7 @@ export const landingStoresRoutes: Route[] = [
                 children: [
                     {
                         path: '',
-                        // component: LandingStoreComponent,
                         component: LandingShopComponent,
-
-
                     },
                     {
                         path: ':product-slug',
@@ -55,27 +49,13 @@ export const landingStoresRoutes: Route[] = [
                         component: LandingProductDetailsComponent,
                         resolve  : {
                             product: ProductResolver,
-                        },
-
+                        }
                     }
                 ],
-            },
-            // {
-            //     path: ':product-slug',
-            //     resolve  : {
-            //         product: ProductResolver,
-            //         // categories: StoreCategoriesResolver
-            //     },
-            //     component: LandingProductDetailsComponent,
-            //     data: {
-            //         breadcrumb: ''
-            //     }
-            // },
-            
+            }
         ],
         resolve  : {
-            stores: StoresResolver,
+            stores: StoresResolver
         }
-    },
-
+    }
 ];

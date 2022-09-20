@@ -1,0 +1,41 @@
+import { Injectable } from "@angular/core";
+import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from "@angular/router";
+import { DiningService } from "app/core/_dining/dining.service";
+import { forkJoin, Observable } from "rxjs";
+
+@Injectable({
+    providedIn: 'root'
+})
+export class StoreTagResolver implements Resolve<any>
+{
+    /**
+     * Constructor
+     */
+    constructor(
+        private _diningService: DiningService
+    )
+    {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Use this resolver to resolve initial mock-api for the application
+     *
+     * @param route
+     * @param state
+     */
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any>
+    {
+        let storeTagArray: string[] = state.url.split("/");
+        let storeTag = storeTagArray[2] ? storeTagArray[2] : "";
+        
+        // Fork join multiple API endpoint calls to wait all of them to finish
+        return forkJoin([
+            this._diningService.setStoreTag(storeTag)
+            // this._httpstatService.get(500)
+        ]);
+    }
+}

@@ -1,26 +1,24 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { LocationService } from 'app/core/location/location.service';
 import { LandingLocation, LocationArea, StoresDetailPagination, StoresDetails } from 'app/core/location/location.types';
 import { NavigateService } from 'app/core/navigate-url/navigate.service';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
-import { StoresService } from 'app/core/store/store.service';
-import { Store, StoreAssets, StorePagination } from 'app/core/store/store.types';
+import { StorePagination } from 'app/core/store/store.types';
 import { CurrentLocationService } from 'app/core/_current-location/current-location.service';
 import { CurrentLocation } from 'app/core/_current-location/current-location.types';
 import { Subject, takeUntil, map, merge, combineLatest } from 'rxjs';
-import { switchMap, debounceTime } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
-    selector     : 'landing-stores',
-    templateUrl  : './store-list.component.html',
+    selector     : 'landing-restaurants',
+    templateUrl  : './restaurant-list.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class LandingStoresComponent implements OnInit
+export class LandingRestaurantsComponent implements OnInit
 {
     @ViewChild("storesPaginator", {read: MatPaginator}) private _paginator: MatPaginator;
     
@@ -35,12 +33,9 @@ export class LandingStoresComponent implements OnInit
     storesDetailsPageSize: number = 30;
     oldStoresDetailsPaginationIndex: number = 0;
     
-    categoryId: string;
-    
-    locationId: string;
-    location: LandingLocation;
-    adjacentLocationIds: string[] = [];
-    
+    categoryId  : string;
+    storeTag    : string;
+        
     currentScreenSize: string[] = [];
     isLoading: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -83,18 +78,6 @@ export class LandingStoresComponent implements OnInit
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Get Current Location
-        this._locationService.featuredLocation$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((location: LandingLocation) => {
-                if (location) {
-                    this.location = location;
-                    this.storesDetailsTitle = "Discover Shops Near " + location.cityDetails.name;
-                }
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
             combineLatest([
                 this._currentLocationService.currentLocation$,
                 this._platformsService.platform$
@@ -116,57 +99,39 @@ export class LandingStoresComponent implements OnInit
                     // Get searches from url parameter 
                     this._activatedRoute.queryParams.subscribe(params => {
                         this.categoryId = params.categoryId ? params.categoryId : null;
-                        this.locationId = params.locationId ? params.locationId : null;
+                        this.storeTag = params.storeTag ? params.storeTag : null;
 
-                        // if there are value for categoryId OR locationId
-                        // no need for lat long, since customer want to see stores that contain the query
-                        if (this.categoryId || this.locationId) {
-                            currentLat = null;
-                            currentLong = null;
-                        }
-
-                        // get back the previous pagination page
-                        // more than 2 means it won't get back the previous pagination page when navigate back from 'carts' page
-                        if (this._navigate.getPreviousUrl() && this._navigate.getPreviousUrl().split("/").length > 2) {                            
-                            this.oldStoresDetailsPaginationIndex = this.storesDetailsPagination ? this.storesDetailsPagination.page : 0;
-                        }
-
-                        // Get current location with locationId 
-                        this._locationService.getFeaturedLocations({ pageSize: 1, regionCountryId: this.platform.country, cityId: this.locationId, sortByCol: 'sequence', sortingOrder: 'ASC' })
-                            .subscribe((location : LandingLocation[]) => {});
-
-                        // Get adjacent city first
-                        this._locationService.getLocationArea(this.locationId)
-                            .subscribe((response: LocationArea[]) => {
-                                this.adjacentLocationIds = [];
-                                this.adjacentLocationIds = response.map(item => {
-                                    return item.storeCityId;
-                                });
-
-                                // put the original this.locationId in the adjacentLocationIds
-                                if (this.adjacentLocationIds.length > 0) {
-                                    this.adjacentLocationIds.unshift(this.locationId);
-                                }
-                                
-                                // if locationId exists
-                                if (this.adjacentLocationIds.length < 1 && this.locationId) {
-                                    this.adjacentLocationIds = [this.locationId];
-                                }
+                        if (this.storeTag) {
                         
-                                // Get stores
-                                this._locationService.getStoresDetails({
-                                    page            : this.oldStoresDetailsPaginationIndex,
-                                    pageSize        : this.storesDetailsPageSize, 
-                                    regionCountryId : this.platform.country, 
-                                    parentCategoryId: this.categoryId, 
-                                    cityId          : this.adjacentLocationIds,
-                                    latitude        : currentLat,
-                                    longitude       : currentLong,
-                                    isDelivery      : false,
-                                    isDineIn        : true
-                                })
-                                .subscribe((stores : StoresDetails[]) => {});
-                            });
+                            // if there are value for categoryId OR locationId
+                            // no need for lat long, since customer want to see stores that contain the query
+                            // if (this.categoryId || this.locationId) {
+                            //     currentLat = null;
+                            //     currentLong = null;
+                            // }
+
+                            // get back the previous pagination page
+                            // more than 2 means it won't get back the previous pagination page when navigate back from 'carts' page
+                            if (this._navigate.getPreviousUrl() && this._navigate.getPreviousUrl().split("/").length > 2) {                            
+                                this.oldStoresDetailsPaginationIndex = this.storesDetailsPagination ? this.storesDetailsPagination.page : 0;
+                            }
+                            
+                            // Get stores
+                            this._locationService.getStoresDetails({
+                                page            : this.oldStoresDetailsPaginationIndex,
+                                pageSize        : this.storesDetailsPageSize, 
+                                regionCountryId : this.platform.country, 
+                                parentCategoryId: this.categoryId, 
+                                tagKeyword      : this.storeTag,
+                                latitude        : currentLat,
+                                longitude       : currentLong,
+                                isDelivery      : false,
+                                isDineIn        : true
+                            })
+                            .subscribe((stores : StoresDetails[]) => {});
+                        } else {
+
+                        }
                     });
                 }
                 this._changeDetectorRef.markForCheck();
@@ -189,7 +154,7 @@ export class LandingStoresComponent implements OnInit
     ngAfterViewInit(): void
     {
         setTimeout(() => {
-            if (this._paginator )
+            if (this._paginator)
             {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -200,10 +165,10 @@ export class LandingStoresComponent implements OnInit
 
                 // if there are value for categoryId OR locationId
                 // no need for lat long, since customer want to see stores that contain the query
-                if (this.categoryId || this.locationId) {
-                    currentLat = null;
-                    currentLong = null;
-                }
+                // if (this.categoryId || this.locationId) {
+                //     currentLat = null;
+                //     currentLong = null;
+                // }
 
                 // Get products if sort or page changes
                 merge(this._paginator.page).pipe(
@@ -214,7 +179,7 @@ export class LandingStoresComponent implements OnInit
                             pageSize        : this.storesDetailsPageOfItems['pageSize'], 
                             regionCountryId : this.platform.country, 
                             parentCategoryId: this.categoryId, 
-                            cityId          : this.adjacentLocationIds,
+                            // cityId          : this.adjacentLocationIds,
                             latitude        : currentLat,
                             longitude       : currentLong,
                             isDelivery      : false,
@@ -258,17 +223,17 @@ export class LandingStoresComponent implements OnInit
 
                 // if there are value for categoryId OR locationId
                 // no need for lat long, since customer want to see stores that contain the query
-                if (this.categoryId || this.locationId) {
-                    currentLat = null;
-                    currentLong = null;
-                }
+                // if (this.categoryId || this.locationId) {
+                //     currentLat = null;
+                //     currentLong = null;
+                // }
     
                 this._locationService.getStoresDetails({
                     page            : this.storesDetailsPageOfItems['currentPage'] - 1, 
                     pageSize        : this.storesDetailsPageOfItems['pageSize'], 
                     regionCountryId : this.platform.country, 
                     parentCategoryId: this.categoryId, 
-                    cityId          : this.adjacentLocationIds,
+                    // cityId          : this.adjacentLocationIds,
                     latitude        : currentLat,
                     longitude       : currentLong,
                     isDelivery      : false,

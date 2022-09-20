@@ -27,6 +27,7 @@ import { VoucherModalComponent } from 'app/modules/customer/vouchers/voucher-mod
 import { SelfPickupInfoDialog } from './modal-self-pickup-info/modal-self-pickup-info.component';
 import { CartAddressComponent } from './modal-address/cart-addresses.component';
 import { Title } from '@angular/platform-browser';
+import { DiningService } from 'app/core/_dining/dining.service';
 
 @Component({
     selector     : 'carts',
@@ -35,21 +36,21 @@ import { Title } from '@angular/platform-browser';
         /* language=SCSS */
         `
             .cart-grid {
-                grid-template-columns: 24px auto 96px 96px 96px 30px;
+                grid-template-columns: auto 96px 96px 96px 30px;
 
                 @screen md {
-                    grid-template-columns: 24px auto 112px 86px 112px 20px;
+                    grid-template-columns: auto 112px 86px 112px 20px;
                 }
                 @screen xl {
-                    grid-template-columns: 24px auto 112px 112px 112px 30px;
+                    grid-template-columns: auto 112px 112px 112px 30px;
                 }
             }
 
             .cart-title-grid {
-                grid-template-columns: 24px auto;
+                grid-template-columns: auto;
 
                 @screen sm {
-                    grid-template-columns: 24px auto;
+                    grid-template-columns: auto;
                 }
             }
 
@@ -153,6 +154,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
     cart: Cart;
     carts: CartWithDetails[];
+    cartIds: { id: string, storeId: string, cartItems: CartItem[]}[] = [];
     
     selectedCart: { 
         carts: { 
@@ -192,7 +194,6 @@ export class CartListComponent implements OnInit, OnDestroy
     totalSelectedCartItem: number = 0;
     
     customerId: string = '';
-    customerAddress: CustomerAddress;
 
     paymentDetails: CartDiscount = {
         cartSubTotal: 0,
@@ -233,7 +234,7 @@ export class CartListComponent implements OnInit, OnDestroy
         message : string
     }[] = [];
 
-    
+    tableNumber: string;
 
     // -------------------------
     // Voucher
@@ -282,18 +283,15 @@ export class CartListComponent implements OnInit, OnDestroy
         private _fuseConfirmationService: FuseConfirmationService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _currencyPipe: CurrencyPipe,
         private _router: Router,
         private _cartService: CartService,
         private _jwtService: JwtService,
         private _authService: AuthService,
-        private _userService: UserService,
         private _scroller: ViewportScroller,
         private _datePipe: DatePipe,
-        private _storesService: StoresService,
         private _voucherService: VoucherService,
+        private _diningService: DiningService,
         private _titleService: Title
-
     )
     {
     }
@@ -307,6 +305,8 @@ export class CartListComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+
+        this.tableNumber = this._diningService.tableNumber$;
 
         this.customerId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid ? this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid : null
 
@@ -427,30 +427,6 @@ export class CartListComponent implements OnInit, OnDestroy
                                 this.selectedCart.carts[cartIdIndex].selected = true;
                             }
                         });
-                        
-                        if (this.customerAddress) {
-                            // get delivery charges of every carts
-                            this.getDeliveryCharges(this.carts.map(element => {
-                                return {
-                                    cartId: element.id,
-                                    customerId: this.customerId,
-                                    delivery: {
-                                        deliveryAddress     : this.customerAddress.address,
-                                        deliveryCity        : this.customerAddress.city,
-                                        deliveryState       : this.customerAddress.state,
-                                        deliveryPostcode    : this.customerAddress.postCode,
-                                        deliveryCountry     : this.customerAddress.country,
-                                        deliveryContactEmail: this.customerAddress.email,
-                                        deliveryContactName : this.customerAddress.name,
-                                        deliveryContactPhone: this.customerAddress.phoneNumber,
-                                        latitude            : this.customerAddress.latitude ? this.customerAddress.latitude : '',
-                                        longitude           : this.customerAddress.longitude ? this.customerAddress.longitude : '' 
-                                    },
-                                    deliveryProviderId: null,
-                                    storeId: element.storeId
-                                }
-                            }));
-                        }
 
                         if (allSelected.length && !allSelected.includes(false)) {
                             // set all selected cart to true since all items in cartItem is true
@@ -509,42 +485,8 @@ export class CartListComponent implements OnInit, OnDestroy
                         }
                     }
 
-                    this._userService.customerAddress$
-                        .pipe(takeUntil(this._unsubscribeAll))
-                        .subscribe((customerAddress : CustomerAddress) => {
-                            if (customerAddress) { 
+                    this.selectAllItemsInCart();
 
-                                this.customerAddress = customerAddress;
-                                // use for self pickup
-                                this.selfPickupInfo = customerAddress;
-
-                                // get delivery charges of every carts
-                                this.getDeliveryCharges(this.carts.map(element => {
-                                    return {
-                                        cartId: element.id,
-                                        customerId: this.customerId,
-                                        delivery: {
-                                            deliveryAddress     : this.customerAddress.address,
-                                            deliveryCity        : this.customerAddress.city,
-                                            deliveryState       : this.customerAddress.state,
-                                            deliveryPostcode    : this.customerAddress.postCode,
-                                            deliveryCountry     : this.customerAddress.country,
-                                            deliveryContactEmail: this.customerAddress.email,
-                                            deliveryContactName : this.customerAddress.name,
-                                            deliveryContactPhone: this.customerAddress.phoneNumber,
-                                            latitude            : this.customerAddress.latitude ? this.customerAddress.latitude : '',
-                                            longitude           : this.customerAddress.longitude ? this.customerAddress.longitude : '' 
-                                        },
-                                        deliveryProviderId: null,
-                                        storeId: element.storeId
-                                    }
-                                }));
-                            }
-                            // Mark for check 
-                            this._changeDetectorRef.markForCheck();
-                        });
-
-                    // this.selectCart(null,null,true);
                 }
 
                 // Mark for check
@@ -941,6 +883,53 @@ export class CartListComponent implements OnInit, OnDestroy
 
     }
 
+    selectAllItemsInCart()
+    {
+        this.cartIds = JSON.parse(this._cartService.cartIds$);
+
+        this.selectedCart = 
+            {
+                carts: this.cartIds.map((item)=>{
+                    return {
+                        id: item.id, 
+                        storeId: item.storeId,
+                        cartItem: item.cartItems.map((element)=>{
+                            return {
+                                id: element.id,
+                                selected: true,
+                                disabled: false
+                            }
+                        }), 
+                        selected: true, 
+                        disabled: false,
+                        minDeliveryCharges: null, 
+                        maxDeliveryCharges: null,
+                        description: {
+                            isOpen: true
+                        },
+                        deliveryQuotationId: null,
+                        deliveryType: null,
+                        deliveryProviderId: null,
+                        deliveryErrorMessage: null,
+                        deliveryProviderImg: null,
+                        deliveryQuotations: null,
+                        deliveryProviderName: null,
+                        isSelfPickup: null,
+                        deliveryPrice: {
+                            selectedDeliveryPrice: null,
+                            discountAmount: null,
+                            discountedPrice: null
+                        },
+                        showRequiredInfo: null
+                    }
+                }),
+                selected: true,
+                disabled: false
+            };
+
+            this.initializeCheckoutList();
+    }
+
     deleteCartItem(cartId: string, cartItem: CartWithDetails){
 
         // This section is to get this.selectedCart.carts index
@@ -1004,106 +993,6 @@ export class CartListComponent implements OnInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
             } 
         });
-    }
-
-    getDeliveryCharges(deliveryChargesBody: DeliveryCharges[] )
-    {
-
-        if (!this.customerAddress) return;
-        this.isGettingDeliveryPrices = true;
-        this._checkoutService.postToRetrieveDeliveriesCharges(deliveryChargesBody)
-            .subscribe((deliveryProviderResponse: DeliveryProviders[])=>{     
-                           
-                deliveryProviderResponse.forEach(item => {
-                    let cartIndex = this.selectedCart.carts.findIndex(element => element.id == item.cartId);
-                    if (cartIndex > -1) {
-                        // let minDeliveryCharges1 = Math.min(...item.quotation.filter(x => x.isError === false).map(element => element.price));
-                        
-                        // Get min/max delivery charges with no error
-                        let minDeliveryCharges = Math.min(
-                            ...item.quotation.reduce((previousValue, currentValue) => {
-                                if (currentValue.isError === false) {
-                                    previousValue.push(currentValue.price);
-                                }
-                                return previousValue
-                            }, []))
-
-                        // let maxDeliveryCharges = Math.max(...item.quotation.filter(x => x.isError === false).map(element => element.price));
-
-                        // find delivery with no error
-                        let indexOfNoError = item.quotation.findIndex(item => item.isError === false);
-
-                        if (indexOfNoError > -1) {
-                            
-                            // find index at response to find the minimum price charges
-                            let minDeliveryChargesIndex = item.quotation.findIndex(element => element.price === minDeliveryCharges);
-
-                            this.selectedCart.carts[cartIndex].deliveryQuotationId = item.quotation[minDeliveryChargesIndex].refId;
-                            this.selectedCart.carts[cartIndex].deliveryType = item.quotation[minDeliveryChargesIndex].deliveryType;
-                            this.selectedCart.carts[cartIndex].deliveryProviderId = item.quotation[minDeliveryChargesIndex].providerId;
-                            this.selectedCart.carts[cartIndex].deliveryProviderImg = item.quotation[minDeliveryChargesIndex].providerImage;
-                            this.selectedCart.carts[cartIndex].deliveryPrice.selectedDeliveryPrice = item.quotation[minDeliveryChargesIndex].price;
-                            this.selectedCart.carts[cartIndex].minDeliveryCharges = item.quotation[minDeliveryChargesIndex].price;
-                            this.selectedCart.carts[cartIndex].maxDeliveryCharges = item.quotation[minDeliveryChargesIndex].price;
-                            this.selectedCart.carts[cartIndex].deliveryProviderName = item.quotation[minDeliveryChargesIndex].providerName;
-                            
-                        }
-                        // if has error
-                        else {
-                            this.selectedCart.carts[cartIndex].deliveryQuotationId = null;
-                            this.selectedCart.carts[cartIndex].deliveryType = null;
-                            this.selectedCart.carts[cartIndex].deliveryProviderId = null;
-                            this.selectedCart.carts[cartIndex].deliveryErrorMessage = item.quotation[0].message;
-
-                            // Disable the cart
-                            this.selectedCart.carts[cartIndex].disabled = true;
-                            this.selectedCart.carts[cartIndex].cartItem.forEach(item => {
-                                item.disabled = true;
-                            })
-                        }
-                        // Get all quotations
-                        this.selectedCart.carts[cartIndex].deliveryQuotations = item.quotation;
-                    }
-                });
-                this.isGettingDeliveryPrices = false;
-                
-                // if got cart selected, call initializeCheckoutList
-                if (this.totalSelectedCartItem > 0) {
-                    this.initializeCheckoutList()
-                }
-            });
-    }
-
-    getDeliveryChargesRange(index: number) : string 
-    {
-        if (this.selectedCart.carts[index]) {
-
-            let cartId = this.selectedCart.carts[index].id;
-            let deliveryDiscount = null;
-
-            let paymentIndex = this.paymentDetails.storeDiscountList.findIndex(item => item.cartId === cartId)
-
-            if (paymentIndex > -1) {
-                deliveryDiscount = this.paymentDetails.storeDiscountList[paymentIndex].deliveryDiscount;
-            }
-            
-            if (this.selectedCart.carts[index].deliveryQuotationId === null) {
-                return this.selectedCart.carts[index].deliveryErrorMessage;
-
-            }
-            if (this.selectedCart.carts[index].minDeliveryCharges === this.selectedCart.carts[index].maxDeliveryCharges && (deliveryDiscount === 0 || deliveryDiscount === null) ) {
-
-                return this._currencyPipe.transform(this.selectedCart.carts[index].minDeliveryCharges, this.platform.currency);
-            } 
-            else if (this.selectedCart.carts[index].minDeliveryCharges === this.selectedCart.carts[index].maxDeliveryCharges && (deliveryDiscount !== 0 || deliveryDiscount !== null) ) {
-
-                return this._currencyPipe.transform(this.selectedCart.carts[index].minDeliveryCharges, this.platform.currency) + " ( -" + this._currencyPipe.transform(deliveryDiscount, this.platform.currency) + " )";
-            }
-            else {
-
-                return this._currencyPipe.transform(this.selectedCart.carts[index].minDeliveryCharges, this.platform.currency) + " - " + this._currencyPipe.transform(this.selectedCart.carts[index].maxDeliveryCharges, this.platform.currency);
-            }
-        }
     }
 
     changeDeliveryProvider(deliveryProviderId, index: number) {
@@ -1261,133 +1150,7 @@ export class CartListComponent implements OnInit, OnDestroy
             }
             // If guest
             else if (!this.customerId) {
-
-                if (this.customerAddress) {
-                    checkoutParams = {
-                        platformVoucherCode: this.voucherApplied.voucher.voucherCode, 
-                        customerId: null, 
-                        email: this.customerAddress.email
-                    }
-                }
-                else if (this.selfPickupInfo) {
-                    checkoutParams = {
-                        platformVoucherCode: this.voucherApplied.voucher.voucherCode, 
-                        customerId: null, 
-                        email: this.selfPickupInfo.email
-                    }
-                }
-                else {
-                    // Check if all delivery, true if got delivery, false if all self pickup
-                    let isAllSelfPickup = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === true);
-                    let isAllDelivery = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === false);
-    
-                    // If all selected items are delivery
-                    if (isAllDelivery && !this.customerAddress) {
-                        
-                        const confirmation = this._fuseConfirmationService.open({
-                            "title": "Address is empty!",
-                            "message": "Please add your delivery address to use this voucher.",
-                            "icon": {
-                            "show": true,
-                            "name": "heroicons_outline:exclamation",
-                            "color": "warn"
-                            },
-                            "actions": {
-                            "confirm": {
-                                "show": true,
-                                "label": "OK",
-                                "color": "primary"
-                            },
-                            "cancel": {
-                                "show": false,
-                                "label": "Cancel"
-                            }
-                            },
-                            "dismissible": true
-                        });
-                        
-                        // Subscribe to the confirmation dialog closed action
-                        confirmation.afterClosed().subscribe((result) => {
-    
-                            // If the confirm button pressed...
-                            if ( result === 'confirmed' )
-                            {
-                                this.addRequiredInfo(null) 
-                            }
-                        })
-                        return;
-                    }
-                    // If all self pickup
-                    else if (isAllSelfPickup && !this.selfPickupInfo){
-                        const confirmation = this._fuseConfirmationService.open({
-                            "title": "Contact info is empty!",
-                            "message": "Please add your contact information to use this voucher.",
-                            "icon": {
-                            "show": true,
-                            "name": "heroicons_outline:exclamation",
-                            "color": "warn"
-                            },
-                            "actions": {
-                            "confirm": {
-                                "show": true,
-                                "label": "OK",
-                                "color": "primary"
-                            },
-                            "cancel": {
-                                "show": false,
-                                "label": "Cancel"
-                            }
-                            },
-                            "dismissible": true
-                        });
-    
-                        // Subscribe to the confirmation dialog closed action
-                        confirmation.afterClosed().subscribe((result) => {
-    
-                            // If the confirm button pressed...
-                            if ( result === 'confirmed' )
-                            {
-                                this.addRequiredInfo(null) 
-                            }
-                        })
-                        return;
-                    }
-                    // If mix
-                    else if (!isAllSelfPickup && !isAllDelivery && (!this.selfPickupInfo || !this.customerAddress)){
-                        const confirmation = this._fuseConfirmationService.open({
-                            "title": "Required info is empty!",
-                            "message": "Please add your address/contact information to use this voucher.",
-                            "icon": {
-                            "show": true,
-                            "name": "heroicons_outline:exclamation",
-                            "color": "warn"
-                            },
-                            "actions": {
-                            "confirm": {
-                                "show": true,
-                                "label": "OK",
-                                "color": "primary"
-                            },
-                            "cancel": {
-                                "show": false,
-                                "label": "Cancel"
-                            }
-                            },
-                            "dismissible": true
-                        });
-    
-                        // Subscribe to the confirmation dialog closed action
-                        confirmation.afterClosed().subscribe((result) => {
-    
-                            // If the confirm button pressed...
-                            if ( result === 'confirmed' )
-                            {
-                                this.addRequiredInfo(null) 
-                            }
-                        })
-                        return;
-                    }
-                }                
+                // "This is a guess";
             }
         } else {
             checkoutParams = {
@@ -1792,62 +1555,6 @@ export class CartListComponent implements OnInit, OnDestroy
         
         dialogRef.afterClosed().subscribe();
     }
- 
-    deleteGuestAddress() {
-
-        const confirmation = this._fuseConfirmationService.open({
-            title  : 'Delete Address',
-            message: 'Are you sure you want to delete this address?',
-            icon:{
-                name:"mat_outline:delete_forever",
-                color:"primary"
-            },
-            actions: {
-                confirm: {
-                    label: 'Delete',
-                    color: 'primary'
-                }
-            }
-        });
-        // Subscribe to the confirmation dialog closed action
-        confirmation.afterClosed().subscribe((result) => {
-
-            // If the confirm button pressed...
-            if ( result === 'confirmed' )
-            {                
-                let guestAddresses: CustomerAddress[] = this._userService.guestAddress$ ? JSON.parse(this._userService.guestAddress$) : [];
-                let index = guestAddresses.findIndex(item => item.id === this.customerAddress.id);
-
-                if (index > -1) {
-
-                    // Delete the address
-                    guestAddresses.splice(index, 1);
-
-                    // Update the address
-                    this._userService.customersAddresses = guestAddresses;
-                    this._userService.customersAddress = null;
-
-                    // Set to local
-                    this._userService.guestAddress = JSON.stringify(guestAddresses);
-
-                    this.customerAddress = null;
-
-                    this.selectedCart.carts.forEach(cart => {
-                        cart.deliveryErrorMessage = null;
-                        cart.deliveryQuotationId = null;
-                        cart.deliveryType = null;
-                        cart.deliveryProviderId = null;
-                        cart.deliveryQuotations = null;
-                        cart.deliveryProviderImg = null;
-                        cart.deliveryPrice.selectedDeliveryPrice = null;
-                        cart.deliveryProviderName = null;
-                    })
-                    this.initializeCheckoutList();
-
-                }
-            }
-        });   
-    }
 
     goToCheckout() {
 
@@ -1882,81 +1589,7 @@ export class CartListComponent implements OnInit, OnDestroy
         let isAllSelfPickup = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === true);
         let isAllDelivery = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === false);
 
-        // If all selected items are delivery
-        if (isAllDelivery && !this.customerAddress) {
-            
-            const confirmation = this._fuseConfirmationService.open({
-                "title": "Address is empty!",
-                "message": "Please add your delivery address before checking out.",
-                "icon": {
-                "show": true,
-                "name": "heroicons_outline:exclamation",
-                "color": "warn"
-                },
-                "actions": {
-                "confirm": {
-                    "show": true,
-                    "label": "OK",
-                    "color": "primary"
-                },
-                "cancel": {
-                    "show": false,
-                    "label": "Cancel"
-                }
-                },
-                "dismissible": true
-            });
-            
-            // Subscribe to the confirmation dialog closed action
-            confirmation.afterClosed().subscribe((result) => {
-
-                // If the confirm button pressed...
-                if ( result === 'confirmed' )
-                {
-                    this.addRequiredInfo(null) 
-                }
-            })
-            
-            return;
-        }
-        // If all self pickup
-        else if (isAllSelfPickup && !this.selfPickupInfo){
-            const confirmation = this._fuseConfirmationService.open({
-                "title": "Contact info is empty!",
-                "message": "Please add your contact information before checking out.",
-                "icon": {
-                "show": true,
-                "name": "heroicons_outline:exclamation",
-                "color": "warn"
-                },
-                "actions": {
-                "confirm": {
-                    "show": true,
-                    "label": "OK",
-                    "color": "primary"
-                },
-                "cancel": {
-                    "show": false,
-                    "label": "Cancel"
-                }
-                },
-                "dismissible": true
-            });
-
-            // Subscribe to the confirmation dialog closed action
-            confirmation.afterClosed().subscribe((result) => {
-
-                // If the confirm button pressed...
-                if ( result === 'confirmed' )
-                {
-                    this.addRequiredInfo(null) 
-                }
-            })
-            
-            return;
-        }
-        // If mix
-        else if (!isAllSelfPickup && !isAllDelivery && (!this.selfPickupInfo || !this.customerAddress)){
+        if (!isAllSelfPickup && !isAllDelivery && !this.selfPickupInfo){
             const confirmation = this._fuseConfirmationService.open({
                 "title": "Required info is empty!",
                 "message": "Please add your address/contact information before checking out.",
@@ -2011,36 +1644,6 @@ export class CartListComponent implements OnInit, OnDestroy
         }
     }
 
-    openProviderSelection() {
-
-        // If address is empty, show popup
-        if (!this.customerAddress) {
-            const confirmation = this._fuseConfirmationService.open({
-                "title": "Address is empty!",
-                "message": "Please add your delivery address to select the delivery option.",
-                "icon": {
-                "show": true,
-                "name": "heroicons_outline:exclamation",
-                "color": "warn"
-                },
-                "actions": {
-                "confirm": {
-                    "show": true,
-                    "label": "OK",
-                    "color": "primary"
-                },
-                "cancel": {
-                    "show": false,
-                    "label": "Cancel"
-                }
-                },
-                "dismissible": true
-            });
-
-            return;
-        }
-    }
-
     selectSelfPickup(cartId: string, value: boolean = false) {
 
         let thisCart = this.selectedCart.carts.filter(cart => cart.id === cartId)[0]
@@ -2088,14 +1691,9 @@ export class CartListComponent implements OnInit, OnDestroy
                 return false;
             }
         }
-        // For delivery
+        // For dinein without any info
         else {
-            if (this.customerAddress) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return true;
         }
     }
 
@@ -2127,21 +1725,6 @@ export class CartListComponent implements OnInit, OnDestroy
             }
             // if delivery, navigate to self address
             else {
-                if (this.customerAddress) {
-                    this._router.navigate(['/address'], {queryParams: {origin: 'carts'}});
-
-                } else {
-                    // max-h-[90vh] max-w-120 sm:min-w-160
-                    const dialogRef = this._dialog.open( 
-                        CartAddressComponent, {
-                            width: this.currentScreenSize.includes('sm') ? '43rem' : '100%',
-                            height: this.currentScreenSize.includes('sm') ? 'auto' : '100%',
-                            maxWidth: this.currentScreenSize.includes('sm') ? 'auto' : '100vw',  
-                            // maxHeight: this.currentScreenSize.includes('sm') ? 'auto' : '100vh',
-                            disableClose: false,
-                        }
-                    );  
-                }
             }
 
         }
@@ -2149,26 +1732,9 @@ export class CartListComponent implements OnInit, OnDestroy
             // Check if all delivery, true if got delivery, false if all self pickup
             let isAllDelivery = this.selectedCart.carts.filter(x => x.showRequiredInfo).some(cart => cart.isSelfPickup === false)
             
-            // For delivery, navigate to add address
-            if (isAllDelivery) {
-                if (this.customerAddress) {
-                    this._router.navigate(['/address'], {queryParams: {origin: 'carts'}});
-
-                } else {
-                    // max-h-[90vh] max-w-120 sm:min-w-160
-                    const dialogRef = this._dialog.open( 
-                        CartAddressComponent, {
-                            width: this.currentScreenSize.includes('sm') ? '43rem' : '100%',
-                            height: this.currentScreenSize.includes('sm') ? 'auto' : '100%',
-                            maxWidth: this.currentScreenSize.includes('sm') ? 'auto' : '100vw',  
-                            // maxHeight: this.currentScreenSize.includes('sm') ? 'auto' : '100vh',
-                            disableClose: false,
-                        }
-                    );  
-                }
-            }
+            
             // For self pickup
-            else {
+            if (!isAllDelivery) {
                 const dialogRef = this._dialog.open( 
                     SelfPickupInfoDialog, {
                         width: this.currentScreenSize.includes('sm') ? 'auto' : '100%',
@@ -2184,6 +1750,7 @@ export class CartListComponent implements OnInit, OnDestroy
                         this.initializeCheckoutList();
                     }
                 });
+            } else {
             }
         }
     }
@@ -2205,22 +1772,6 @@ export class CartListComponent implements OnInit, OnDestroy
         if (countObject[refId] > 1) return true;
         else return false; 
         
-    }
-
-    addAddressPopup() {
-        if (this.customerAddress) {
-            this._router.navigate(['/address'], {queryParams: {origin: 'carts'}});
-
-        } else {
-            const dialogRef = this._dialog.open( 
-                CartAddressComponent, {
-                    width: this.currentScreenSize.includes('sm') ? '43rem' : '100%',
-                    height: this.currentScreenSize.includes('sm') ? 'auto' : '100%',
-                    maxWidth: this.currentScreenSize.includes('sm') ? 'auto' : '100vw',  
-                    disableClose: false,
-                }
-            );  
-        }
     }
 
 }

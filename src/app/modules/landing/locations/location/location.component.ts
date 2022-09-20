@@ -118,7 +118,9 @@ export class LocationComponent implements OnInit
                             sortingOrder    : 'DESC', 
                             regionCountryId : this.platform.country,
                             cityId          : this.adjacentLocationIds, 
-                            parentCategoryId: this.categoryId
+                            parentCategoryId: this.categoryId,
+                            isDelivery      : false,
+                            isDineIn        : true
                         })
                         .subscribe((storesDetails: StoresDetails[])=>{
                         });
@@ -171,7 +173,9 @@ export class LocationComponent implements OnInit
                             sortingOrder    : 'DESC', 
                             regionCountryId : this.platform.country,
                             cityId          : this.adjacentLocationIds, 
-                            parentCategoryId: this.categoryId
+                            parentCategoryId: this.categoryId,
+                            isDelivery      : false,
+                            isDineIn        : true
                         })
                         .subscribe((storesDetails: StoresDetails[])=>{
                         });

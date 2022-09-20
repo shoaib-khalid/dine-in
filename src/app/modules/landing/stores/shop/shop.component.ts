@@ -224,7 +224,6 @@ export class LandingShopComponent implements OnInit
     selectedProductInventory: ProductInventory = null;
     selectedProductInventoryItems: ProductInventoryItem[] = [];
 
-    
     productAssets: ProductAssets[] = [];
     imageCollection:any = [];
     galleryOptions: NgxGalleryOptions[] = [];
@@ -241,12 +240,12 @@ export class LandingShopComponent implements OnInit
     quantity: number = 1;
     minQuantity: number = 1;
     maxQuantity: number = 999;
-
-
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
-    @ViewChild('openDetails', { read: TemplateRef }) _openDetails:TemplateRef<any>;
     drawer: CupertinoPane;
-    
+
+    serviceType: string = "DINEIN";
+
+    @ViewChild('openDetails', { read: TemplateRef }) _openDetails:TemplateRef<any>;
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
      * Constructor
@@ -1186,6 +1185,7 @@ export class LandingShopComponent implements OnInit
                         const cart = {
                             customerId  : customerId, 
                             storeId     : this.store.id,
+                            serviceType : this.serviceType
                         }
                         // Create it first
                         this._cartService.createCart(cart)
@@ -1240,10 +1240,10 @@ export class LandingShopComponent implements OnInit
                         });
                     }
                 } else { // New cart to be pushed
-                    if (cartIds.length > 4) { // Too many in local storage
+                    if (cartIds.length > 9) { // Too many in local storage
                         const confirmation = this._fuseConfirmationService.open({
                             "title": "Too many carts",
-                            "message": 'Guest only allowed maximum 5 carts',
+                            "message": 'Guest only allowed maximum 10 carts',
                             "icon": {
                                 "show": true,
                                 "name": "heroicons_outline:exclamation",
@@ -1267,6 +1267,7 @@ export class LandingShopComponent implements OnInit
                         const cart = {
                             customerId  : null, 
                             storeId     : this.store.id,
+                            serviceType : this.serviceType
                         }
                         // Create it first
                         this._cartService.createCart(cart)
@@ -1277,7 +1278,7 @@ export class LandingShopComponent implements OnInit
                                     cartIds.push({
                                         id: response.cartId,
                                         cartItems: [response],
-                                        storeId: this.store.id
+                                        storeId: this.store.id,
                                     });
 
                                     this._cartService.cartIds = JSON.stringify(cartIds);
@@ -1293,6 +1294,7 @@ export class LandingShopComponent implements OnInit
                 const cart = {
                     customerId  : null, 
                     storeId     : this.store.id,
+                    serviceType : this.serviceType
                 }
 
                 // Create it first

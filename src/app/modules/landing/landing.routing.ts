@@ -20,7 +20,9 @@ export const landingRoutes: Route[] = [
             {path: 'carts', data: { breadcrumb: 'Carts' }, loadChildren: () => import('app/modules/landing/carts/carts.module').then(m => m.CartsModule)},
             {path: 'address', data: { breadcrumb: 'Address' }, loadChildren: () => import('app/modules/landing/address-setting/address-setting.module').then(m => m.AddressSettingsModule)},
             {path: 'thankyou', data: { breadcrumb: 'Thankyou' }, loadChildren: () => import('app/modules/landing/thankyou/thankyou.module').then(m => m.LandingThankyouModule)},
-            // {path: 'legal', loadChildren: () => import('app/modules/admin/docs/legal/legal.module').then(m => m.LegalModule)}
+            // {path: 'legal', loadChildren: () => import('app/modules/admin/docs/legal/legal.module').then(m => m.LegalModule)},
+            {path: 'getting-started', data: { breadcrumb: 'Getting Started' }, loadChildren: () => import('app/modules/landing/getting-started/getting-started.module').then(m => m.LandingGettingStartedModule)},
+            {path: 'restaurant', data: { breadcrumb: 'Restaurant' }, loadChildren: () => import('app/modules/landing/restaurants/restaurants.module').then(m => m.LandingRestaurantsModule)}
         ]
     },
 

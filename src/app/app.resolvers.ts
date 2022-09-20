@@ -15,6 +15,7 @@ import { HttpStatService } from './mock-api/httpstat/httpstat.service';
 import { AnalyticService } from './core/analytic/analytic.service';
 import { CurrentLocationService } from './core/_current-location/current-location.service';
 import { LocationService } from './core/location/location.service';
+import { DiningService } from './core/_dining/dining.service';
 
 @Injectable({
     providedIn: 'root'
@@ -71,10 +72,10 @@ export class PlatformSetupResolver implements Resolve<any>
         private _authService: AuthService,
         private _cartService: CartService,
         private _userService: UserService,
-        private _cartsService: CartService,
         private _analyticService: AnalyticService,
         private _currentLocationService: CurrentLocationService,
         private _locationService: LocationService,
+        private _diningService: DiningService,
         private _httpstatService: HttpStatService
     )
     {
@@ -98,10 +99,11 @@ export class PlatformSetupResolver implements Resolve<any>
             this._platformsService.set(),
             this._userService.get(this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid),
             this._cartService.getCartsByCustomerId(customerId),
-            this._cartsService.cartResolver(true), // cartResolver(true) means we resolving the cart notification header
+            this._cartService.cartResolver(true), // cartResolver(true) means we resolving the cart notification header
             this._analyticService.resolveAnalytic(),
-            this._currentLocationService.get(),
-            this._locationService.getTags()
+            this._currentLocationService.get(false), // set to false to disable
+            this._locationService.getTags(),
+            this._diningService.requestDiningTable(state)
             // this._httpstatService.get(500)
         ])
     }

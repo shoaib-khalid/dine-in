@@ -48,6 +48,7 @@ export class _SearchComponent implements OnInit, OnDestroy
     currentScreenSize: string[] = [];
     route: string;
 
+    storeTag    : string;
     currentLat  : number = null;
     currentLong : number = null;
 
@@ -115,6 +116,7 @@ export class _SearchComponent implements OnInit, OnDestroy
         this._activatedRoute.queryParams.subscribe(params => {
             this.currentLat = params['lat'];
             this.currentLong = params['lng'];
+            this.storeTag = params['storeTag'];
         });
         
         this._userService.user$
@@ -330,6 +332,7 @@ export class _SearchComponent implements OnInit, OnDestroy
 
         let queryParams = {
             keyword : value,
+            storeTag: this.storeTag,
             lat     : this.currentLat,
             lng     : this.currentLong
         }

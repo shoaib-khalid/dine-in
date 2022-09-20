@@ -113,7 +113,9 @@ export class LandingHomeComponent implements OnInit
                     regionCountryId : this.platform.country,
                     latitude        : currentLat,
                     longitude       : currentLong,
-                    isMainLevel     : true
+                    isMainLevel     : true,
+                    isDelivery      : false,
+                    isDineIn        : true
                 })
                 .subscribe((storesDetails: StoresDetails[])=>{
                 });

@@ -674,10 +674,10 @@ export class LandingProductDetailsComponent implements OnInit
                         });
                     }
                 } else { // New cart to be pushed
-                    if (cartIds.length > 4) { // Too many in local storage
+                    if (cartIds.length > 9) { // Too many in local storage
                         const confirmation = this._fuseConfirmationService.open({
                             "title": "Too many carts",
-                            "message": 'Guest only allowed maximum 5 carts',
+                            "message": 'Guest only allowed maximum 10 carts',
                             "icon": {
                                 "show": true,
                                 "name": "heroicons_outline:exclamation",

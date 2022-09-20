@@ -24,28 +24,28 @@
                             <div class="flex items-center">
                                 <img
                                     (click)="goToHome()"
-                                    class="w-28 md:w-36 cursor-pointer"
-                                    [src]="platform.logo"
+                                    class="h-12 md:h-16 py-1.5 object-contain cursor-pointer"
+                                    [src]="platform.logo + '?original=true'"
                                     alt="Logo image">
                                 <!-- <span class="block md:hidden">{{headerTitle}}</span> -->
                             </div>
                         </ng-container>
                         <!-- <search class="w-1/2 hidden sm:block"></search> -->
                         <!-- <vertical-mode></vertical-mode> -->
-                        <search-location class="w-1/2 hidden md:block"></search-location>
+                        <!-- <search-location class="w-1/2 hidden md:block"></search-location> -->
                         <div class="flex items-center flex-row py-0 md:py-4 pl-4 sm:p-0">
-                            <button class="md:hidden" mat-icon-button (click)="toggleSearch()">
+                            <!-- <button class="md:hidden" mat-icon-button (click)="toggleSearch()">
                                 <mat-icon class="text-primary" [svgIcon]="'mat_outline:add_location_alt'"></mat-icon>
-                            </button>
+                            </button> -->
                             <!-- <notifications></notifications> -->
                             <!-- <span class="text-gray-300 hidden sm:block"> &nbsp; | &nbsp; </span> -->
                             <!-- cart -->
                             <cart></cart>
-                            <span class="text-gray-300 items-center w-full hidden md:block">|</span>
+                            <!-- <span class="text-gray-300 items-center w-full hidden md:block">|</span> -->
                             <!-- Components -->
                             <div class="flex w-full items-center">
                                 <!-- <search [appearance]="'bar'"></search> -->
-                                <user></user>
+                                <!-- <user></user> -->
                                 <!-- <ng-container *ngIf="!isScreenSmall">
                                     <div class="ml-4 text-medium font-medium leading-5 truncate">
                                         {{displayUsername}}
@@ -65,17 +65,16 @@
                         <span class="text-white">&nbsp;></span>
                     </div>
                 </div> -->
-                <div class="md:hidden relative w-full flex flex-auto items-center p-2 pb-2 z-20 bg-primary"
+                <!-- Search Location small -->
+                <!-- <div class="md:hidden relative w-full flex flex-auto items-center p-2 pb-2 z-20 bg-primary"
                     *ngIf="isSearchOpened" 
                     @expandCollapse
                     >
-                    <!-- <search class="w-full"></search> -->
-                    <!-- <vertical-mode></vertical-mode> -->
                     <search-location class="w-full"></search-location>
                     <div class="absolute top-1 right-1">
                         <mat-icon (click)="closeSearch()" class="text-white cursor-pointer" [svgIcon]="'heroicons_outline:x'"></mat-icon>
                     </div>
-                </div> 
+                </div>  -->
                 <!-- Breadcrumbs -->
                 <div class="flex items-center w-full">
                     <breadcrumb class="w-full"></breadcrumb>

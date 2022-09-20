@@ -35,8 +35,15 @@ export class CurrentLocationService
     // -----------------------------------------------------------------------------------------------------
 
     /** Set current platform */
-    get(): Observable<any>
+    get(enabled: boolean = false): Observable<any>
     {
+
+        if (!enabled) {
+            this._logging.debug("Get current location disabled")
+            this._currentLocation.next({ isAllowed: false });
+            return of(true);
+        }
+
         return of(true).pipe(
             switchMap(async (response: any) => {
                 let currentLat: number;

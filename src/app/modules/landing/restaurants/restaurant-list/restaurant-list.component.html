@@ -1,0 +1,42 @@
+<div class="flex flex-col items-center bg-card w-full h-full">
+    <!-- Search -->
+    <!-- <search *ngIf="!currentScreenSize.includes('md')" class="w-full sm:mt-4"></search> -->
+    <search class="w-full mb-2 sm:mt-2 sm:mb-4"></search>
+    <ng-container *ngIf="storesDetails && storesDetails.length; else noStores">
+        <!-- Featured Stores -->
+        <featured-stores class="w-full" [stores]="storesDetails" [title]="storesDetailsTitle"></featured-stores>
+        <!-- Pagination -->
+        <ng-container *ngIf="storesDetailsPagination">
+            <div class="flex w-full my-4 items-center justify-center">
+                <pagination 
+                    *ngIf="storesDetailsPagination.length > storesDetailsPagination.size"
+                    [itemLength]="storesDetailsPagination.length" 
+                    [initialPage]="storesDetailsPagination.page + 1"
+                    [pageSize]="storesDetailsPagination.size"
+                    (changePage)="onChangePage($event)"
+                    (click)="scrollToTop()"
+                    #storesPaginator></pagination>
+            </div>
+        </ng-container>
+    </ng-container>
+    <ng-template #noStores>
+        <ng-container *ngIf="isLoading; else noResult">
+            <div class="flex flex-auto h-96 flex-col items-center justify-center rounded-lg border border-gray-300 dark:bg-transparent">
+                <img class="w-20" src="assets/gif/loading.gif" alt="loading">
+                <div class="mt-6 text-2xl font-semibold tracking-tight text-secondary">Loading Products</div>
+            </div>
+            <div class="mb-12"></div>
+        </ng-container>
+        <ng-template #noResult>
+            <div class="flex flex-auto justify-center w-full h-full p-6 sm:p-10">
+                <error-background class="absolute z-0 inset-0 w-full opacity-50"></error-background>
+                <div class="items-center justify-center z-10">
+                    <div class="mt-2 text-4xl md:text-6xl font-extrabold tracking-tight leading-tight md:leading-none text-center">Oops!</div>
+                    <div class="mt-2 text-4xl md:text-8xl font-semibold tracking-tight leading-tight md:leading-none text-primary text-center">404</div>
+                    <div class="mt-2 text-4xl md:text-5xl font-semibold tracking-tight leading-tight md:leading-none text-center">No available stores</div>
+                    <div class="mt-4 max-w-120 text-lg md:text-xl font-medium tracking-tight text-center text-secondary">The stores you are looking for might have been removed, had its name changed or is temporarily unavailable.</div>
+                </div>
+            </div>
+        </ng-template>
+    </ng-template>
+</div>

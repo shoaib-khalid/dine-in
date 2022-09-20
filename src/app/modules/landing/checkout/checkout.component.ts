@@ -211,6 +211,8 @@ export class BuyerCheckoutComponent implements OnInit
     
     customerActivity: CustomerActivity;
 
+    dineInPack: 'DINEIN' | 'TAKEAWAY' = "DINEIN";
+
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -473,19 +475,17 @@ export class BuyerCheckoutComponent implements OnInit
         let platformVoucherCode = null;
 
         let customerInfo = {
-            address: this.customerAddress ? this.customerAddress.address : '',
-            city: this.customerAddress ? this.customerAddress.city : '',
-            country: this.customerAddress ? this.customerAddress.country : '',
-            state: this.customerAddress ? this.customerAddress.state : '',
-            postCode: this.customerAddress ? this.customerAddress.postCode : '',
-
-            email: this.customerAddress ? this.customerAddress.email : this.selfPickupInfo.email,
-            phoneNumber: this.customerAddress ? this.customerAddress.phoneNumber : this.selfPickupInfo.phoneNumber,
-            name: this.customerAddress ? this.customerAddress.name : this.selfPickupInfo.name
+            address     : '',
+            city        : '',
+            country     : '',
+            state       : '',
+            postCode    : '',
+            email       : this.selfPickupInfo ? this.selfPickupInfo.email : '',
+            phoneNumber : this.selfPickupInfo ? this.selfPickupInfo.phoneNumber : '',
+            name        : this.selfPickupInfo ? this.selfPickupInfo.name: ''
         }
 
         this.checkoutItems.forEach(checkout => {
-
             const orderBody = {
                 cartId: checkout.cartId,
                 cartItems: checkout.selectedItemId.map(element => {
@@ -495,31 +495,13 @@ export class BuyerCheckoutComponent implements OnInit
                 }),
                 customerId: this.customerId,
                 customerNotes: checkout.orderNotes,
-                // voucherCode: checkout.platformVoucherCode,
-                orderPaymentDetails: {
-                    accountName: this.user ? this.user.name : customerInfo.name,
-                    deliveryQuotationReferenceId: checkout.deliveryQuotationId ? checkout.deliveryQuotationId : null
-                },
-                orderShipmentDetails: {
-                    address:  customerInfo.address,
-                    city: customerInfo.city,
-                    country: customerInfo.country,
-                    email: customerInfo.email,
-                    phoneNumber: customerInfo.phoneNumber,
-                    receiverName: customerInfo.name,
-                    state: customerInfo.state,
-                    storePickup: checkout.deliveryType === 'PICKUP' ? true : false,
-                    zipcode: customerInfo.postCode,
-                    deliveryProviderId: checkout.deliveryProviderId,
-                    deliveryType: checkout.deliveryType ? checkout.deliveryType : null
-                }
-
+                dineInPack: this.dineInPack
             };
             orderBodies.push(orderBody)
             platformVoucherCode = checkout.platformVoucherCode;
-        })
+        });
         
-        this._checkoutService.postPlaceGroupOrder(orderBodies, true, platformVoucherCode)
+        this._checkoutService.postPlaceGroupOrder(orderBodies, false, platformVoucherCode)
             .subscribe((response) => {
 
                 this.order = response;
@@ -545,66 +527,69 @@ export class BuyerCheckoutComponent implements OnInit
 
                         this.payment = response;
 
-                        if (this.payment.isSuccess === true) {
-                            if (this.payment.providerId == "1") {
-                                window.location.href = this.payment.paymentLink;
-                            } else if (this.payment.providerId == "2") {                                                               
-                                this.postForm( "post-to-senangpay", this.payment.paymentLink, 
-                                {
-                                    "detail" : this.payment.sysTransactionId, 
-                                    "amount": this.paymentDetails.cartGrandTotal.toFixed(2), 
-                                    "order_id": this.order.id, 
-                                    "name": this.order.shipmentName, 
-                                    "email": this.order.shipmentEmail, 
-                                    "phone": this.order.shipmentPhoneNumber, 
-                                    "hash": this.payment.hash 
-                                },'post', true );
-                            } else if (this.payment.providerId == "3") {      
-                                let fullUrl = (this._platformLocation as any).location.origin;
-                                this.postForm("post-to-fastpay", this.payment.paymentLink, 
-                                    { 
-                                        "CURRENCY_CODE" : "PKR", 
-                                        "MERCHANT_ID"   : "13464", 
-                                        "MERCHANT_NAME" : "EasyDukan Pvt Ltd", 
-                                        "TOKEN"         : this.payment.token, 
-                                        "SUCCESS_URL"   : this._apiServer.settings.apiServer.paymentService + 
-                                                            "/payments/payment-redirect?name=" + this.order.shipmentName + 
-                                                            "&email="           + this.order.shipmentEmail + 
-                                                            "&phone="           + this.order.shipmentPhoneNumber + 
-                                                            "&amount="          + this.paymentDetails.cartGrandTotal.toFixed(2) +
-                                                            "&hash="            + this.payment.hash +
-                                                            "&status_id=1"      +
-                                                            "&order_id="        + this.order.id+
-                                                            "&transaction_id="  + transactionId+
-                                                            "&msg=Payment_was_successful&payment_channel=fastpay", 
-                                        "FAILURE_URL"   : this._apiServer.settings.apiServer.paymentService + 
-                                                            "/payments/payment-redirect?name=" + this.order.shipmentName + 
-                                                            "&email="           + this.order.shipmentEmail + 
-                                                            "&phone="           + this.order.shipmentPhoneNumber + 
-                                                            "&amount="          + this.paymentDetails.cartGrandTotal.toFixed(2)+ 
-                                                            "&hash="            + this.payment.hash +
-                                                            "&status_id=0"      +
-                                                            "&order_id="        + this.order.id +
-                                                            "&transaction_id="  + transactionId +
-                                                            "&msg=Payment_was_failed&payment_channel=fastpay", 
-                                        "CHECKOUT_URL"  : fullUrl + "/checkout", 
-                                        "CUSTOMER_EMAIL_ADDRESS"    : this.order.shipmentEmail, 
-                                        "CUSTOMER_MOBILE_NO"        : this.order.shipmentPhoneNumber, 
-                                        "TXNAMT"        : this.paymentDetails.cartGrandTotal.toFixed(2), 
-                                        "BASKET_ID"     : this.payment.sysTransactionId, 
-                                        "ORDER_DATE"    : dateTimeNow, 
-                                        "SIGNATURE"     : "SOME-RANDOM-STRING", 
-                                        "VERSION"       : "MERCHANT-CART-0.1", 
-                                        "TXNDESC"       : "Item purchased from EasyDukan", 
-                                        "PROCCODE"      : "00", 
-                                        "TRAN_TYPE"     : "ECOMM_PURCHASE", 
-                                        "STORE_ID"      : "", 
-                                    } , 'post', false);
-                            } else {
-                                this.displayError("Provider id not configured");
-                                console.error("Provider id not configured");
-                            }
-                        }
+                        // if (this.payment.isSuccess === true) {
+                        //     if (this.payment.providerId == "1") {
+                        //         window.location.href = this.payment.paymentLink;
+                        //     } else if (this.payment.providerId == "2") {                                                               
+                        //         this.postForm( "post-to-senangpay", this.payment.paymentLink, 
+                        //         {
+                        //             "detail" : this.payment.sysTransactionId, 
+                        //             "amount": this.paymentDetails.cartGrandTotal.toFixed(2), 
+                        //             "order_id": this.order.id, 
+                        //             "name": this.order.shipmentName, 
+                        //             "email": this.order.shipmentEmail, 
+                        //             "phone": this.order.shipmentPhoneNumber, 
+                        //             "hash": this.payment.hash 
+                        //         },'post', true );
+                        //     } else if (this.payment.providerId == "3") {      
+                        //         let fullUrl = (this._platformLocation as any).location.origin;
+                        //         this.postForm("post-to-fastpay", this.payment.paymentLink, 
+                        //             { 
+                        //                 "CURRENCY_CODE" : "PKR", 
+                        //                 "MERCHANT_ID"   : "13464", 
+                        //                 "MERCHANT_NAME" : "EasyDukan Pvt Ltd", 
+                        //                 "TOKEN"         : this.payment.token, 
+                        //                 "SUCCESS_URL"   : this._apiServer.settings.apiServer.paymentService + 
+                        //                                     "/payments/payment-redirect?name=" + this.order.shipmentName + 
+                        //                                     "&email="           + this.order.shipmentEmail + 
+                        //                                     "&phone="           + this.order.shipmentPhoneNumber + 
+                        //                                     "&amount="          + this.paymentDetails.cartGrandTotal.toFixed(2) +
+                        //                                     "&hash="            + this.payment.hash +
+                        //                                     "&status_id=1"      +
+                        //                                     "&order_id="        + this.order.id+
+                        //                                     "&transaction_id="  + transactionId+
+                        //                                     "&msg=Payment_was_successful&payment_channel=fastpay", 
+                        //                 "FAILURE_URL"   : this._apiServer.settings.apiServer.paymentService + 
+                        //                                     "/payments/payment-redirect?name=" + this.order.shipmentName + 
+                        //                                     "&email="           + this.order.shipmentEmail + 
+                        //                                     "&phone="           + this.order.shipmentPhoneNumber + 
+                        //                                     "&amount="          + this.paymentDetails.cartGrandTotal.toFixed(2)+ 
+                        //                                     "&hash="            + this.payment.hash +
+                        //                                     "&status_id=0"      +
+                        //                                     "&order_id="        + this.order.id +
+                        //                                     "&transaction_id="  + transactionId +
+                        //                                     "&msg=Payment_was_failed&payment_channel=fastpay", 
+                        //                 "CHECKOUT_URL"  : fullUrl + "/checkout", 
+                        //                 "CUSTOMER_EMAIL_ADDRESS"    : this.order.shipmentEmail, 
+                        //                 "CUSTOMER_MOBILE_NO"        : this.order.shipmentPhoneNumber, 
+                        //                 "TXNAMT"        : this.paymentDetails.cartGrandTotal.toFixed(2), 
+                        //                 "BASKET_ID"     : this.payment.sysTransactionId, 
+                        //                 "ORDER_DATE"    : dateTimeNow, 
+                        //                 "SIGNATURE"     : "SOME-RANDOM-STRING", 
+                        //                 "VERSION"       : "MERCHANT-CART-0.1", 
+                        //                 "TXNDESC"       : "Item purchased from EasyDukan", 
+                        //                 "PROCCODE"      : "00", 
+                        //                 "TRAN_TYPE"     : "ECOMM_PURCHASE", 
+                        //                 "STORE_ID"      : "", 
+                        //             } , 'post', false);
+                        //     } else {
+                        //         this.displayError("Provider id not configured");
+                        //         console.error("Provider id not configured");
+                        //     }
+                        // }
+
+                        this._router.navigate(['/thankyou/1/CASH/ORDER_PLACED']);
+
                         // Set Loading to false
                         this.isLoading = false;
                     }, (error) => {
