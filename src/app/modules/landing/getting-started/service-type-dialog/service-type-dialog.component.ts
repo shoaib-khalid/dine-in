@@ -17,6 +17,8 @@ export class ServiceTypeDialog implements OnInit
     tableNumber: number;
     displayTableNumberErr: boolean = false;
     storeTag: string;
+    servingType: string;
+    
     // serviceType: 'tableService' | 'selfPickup';
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -33,6 +35,7 @@ export class ServiceTypeDialog implements OnInit
 
     ngOnInit(): void {
         this.storeTag = this.data['storeTag'];
+        this.servingType = this.data['servingType'];
     }
     
     validateTableNumber(tableNumber: number)

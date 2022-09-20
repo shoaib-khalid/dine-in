@@ -86,11 +86,12 @@ export class LandingGettingStartedComponent implements OnInit
     }
 
 
-    openDialog()
+    openDialog(type: string)
     {
         const dialogRef = this._dialog.open( 
             ServiceTypeDialog, {
                 data: {
+                    servingType : type,
                     serviceType : this.serviceType,
                     storeTag    : this.storeTag
                 },

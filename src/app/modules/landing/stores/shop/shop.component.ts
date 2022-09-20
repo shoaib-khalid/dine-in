@@ -718,7 +718,7 @@ export class LandingShopComponent implements OnInit
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
-        if (this.drawer.isPanePresented()) 
+        if (this.drawer && this.drawer.isPanePresented()) 
             this.drawer.destroy()
         this._productsService.selectProduct(null);
     }
