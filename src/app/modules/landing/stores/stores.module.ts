@@ -26,6 +26,7 @@ import { LandingShopComponent } from './shop/shop.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FuseScrollbarModule } from '@fuse/directives/scrollbar';
 import { _BottomPopUpModule } from 'app/layout/common/_bottom-popup/bottom-popup.module';
+import { FloatingStoreListModule } from 'app/layout/common/_floating-store-list/floating-store-list.module';
 
 @NgModule({
     declarations: [
@@ -52,6 +53,7 @@ import { _BottomPopUpModule } from 'app/layout/common/_bottom-popup/bottom-popup
         _FeaturedStoresModule,
         _StoreProductsModule,
         _StoreCategoriesModule,
+        FloatingStoreListModule,
         NgxGalleryModule,
         MatTabsModule,
         FuseScrollbarModule,
