@@ -73,6 +73,12 @@ export class LandingGettingStartedComponent implements OnInit
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+
+        setTimeout(() => {
+            this.openDialog('dining');
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+        }, 200);
     }
 
     /**
@@ -95,7 +101,8 @@ export class LandingGettingStartedComponent implements OnInit
                     serviceType : this.serviceType,
                     storeTag    : this.storeTag
                 },
-            }
+                disableClose: true
+            },
         );    
         dialogRef.afterClosed().subscribe(result=>{                
             if (result) {
