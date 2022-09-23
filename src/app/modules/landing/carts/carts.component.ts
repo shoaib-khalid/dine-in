@@ -235,6 +235,7 @@ export class CartListComponent implements OnInit, OnDestroy
     }[] = [];
 
     tableNumber: string;
+    detailsNeeded: boolean = false;
 
     // -------------------------
     // Voucher
@@ -326,8 +327,17 @@ export class CartListComponent implements OnInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((cartsWithDetails: CartWithDetails[]) => {
                 if (cartsWithDetails) {
-                    this.carts = cartsWithDetails;  
+                    this.carts = cartsWithDetails;
 
+                    console.log("this.carts", this.carts);
+                    this.carts.map(item => {
+                        if(item.store.dineInOption.includes("SELFCOLLECT")){
+                            return this.detailsNeeded = true;
+                        } else {
+                            return this.detailsNeeded;
+                        }
+                    });
+                    
                     this.storesOpening = [];
                     
                     cartsWithDetails.forEach((cart: CartWithDetails) => {
@@ -694,29 +704,29 @@ export class CartListComponent implements OnInit, OnDestroy
         let thisCartIndex = this.carts.findIndex(cart => cart.id === cartId);
                 
         // If selected, show popup to say unable to delete
-        let isSelected = this.selectedCart.carts[cartIndex].cartItem.some(item => item.selected) || this.selectedCart.carts[cartIndex].selected;
-        if (isSelected) {
+        // let isSelected = this.selectedCart.carts[cartIndex].cartItem.some(item => item.selected) || this.selectedCart.carts[cartIndex].selected;
+        // if (isSelected) {
 
-            const confirmation = this._fuseConfirmationService.open({
-                title  : 'Unable To Delete Cart',
-                message: 'Cannot delete selected cart. If you wish to delete the cart, unselect it first.',
-                icon:{
-                    name:"heroicons_outline:exclamation",
-                    color:"warn"
-                },
-                actions: {
-                    confirm: {
-                        label: 'OK',
-                        color: 'primary'
-                    },
-                    cancel: {
-                        show: false,
-                    },
-                }
-            });
+        //     const confirmation = this._fuseConfirmationService.open({
+        //         title  : 'Unable To Delete Cart',
+        //         message: 'Cannot delete selected cart. If you wish to delete the cart, unselect it first.',
+        //         icon:{
+        //             name:"heroicons_outline:exclamation",
+        //             color:"warn"
+        //         },
+        //         actions: {
+        //             confirm: {
+        //                 label: 'OK',
+        //                 color: 'primary'
+        //             },
+        //             cancel: {
+        //                 show: false,
+        //             },
+        //         }
+        //     });
 
-            return;
-        }
+        //     return;
+        // }
 
         let dialogRef = this._dialog.open(ModalConfirmationDeleteItemComponent, { disableClose: true, data:{ cartId: cartId, itemId: null }});
         // Subscribe to the confirmation dialog closed action
@@ -937,35 +947,35 @@ export class CartListComponent implements OnInit, OnDestroy
         let cartItemIndex = cartIndex ? this.carts[cartIndex].cartItems.findIndex(item => item.id === cartItem.id) : -1;
         
         // This is to get index of selected cart item
-        let isCartItemIsSelectedIndex = cartIndex > -1 ? this.selectedCart.carts[cartIndex].cartItem.findIndex(item => item.id === cartItem.id && (item.selected === true)) : -1;
+        // let isCartItemIsSelectedIndex = cartIndex > -1 ? this.selectedCart.carts[cartIndex].cartItem.findIndex(item => item.id === cartItem.id && (item.selected === true)) : -1;
         
         // This section is to get this.carts index
         let thisCartIndex = this.carts.findIndex(cart => cart.id === cartId);
         let thisCartItemIndex = thisCartIndex ? this.carts[thisCartIndex].cartItems.findIndex(item => item.id === cartItem.id) : -1;
-
+        
         // If more than -1 means it is selected
-        if (isCartItemIsSelectedIndex > -1) {
+        // if (isCartItemIsSelectedIndex > -1) {
 
-            const confirmation = this._fuseConfirmationService.open({
-                title  : 'Unable To Delete Item',
-                message: 'Cannot delete selected item. If you wish to delete the item, unselect it first.',
-                icon:{
-                    name:"heroicons_outline:exclamation",
-                    color:"warn"
-                },
-                actions: {
-                    confirm: {
-                        label: 'OK',
-                        color: 'primary'
-                    },
-                    cancel: {
-                        show: false,
-                    },
-                }
-            });
+        //     const confirmation = this._fuseConfirmationService.open({
+        //         title  : 'Unable To Delete Item',
+        //         message: 'Cannot delete selected item. If you wish to delete the item, unselect it first.',
+        //         icon:{
+        //             name:"heroicons_outline:exclamation",
+        //             color:"warn"
+        //         },
+        //         actions: {
+        //             confirm: {
+        //                 label: 'OK',
+        //                 color: 'primary'
+        //             },
+        //             cancel: {
+        //                 show: false,
+        //             },
+        //         }
+        //     });
 
-            return;
-        }
+        //     return;
+        // }
 
         // To make custom pop up, and we pass the details in paramter data
         // Deletion will occur at service level, here we'll only call the resolver
@@ -1588,8 +1598,9 @@ export class CartListComponent implements OnInit, OnDestroy
         // Check if all delivery, true if got delivery, false if all self pickup
         let isAllSelfPickup = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === true);
         let isAllDelivery = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === false);
+        // if (!isAllSelfPickup && !isAllDelivery && !this.selfPickupInfo)
 
-        if (!isAllSelfPickup && !isAllDelivery && !this.selfPickupInfo){
+        if (this.detailsNeeded && !this.selfPickupInfo){
             const confirmation = this._fuseConfirmationService.open({
                 "title": "Required info is empty!",
                 "message": "Please add your address/contact information before checking out.",

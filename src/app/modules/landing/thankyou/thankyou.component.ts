@@ -76,6 +76,9 @@ export class LandingThankyouComponent
             //     }
             // });
 
+            // this._cartService.orderIds = this._cartService.cartIds$;
+            
+
             this._cartService.cartsHeaderWithDetails = [];
         }
         // Get the store info

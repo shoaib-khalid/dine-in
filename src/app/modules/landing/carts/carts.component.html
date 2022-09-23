@@ -5,7 +5,7 @@
         <!-- Carts -->
         <ng-container *ngIf="carts && (carts.length > 0); else noCarts">
             <!-- Store pickup info (MOBILE)  -->
-            <ng-container *ngIf="hasSelfPickup">
+            <ng-container *ngIf="detailsNeeded">
                 <div class="block md:hidden w-full flex flex-col justify-center items-start border rounded-lg p-2 mb-2">
                     <!-- Header -->
                     <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
@@ -572,6 +572,26 @@
                                      'cursor-not-allowed bg-gray-400' : isPristine}">
                         Checkout Now
                     </button>
+                </div>
+                <div class="w-full flex flex-col border rounded-lg p-2 mt-4">
+                    <div class="flex flex-row">
+                        <mat-icon svgIcon="mat_outline:account_balance_wallet"></mat-icon>
+                        <span class="font-bold ml-2">Payment Method</span>
+                    </div>
+                    <mat-radio-group
+                        class="flex flex-col"
+                        [color]="'primary'">
+                        <mat-radio-button
+                            class="m-1"
+                            [value]="true">
+                            Cash
+                        </mat-radio-button>
+                        <!-- <mat-radio-button
+                            class="my-1"
+                            [value]="false">
+                            Online Banking
+                        </mat-radio-button> -->
+                    </mat-radio-group>
                 </div>
                 <!-- Store Address (md) -->
                 <ng-container *ngIf="false">

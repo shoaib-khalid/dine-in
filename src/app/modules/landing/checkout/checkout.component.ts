@@ -423,6 +423,9 @@ export class BuyerCheckoutComponent implements OnInit
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+
+            console.log("this.selfPickupInfo", this.selfPickupInfo);
+            
     }
 
     /**
@@ -493,9 +496,9 @@ export class BuyerCheckoutComponent implements OnInit
                         id: element,
                     }
                 }),
-                customerId: this.customerId,
-                customerNotes: checkout.orderNotes,
-                dineInPack: this.dineInPack
+                customerId         : this.customerId,
+                customerNotes      : checkout.orderNotes,
+                dineInPack         : this.dineInPack,
             };
             orderBodies.push(orderBody)
             platformVoucherCode = checkout.platformVoucherCode;
@@ -504,8 +507,20 @@ export class BuyerCheckoutComponent implements OnInit
         this._checkoutService.postPlaceGroupOrder(orderBodies, false, platformVoucherCode)
             .subscribe((response) => {
 
-                this.order = response;
+                this.order = response;                
 
+                if (this._cartService.orderIds$ === "" || !this._cartService.orderIds$ || this._cartService.orderIds$ === "[]") {
+                    // if the order array is empty, the set the array from first place order response
+                    this._cartService.orderIds = JSON.stringify([response]);
+                } else {
+                    let existingOrderIds = JSON.parse(this._cartService.orderIds$);
+                    // push next order response in the existing order array
+                    existingOrderIds.push(response);
+                    // then, set the new order array as the new response added
+                    this._cartService.orderIds = JSON.stringify(existingOrderIds)
+                    
+                }
+                
                 let dateTime = new Date();
                 let transactionId = this._datePipe.transform(dateTime, "yyyyMMddhhmmss");
                 let dateTimeNow = this._datePipe.transform(dateTime, "yyyy-MM-dd hh:mm:ss"); //2022-05-18 09:51:36

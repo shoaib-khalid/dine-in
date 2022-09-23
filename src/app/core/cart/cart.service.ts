@@ -62,6 +62,11 @@ export class CartService
     /** Setter for cartId */
     set cartIds(value: string) { localStorage.setItem('cartIds', value); }
 
+    /** Getter for cartId */
+    get orderIds$(): string { return localStorage.getItem('orderIds') ?? ''; }
+    /** Setter for cartId */
+    set orderIds(value: string) { localStorage.setItem('orderIds', value); }
+
     /** Cart Summary */
     get cartSummary$(): Observable<DiscountOfCartGroup> { return this._cartSummary.asObservable(); }
     set cartSummary(value: DiscountOfCartGroup) { this._cartSummary.next(value); }
@@ -76,8 +81,7 @@ export class CartService
             map(()=>{
                 
                 let customerId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid ? this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid : null;
-                let cartIds: { id: string, storeId: string, cartItems: CartItem[]}[] = this.cartIds$ ? JSON.parse(this.cartIds$) : [];
-                
+                let cartIds: { id: string, storeId: string, cartItems: CartItem[]}[] = this.cartIds$ ? JSON.parse(this.cartIds$) : [];                
 
                 // if resolveCartHeader true, we'll query 99 (max) paginated pageSize
                 // for cart notification header, normal default cartItem is 10

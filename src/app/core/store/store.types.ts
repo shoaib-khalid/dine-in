@@ -12,6 +12,8 @@ export interface Store
 {
     id: string;
     name: string;
+    dineInOption?: string;
+    dineInPaymentType?: string;
     storeDescription?: string;
     storeLogo: string;
     slug?: string;
