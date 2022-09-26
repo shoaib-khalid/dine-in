@@ -329,7 +329,6 @@ export class CartListComponent implements OnInit, OnDestroy
                 if (cartsWithDetails) {
                     this.carts = cartsWithDetails;
 
-                    console.log("this.carts", this.carts);
                     this.carts.map(item => {
                         if(item.store.dineInOption.includes("SELFCOLLECT")){
                             return this.detailsNeeded = true;
