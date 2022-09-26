@@ -1,0 +1,120 @@
+<!-- Order Details -->
+<div class="relative flex flex-col items-center bg-card w-full h-full">
+    <!-- Main menu -->
+    <div class="flex flex-col items-center w-full h-auto">
+        <!-- Container -->
+        <div class="flex flex-col md:flex-row w-full">
+            <!-- Order Details -->
+            <div class="flex flex-col w-full">
+                <ng-container *ngIf="orderDetails">
+                    <div class="flex flex-col w-full border border-gray-300 rounded-lg p-2 sm:p-4 mb-4">
+                        <!-- Header -->
+                        <div class="flex flex-row justify-between items-center pb-2 sm:pb-4">
+                            <h3 class="font-semibold items-center">Order ID : {{orderDetails.invoiceId}}</h3>
+
+                        </div>
+
+                        <!-- Border -->
+                        <div class="border-t w-full"></div>
+
+                        <!-- Details -->
+                        <div class="flex flex-col w-full py-2">
+                            <div class="flex flex-row">
+                                <mat-icon class="text-primary" svgIcon="mat_solid:storefront"></mat-icon>
+                                <div class="flex flex-col pl-2">
+                                    <h3 class="font-bold cursor-pointer" (click)="redirectToStore(orderDetails.store.domain)">{{orderDetails.store.name}}</h3>
+                                    <h3 class="font-medium text-gray-400 text-xs sm:text-sm">Order Placed : {{convertDate(orderDetails.orderTimeConverted) | date:'MMM dd yyyy, h:mm a' }}</h3>
+                                </div>
+                            </div>                          
+
+                        </div>
+
+                        <!-- Border -->
+                        <div class="border-t w-full"></div>
+
+                        <!-- Items -->
+                        <div class="flex flex-col my-3 items-center justify-between w-full pt-2">
+                            <ng-container *ngFor="let orderItem of orderDetails.orderItemWithDetails">
+                                <div class="flex flex-row justify-between items-center w-full py-2 gap-2">
+                                    <div class="w-16">
+                                        <div class="relative flex flex-0 items-center justify-center w-16 h-16 mr-4 rounded overflow-hidden border">
+                                            <img
+                                                class="w-32"
+                                                [alt]="'Product thumbnail image of ' + orderItem.productName"
+                                                [src]=
+                                                    "orderItem.itemAssetDetails ? orderItem.itemAssetDetails.url 
+                                                    : orderItem.product.thumbnailUrl ? orderItem.product.thumbnailUrl 
+                                                    : orderDetails.store.storeLogoUrl ? orderDetails.store.storeLogoUrl
+                                                    : platform.logoSquare">
+                                            <div
+                                                class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-full">
+                                        <h3 class="line-clamp-3 font-semibold text-md sm:text-base">{{orderItem.productName}}</h3>
+                                        <h3 class="font-medium text-md sm:text-base text-gray-400">{{orderItem.productVariant}}</h3>
+                                    </div>
+                                    <div class="items-center justify-end sm:justify-center">
+                                        <h3 class="text-gray-400">x{{orderItem.quantity}}</h3>
+                                    </div>
+                                    <div class="items-end w-1/2 flex flex-col">
+                                        <span *ngIf="orderItem.normalPrice !== orderItem.price" class="text-gray-400 items-start text-left text-sm line-through">{{orderItem.normalPrice | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
+                                        <span class="font-semibold text-md sm:text-base text-primary">{{orderItem.price | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <!-- Border -->
+                        <div class="border-t w-full"></div>
+
+                        <!-- Footer -->
+                        <div class="flex flex-col pt-2 gap-1">
+                            <!-- Sub Total -->
+                            <div class="flex flex-row justify-between w-full">
+                                <h3 class="font-semibold text-md sm:text-base text-gray-500">Sub Total</h3>
+                                <p class="items-center font-semibold text-md sm:text-base text-gray-400">{{orderDetails.subTotal | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                            </div>
+                            <!-- Order Discount -->
+                            <ng-container *ngIf="orderDetails.appliedDiscount !== 0">
+                                <div class="flex flex-row justify-between w-full">
+                                    <p class="font-semibold text-md sm:text-base text-gray-500">
+                                        <span>Order Discount</span>
+                                        <span *ngIf="orderDetails.appliedDiscountDescription">&nbsp;({{orderDetails.appliedDiscountDescription}})</span>
+                                        <span class="text-xs text-gray-500" *ngIf="orderDetails.discountMaxAmount && orderDetails.discountMaxAmount != 0 && orderDetails.appliedDiscount >= orderDetails.discountMaxAmount && orderDetails.appliedDiscount != 0">
+                                            Capped at {{orderDetails.discountMaxAmount | currency: orderDetails.store.regionCountry.currencySymbol }}
+                                        </span>
+                                    </p>
+                                    <p class="items-center font-semibold text-gray-400">-{{orderDetails.appliedDiscount | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                                </div>
+                            </ng-container>
+                            <!-- Service Charges -->
+                            <ng-container *ngIf="orderDetails.storeServiceCharges !== 0">
+                                <div class="flex flex-row justify-between w-full">
+                                    <h3 class="font-semibold text-md sm:text-base text-gray-500">Service Charges ({{orderDetails.store.serviceChargesPercentage | number}}%)</h3>
+                                    <p class="items-center font-semibold text-md sm:text-base text-gray-400">{{orderDetails.storeServiceCharges | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                                </div>
+                            </ng-container>
+
+                            <!-- Voucher Discount -->
+                            <ng-container *ngIf="orderDetails.voucherDiscount !== 0 && orderDetails.voucherDiscount !== null">
+                                <div class="flex flex-row justify-between w-full">
+                                    <p class="font-semibold text-md sm:text-base text-gray-500">
+                                        <span>Voucher Discount</span>
+                                    </p>
+                                    <p class="items-center font-semibold text-md sm:text-base text-gray-400">-{{orderDetails.voucherDiscount | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                                </div>
+                            </ng-container>
+                            <!-- Total Amount -->
+                            <div class="flex flex-row justify-between w-full border-t pt-2">
+                                <h3 class="font-semibold text-md sm:text-base">Total Amount</h3>
+                                <p class="items-center font-semibold text-md sm:text-base">Total Order ({{orderDetails.orderItemWithDetails.length}}): {{orderDetails.total | currency: orderDetails.store.regionCountry.currencySymbol}}</p> 
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

@@ -81,7 +81,7 @@ export class OrderService
     getOrderGroups(params: {
         page                    : number,
         pageSize                : number,
-        orderGroupId?           : string,
+        orderGroupId?           : string[],
         customerId?             : string,
         from?                   : string,
         to?                     : string
@@ -96,11 +96,11 @@ export class OrderService
     Observable<any>
     {        
         let orderService = this._apiServer.settings.apiServer.orderService;
-        let accessToken = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).act;
+        let accessToken = this._authService.publicToken;
         let clientId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid;
 
         const header = {
-            headers: new HttpHeaders().set("Authorization", `Bearer ${accessToken}`),
+            headers: new HttpHeaders().set("Authorization", `${accessToken}`),
             params: params
         };
 
@@ -118,6 +118,58 @@ export class OrderService
             map((response) => {
 
                 this._logging.debug("Response from CartService (getOrderGroups)", response);
+
+                let _pagination = {
+                    length: response.data.totalElements,
+                    size: response.data.size,
+                    page: response.data.number,
+                    lastPage: response.data.totalPages,
+                    startIndex: response.data.pageable.offset,
+                    endIndex: response.data.pageable.offset + response.data.numberOfElements - 1
+                }                
+
+                this._orderGroups.next(response.data.content);
+                this._orderGroupsPagination.next(_pagination);
+
+                return response["data"].content;
+            })
+        );
+    }
+
+    searchOrderGroup(params: {
+        page                    : number,
+        pageSize                : number,
+        orderGroupIds?          : string[],
+    } = {
+        page                    : 0, 
+        pageSize                : 10, 
+        orderGroupIds           : null,
+    }):
+    Observable<any>
+    {        
+        let orderService = this._apiServer.settings.apiServer.orderService;
+        let accessToken = this._authService.publicToken;
+        let clientId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid;
+
+        const header = {
+            headers: new HttpHeaders().set("Authorization", `${accessToken}`),
+            params: params
+        };
+
+        // Delete empty value
+        Object.keys(header.params).forEach(key => {
+            if (Array.isArray(header.params[key])) {
+                header.params[key] = header.params[key].filter(element => element !== null)
+            }
+            if (header.params[key] === null || (header.params[key].constructor === Array && header.params[key].length === 0)) {
+                delete header.params[key];
+            }
+        });        
+
+        return this._httpClient.get<any>(orderService +'/ordergroups/search', header).pipe(
+            map((response) => {
+
+                this._logging.debug("Response from CartService (searchOrderGroup)", response);
 
                 let _pagination = {
                     length: response.data.totalElements,
@@ -186,18 +238,18 @@ export class OrderService
             );
     }
      
-    getOrdersWithDetails(customerId: string, page: number = 0, size: number = 3,  completionStatus: string | string[] = []): 
+    getOrdersWithDetails(orderGroupIds: string[], page: number = 0, size: number = 3,  completionStatus: string | string[] = []): 
     Observable<{ pagination: OrderPagination; orders: Order[] }>
     {
         let orderService = this._apiServer.settings.apiServer.orderService;
-        let accessToken = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).act;
+        let accessToken = this._authService.publicToken;
         let clientId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid;
 
         const header = {
-            headers: new HttpHeaders().set("Authorization", `Bearer ${accessToken}`),
+            headers: new HttpHeaders().set("Authorization", `${accessToken}`),
             params: {
                 completionStatus,
-                customerId : '' + customerId,
+                orderGroupIds : '' + orderGroupIds,
                 page       : '' + page,
                 pageSize   : '' + size,
             }
