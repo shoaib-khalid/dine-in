@@ -9,8 +9,8 @@
             <div class="flex flex-col w-full">
                 <!-- Orders -->
                 <ng-container *ngIf="openTab !== 'ALL'; else orderGroups">
-                    <ng-container *ngIf="(ordersDetails$ | async) as ordersDetails">
-                        <ng-container *ngIf="ordersDetails.length > 0; else noOrder">
+                    <ng-container *ngIf="(ordersDetails$ | async) as ordersDetails; else noOrder">
+                        <ng-container *ngIf="ordersDetails.length > 0">
                             <ng-container *ngFor="let orderDetails of ordersDetails; let i = index">
                                 <!-- Orders -->
                                 <div class="flex flex-col md:flex-row w-full justify-between bg-card border border-gray-300 rounded-lg p-2 mb-1 sm:mb-2">
@@ -203,8 +203,8 @@
                     </div>
                 </ng-container>
                 <ng-template #orderGroups>
-                    <ng-container *ngIf="(ordersGroups$ | async) as ordersGroups">
-                        <ng-container *ngIf="ordersGroups.length > 0; else noOrderGroup">
+                    <ng-container *ngIf="(ordersGroups$ | async) as ordersGroups; else noOrderGroup">
+                        <ng-container *ngIf="ordersGroups.length > 0">
                             <ng-container *ngFor="let ordersGroup of ordersGroups; let i = index">
                                 <!-- Order Groups -->
                                 <div class="flex flex-col w-full bg-primary-100 border border-gray-300 rounded-lg py-1 sm:py-2 px-1 sm:px-2 mb-4">

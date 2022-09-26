@@ -21,7 +21,29 @@ import { debounceTime, map, merge, Observable, Subject, switchMap, takeUntil } f
     templateUrl  : './orders-history.component.html',
     styles       : [
         `
+            /** Custom input number **/
+            input[type='number']::-webkit-inner-spin-button,
+            input[type='number']::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+            }
 
+            input[type='number'] {
+                -moz-appearance:textfield;
+            }
+        
+            .custom-number-input input:focus {
+            outline: none !important;
+            }
+        
+            .custom-number-input button:focus {
+            outline: none !important;
+            }
+
+            ngx-gallery {
+                position: relative;
+                z-index: 10;
+            }
         `
     ]
 })
@@ -46,8 +68,8 @@ export class OrdersHistoryComponent implements OnInit
     userOrdersId: string;
     userGroupOrdersId: string;
 
-    customerOrderIds: string [];
-    groupcustomerOrderIds: string [];
+    customerOrderIds: string [] = [];
+    groupcustomerOrderIds: string [] = [];
     
     customerAuthenticate: CustomerAuthenticate;
     
@@ -104,36 +126,38 @@ export class OrdersHistoryComponent implements OnInit
             this._changeDetectorRef.markForCheck();
         });
 
-        // Get customer order ID
-        this.customerOrderIds = JSON.parse(this._cartService.orderIds$).map( item => { return item.id });
-
-        // Get customer group order ID
-        this.groupcustomerOrderIds = JSON.parse(this._cartService.orderIds$).map( item => { 
-            if(item.id.charAt(0) === 'G'){
-                return item.id.substring(1);
-            }
-        });
+        let orderId = (this._cartService.orderIds$ && this._cartService.orderIds$ !== "" && this._cartService.orderIds$ !== "[]") ? JSON.parse(this._cartService.orderIds$) : []; 
         
-        // resolver get order with details
-        this._orderService.getOrdersWithDetails(this.customerOrderIds, 0,3)
-            .subscribe((response) => {
-    
+        if (orderId.length > 0) {
+
+            this.customerOrderIds = orderId.map( item => { return item.id }) ? orderId : this.customerOrderIds
+            // Get customer group order ID
+            this.groupcustomerOrderIds = orderId.map( item => { 
+                if(item.id.charAt(0) === 'G'){
+                    return item.id.substring(1);
+                }
             });
         
-        // resolver get group order with details
-        this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
-        .subscribe((orders: OrderGroup[]) => {
-            
-        });
-
-        // set order details to be display and will be use in html
-        this.ordersDetails$ = this._orderService.ordersDetails$;
-        this.ordersGroups$ = this._orderService.orderGroups$;
+            // resolver get order with details
+            this._orderService.getOrdersWithDetails(this.customerOrderIds, 0,3)
+                .subscribe((response) => {
         
+                });
+
+            // resolver get group order with details
+            this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
+            .subscribe((orders: OrderGroup[]) => {
+                
+            });
+            // set order details to be display and will be use in html
+            this.ordersDetails$ = this._orderService.ordersDetails$;
+            this.ordersGroups$ = this._orderService.orderGroups$;
+        }
+          
         this._orderService.ordersDetails$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((response: OrderDetails[])=>{
-
+                
                 if (response) {                    
                     this.displayAll = response.map(item => {
                         return {
@@ -184,7 +208,7 @@ export class OrdersHistoryComponent implements OnInit
                 // Mark for change
                 this._changeDetectorRef.markForCheck();
             });
-                
+        
         this.orderCountSummary = [
             { id: "ALL", label: "All", completionStatus: ["PAYMENT_CONFIRMED", "RECEIVED_AT_STORE", "BEING_PREPARED", "AWAITING_PICKUP", "BEING_DELIVERED", "DELIVERED_TO_CUSTOMER", "CANCELED_BY_MERCHANT"], count: 0, class: null, icon: null },
             { id: "TO_SHIP", label: "To Deliver", completionStatus: ["RECEIVED_AT_STORE","PAYMENT_CONFIRMED", "BEING_PREPARED", "AWAITING_PICKUP"], count: 0, class: "text-green-500 icon-size-5", icon: "heroicons_solid:clock" },            

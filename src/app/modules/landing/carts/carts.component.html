@@ -359,7 +359,7 @@
                         <div class="flex flex-col text-center">
                             <span class="font-semibold">Table No: #{{tableNumber}}</span>
                             <span class="text-gray-500 text-xs">Wrong table number ?</span>
-                            <span class="text-gray-500 text-xs underline cursor-pointer">Change Here</span>
+                            <span [routerLink]="['/getting-started/foodcourt']" class="text-primary text-xs underline cursor-pointer">Change Here</span>
                         </div>
                     </div>
                     <!-- Summary -->
@@ -562,20 +562,10 @@
                         <span class="text-md font-semibold">{{paymentDetails.cartGrandTotal | currency: platform.currency}}</span>
                     </div>
 
-                    <!-- Checkout -->
-                    <button 
-                        (click)="goToCheckout()"
-                        [disabled]="isLoading || isGettingDeliveryPrices"
-                        class="py-2 px-4 rounded w-full mt-2 text-white"
-                        [ngClass]="{ 'cursor-wait bg-gray-400' : isLoading, 
-                                     'cursor-pointer bg-primary hover:bg-primary-600' : !isLoading || !isPristine,
-                                     'cursor-not-allowed bg-gray-400' : isPristine}">
-                        Checkout Now
-                    </button>
                 </div>
                 <div class="w-full flex flex-col border rounded-lg p-2 mt-4">
                     <div class="flex flex-row">
-                        <mat-icon svgIcon="mat_outline:account_balance_wallet"></mat-icon>
+                        <mat-icon class="text-primary" svgIcon="mat_outline:account_balance_wallet"></mat-icon>
                         <span class="font-bold ml-2">Payment Method</span>
                     </div>
                     <mat-radio-group
@@ -592,6 +582,16 @@
                             Online Banking
                         </mat-radio-button> -->
                     </mat-radio-group>
+                    <!-- Checkout -->
+                    <button 
+                        (click)="goToCheckout()"
+                        [disabled]="isLoading || isGettingDeliveryPrices"
+                        class="py-2 px-4 rounded w-full mt-2 text-white"
+                        [ngClass]="{ 'cursor-wait bg-gray-400' : isLoading, 
+                                     'cursor-pointer bg-primary hover:bg-primary-600' : !isLoading || !isPristine,
+                                     'cursor-not-allowed bg-gray-400' : isPristine}">
+                        Checkout Now
+                    </button>
                 </div>
                 <!-- Store Address (md) -->
                 <ng-container *ngIf="false">

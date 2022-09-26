@@ -105,7 +105,7 @@ export class SelfPickupInfoDialog implements OnInit {
 
         // Create the form
         this.addressForm = this._formBuilder.group({
-            name        : ['', Validators.required],
+            name        : [''],
             email       : ['', Validators.required],
             phoneNumber : ['', [UserProfileValidationService.phonenumberValidator, Validators.maxLength(30)]],
   

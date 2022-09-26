@@ -22,8 +22,8 @@
                         <!-- Logo -->
                         <ng-container *ngIf="platform">
                             <div class="flex items-center">
+                                <!-- (click)="goToHome()" -->
                                 <img
-                                    (click)="goToHome()"
                                     class="h-12 md:h-16 py-1.5 object-contain cursor-pointer"
                                     [src]="platform.logo + '?original=true'"
                                     alt="Logo image">

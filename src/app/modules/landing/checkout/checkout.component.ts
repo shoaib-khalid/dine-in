@@ -313,17 +313,22 @@ export class BuyerCheckoutComponent implements OnInit
                         .subscribe((checkoutItems: CheckoutItems[])=>{
                             if (checkoutItems) { 
                                 
+                                console.log("checkoutItems", checkoutItems);
+                                
                                 this.checkoutItems = checkoutItems;
                                 let cartsWithDetailsTotalItemsArr = checkoutItems.map(item => item.selectedItemId.length);
                                 let cartsWithDetailsTotalItems = cartsWithDetailsTotalItemsArr.reduce((partialSum, a) => partialSum + a, 0);
                                 this.totalSelectedCartItem = cartsWithDetailsTotalItems;
 
                                 // Check if has self pickup 
-                                this.hasSelfPickup = checkoutItems.some(item => item.deliveryType === 'PICKUP');
+                                this.hasSelfPickup = true;
                                 
                                 // Get self pickup info
-                                let selfPickupIndex = checkoutItems.findIndex(item => item.selfPickupInfo.name);
+                                let selfPickupIndex = checkoutItems.findIndex(item => item.selfPickupInfo.phoneNumber);
                                 if (selfPickupIndex > -1) this.selfPickupInfo = checkoutItems[selfPickupIndex].selfPickupInfo;
+
+                                console.log("this.selfPickupInfo", this.selfPickupInfo);
+                                
                             }
                             // Mark for check 
                             this._changeDetectorRef.markForCheck();
@@ -422,10 +427,7 @@ export class BuyerCheckoutComponent implements OnInit
                 this.customerActivity = customerActivity;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
-            });
-
-            console.log("this.selfPickupInfo", this.selfPickupInfo);
-            
+            });            
     }
 
     /**
@@ -499,6 +501,10 @@ export class BuyerCheckoutComponent implements OnInit
                 customerId         : this.customerId,
                 customerNotes      : checkout.orderNotes,
                 dineInPack         : this.dineInPack,
+                orderShipmentDetails: {
+                    email: customerInfo.email,
+                    phoneNumber: customerInfo.phoneNumber,
+                }
             };
             orderBodies.push(orderBody)
             platformVoucherCode = checkout.platformVoucherCode;

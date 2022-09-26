@@ -620,6 +620,7 @@ export class LandingProductDetailsComponent implements OnInit
                         const cart = {
                             customerId  : customerId, 
                             storeId     : this.store.id,
+                            serviceType : "DINEIN"
                         }
                         // Create it first
                         this._cartService.createCart(cart)
@@ -701,6 +702,7 @@ export class LandingProductDetailsComponent implements OnInit
                         const cart = {
                             customerId  : null, 
                             storeId     : this.store.id,
+                            serviceType : "DINEIN"
                         }
                         // Create it first
                         this._cartService.createCart(cart)
@@ -727,6 +729,7 @@ export class LandingProductDetailsComponent implements OnInit
                 const cart = {
                     customerId  : null, 
                     storeId     : this.store.id,
+                    serviceType : "DINEIN"
                 }
 
                 // Create it first

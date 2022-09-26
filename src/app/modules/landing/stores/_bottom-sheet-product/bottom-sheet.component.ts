@@ -433,6 +433,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                         const cart = {
                             customerId  : customerId, 
                             storeId     : this.store.id,
+                            serviceType : "DINEIN"
                         }
                         // Create it first
                         this._cartService.createCart(cart)
@@ -514,6 +515,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                         const cart = {
                             customerId  : null, 
                             storeId     : this.store.id,
+                            serviceType : "DINEIN"
                         }
                         // Create it first
                         this._cartService.createCart(cart)
@@ -540,6 +542,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                 const cart = {
                     customerId  : null, 
                     storeId     : this.store.id,
+                    serviceType : "DINEIN"
                 }
 
                 // Create it first
