@@ -27,7 +27,7 @@ export class LandingRestaurantsComponent implements OnInit
     currentLocation: CurrentLocation;
     
     // Stores Details
-    storesDetailsTitle: string = "Shops"
+    storesDetailsTitle: string = "Food & Beverage Stalls"
     storesDetails: StoresDetails[] = [];
     storesDetailsPagination: StorePagination;
     storesDetailsPageOfItems: Array<any>;

@@ -37,7 +37,7 @@ export class LandingSearchComponent implements OnInit
     ads: Ad[] = [];
 
     // store details
-    storesDetailsTitle: string = "Shops";
+    storesDetailsTitle: string = "Food & Beverage Stalls";
     storesDetails: StoresDetails[] = [];
     storesDetailsPagination: StoresDetailPagination;
     storesDetailsPageOfItems: Array<any>;
