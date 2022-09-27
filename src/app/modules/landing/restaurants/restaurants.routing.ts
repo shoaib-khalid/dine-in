@@ -10,7 +10,7 @@ export const landingStoresRoutes: Route[] = [
     {
         path     : 'restaurant-list',
         data: {
-            headerTitle: 'All Stores',
+            headerTitle: 'All Restaurants',
             breadcrumb: ''
         },
         component: LandingRestaurantsComponent

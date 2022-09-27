@@ -194,21 +194,21 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
             }
             else {
                 //get the cheapest price
-                this.selectedProductInventory = this.selectedProduct.productInventories.reduce((r, e) => r.price < e.price ? r : e);
+                this.selectedProductInventory = this.selectedProduct.productInventories.reduce((r, e) => r.dineInPrice < e.dineInPrice ? r : e);
             }
     
             // set initial selectedProductInventoryItems to the cheapest item
             this.selectedProductInventoryItems = this.selectedProductInventory.productInventoryItems;
             
             if (this.selectedProductInventoryItems) {
-                this.displayedProduct.price = this.selectedProductInventory.price;
+                this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
                 this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                 this.displayedProduct.sku = this.selectedProductInventory.sku;
                 this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
                 this.displayedProduct.discountedPrice = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountedPrice : null;
             } 
             else {
-                this.displayedProduct.price = this.selectedProductInventory.price;
+                this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
                 this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                 this.displayedProduct.sku = this.selectedProductInventory.sku;
                 this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
@@ -335,7 +335,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         }
 
         // Pre-check the product price
-        if (this.selectedProductInventory.price === 0) {
+        if (this.selectedProductInventory.dineInPrice === 0) {
             const confirmation = this._fuseConfirmationService.open({
                 "title": "Product Unavailable",
                 "message": "Sorry, this item is not available at the moment.",
@@ -587,9 +587,9 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         const cartItemBody = {
             cartId: cartId,
             itemCode: this.selectedProductInventory.itemCode,
-            price: this.selectedProductInventory.price, // need to recheck & revisit
+            price: this.selectedProductInventory.dineInPrice, // need to recheck & revisit
             productId: this.selectedProductInventory.productId,
-            productPrice: this.selectedProductInventory.price, // need to recheck & revisit
+            productPrice: this.selectedProductInventory.dineInPrice, // need to recheck & revisit
             quantity: this.quantity,
             SKU: this.selectedProductInventory.sku,
             specialInstruction: this.specialInstructionForm.get('specialInstructionValue').value
@@ -758,7 +758,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
 
                 this.selectedProductInventory = selectedProductInventory;
 
-                this.displayedProduct.price = selectedProductInventory.price
+                this.displayedProduct.price = selectedProductInventory.dineInPrice
                 this.displayedProduct.itemCode = selectedProductInventory.itemCode
                 this.displayedProduct.sku = selectedProductInventory.sku
                 this.displayedProduct.discountAmount = selectedProductInventory.itemDiscount ? selectedProductInventory.itemDiscount.discountAmount : null;
