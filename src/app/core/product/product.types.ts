@@ -68,7 +68,9 @@ export interface ProductInventory
         lastUpdateTime: string;
         normalItemOnly: boolean;
         normalPrice: number;
-    }
+    };
+    dineInPrice?: number;
+
 }
 
 
@@ -167,6 +169,7 @@ export interface ProductPackageOption
     title: string;
     totalAllow: number;
     productPackageOptionDetail: ProductPackageOptionDetail[];
+    sequenceNumber: number;
 }
 
 export interface ProductPackageOptionDetail 
@@ -175,6 +178,7 @@ export interface ProductPackageOptionDetail
     productId?: string;
     product?: Product;
     productPackageOptionId?: string;
-    
+    productInventory: ProductInventory[];
+    sequenceNumber: number;
 }
  

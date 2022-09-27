@@ -6,7 +6,7 @@ import { Platform } from 'app/core/platform/platform.types';
 import { DOCUMENT } from '@angular/common';
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from 'ngx-gallery-9';
-import { Product, ProductAssets, ProductInventory, ProductInventoryItem } from 'app/core/product/product.types';
+import { Product, ProductAssets, ProductInventory, ProductInventoryItem, ProductPackageOption } from 'app/core/product/product.types';
 import { FormBuilder } from '@angular/forms';
 import { ProductsService } from 'app/core/product/product.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -45,7 +45,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
     @Input() banners: any;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     selectedProduct: Product = null
-    combos: any = [];
+    combos: ProductPackageOption[] = [];
     selectedCombo: any = [];
     selectedVariants: any = [];
     selectedVariant: any = [];
@@ -164,8 +164,19 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         // Initialize data
 
         if (this.combos.length > 0) {
-            this.combos.forEach(element => {
-                this.selectedCombo[element.id] = [];
+            this.combos.forEach(combo => {
+
+                const firstValue = combo.productPackageOptionDetail.reduce((previousValue, currentValue) => {
+                    if (currentValue.sequenceNumber === 1) {
+                        return currentValue.productId;
+                    }
+                    return previousValue;
+                }, []);
+                
+                this.selectedCombo[combo.id] = [];
+                if (firstValue !== undefined) {
+                    this.selectedCombo[combo.id].push(firstValue);
+                }
             });
         }
 
