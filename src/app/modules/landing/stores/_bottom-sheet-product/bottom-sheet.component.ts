@@ -587,9 +587,9 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         const cartItemBody = {
             cartId: cartId,
             itemCode: this.selectedProductInventory.itemCode,
-            price: this.selectedProductInventory.dineInPrice, // need to recheck & revisit
+            price: this.selectedProductInventory.price, // need to recheck & revisit
             productId: this.selectedProductInventory.productId,
-            productPrice: this.selectedProductInventory.dineInPrice, // need to recheck & revisit
+            productPrice: this.selectedProductInventory.price, // need to recheck & revisit
             quantity: this.quantity,
             SKU: this.selectedProductInventory.sku,
             specialInstruction: this.specialInstructionForm.get('specialInstructionValue').value
