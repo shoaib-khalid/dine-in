@@ -1,6 +1,6 @@
 <div class="flex flex-col w-full justify-center items-center max-w-100">
     <ng-container *ngIf="servingType === 'dining'">
-        <span class="font-semibold text-center text-lg">Please insert your table number</span>
+        <span class="font-semibold text-center text-lg">Key-in your Table No.</span>
         <svg
             class="w-full"
             xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 893.68018 749.53003"
@@ -97,5 +97,5 @@
     <mat-error class="text-sm mt-1" *ngIf="displayTableNumberErr">
         Please input your table number
     </mat-error>
-    <span class="text-sm mt-2 text-gray-500">Note: Table service is different for each store. For store that does not offer table service, you'll need to pickup your order at the store counter</span>
+    <span class="text-sm mt-2 text-gray-500">Please Note: Some of the food may need to Self Service from the Stall.</span>
 </div>

@@ -5,14 +5,14 @@
         <!-- Carts -->
         <ng-container *ngIf="carts && (carts.length > 0); else noCarts">
             <!-- Store pickup info (MOBILE)  -->
-            <ng-container *ngIf="detailsNeeded">
+            <ng-container *ngIf="detailsNeeded && showContactInfo">
                 <div class="block md:hidden w-full flex flex-col justify-center items-start border rounded-lg p-2 mb-2">
                     <!-- Header -->
                     <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
                         <mat-icon 
                             class="icon-size-5 text-primary" 
                             [svgIcon]="'mat_solid:contact_phone'"></mat-icon>
-                        <span class="ml-2 font-bold">Contact Info for Self Collect</span>
+                        <span class="ml-2 font-bold">Contact Info</span>
                     </div>
                     <ng-container *ngIf="selfPickupInfo; else noSelfPickupInfo">
                         <div class="w-full flex flex-col rounded">
@@ -104,11 +104,18 @@
                                 <div class="cart-title-grid grid w-full sticky border-b h-14 lg:h-16 items-center">
                                     <div class="flex flex-col justify-start ml-2 md:ml-4">
                                         <div class="flex flex-row justify-between items-center">
-                                            <span 
-                                                class="text-md sm:text-xl font-semibold hover:cursor-pointer max-w-2/3"
-                                                (click)="redirect('store', cart.store, null)">
-                                                {{cart.store.name}}
-                                            </span>
+                                            <div class="flex flex-col w-full">
+                                                <span 
+                                                    class="text-md sm:text-xl font-semibold hover:cursor-pointer max-w-2/3"
+                                                    (click)="redirect('store', cart.store, null)">
+                                                    {{cart.store.name}}
+                                                </span>
+                                                <div class="flex flex-row">
+                                                    <span class="text-sm">Food to be served:</span>
+                                                    <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm text-primary">&nbsp;Send to table</span>
+                                                    <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm text-primary">&nbsp;Self service</span>
+                                                </div>
+                                            </div>
                                             <div class="flex flex-row items-center gap-2">
                                                 <!-- Store timing DESKTOP -->
                                                 <div *ngIf="isStoreClose(cart.storeId)" 
@@ -280,11 +287,11 @@
                                         <span class="text-secondary">Additional Information</span>
                                         <div class="w-full flex flex-row text-center items-center my-2 text-sm"> 
                                             <span class="mr-2">Order Notes (Optional)</span>
-                                            <span  *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === false" (click)="open(cart.id)" class="text-primary cursor-pointer">Insert Order Notes</span>
-                                            <span *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === true" (click)="close(cart.id)" class="text-primary cursor-pointer">Cancel</span>
+                                            <span  *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === true" (click)="close(cart.id)" class="text-primary cursor-pointer">Insert Order Notes</span>
+                                            <span *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === false" (click)="open(cart.id)" class="text-primary cursor-pointer">Cancel</span>
                                         </div>
                                         <!-- Additional info -->
-                                        <mat-form-field *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === true"
+                                        <mat-form-field *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === false"
                                         @zoomIn @zoomOut class="w-full mt-2" floatLabel="always">
                                             <textarea
                                                 matInput
@@ -357,9 +364,9 @@
                             <span class="ml-2 font-bold">Cart Summary</span>
                         </div>
                         <div class="flex flex-col text-center">
-                            <span class="font-semibold">Table No: #{{tableNumber}}</span>
+                            <span class="font-semibold">Table No:&nbsp;{{tableNumber}}</span>
                             <span class="text-gray-500 text-xs">Wrong table number ?</span>
-                            <span [routerLink]="['/getting-started/foodcourt']" class="text-primary text-xs underline cursor-pointer">Change Here</span>
+                            <span [routerLink]="['/getting-started/foodcourt']" class="text-primary text-xs underline cursor-pointer">change here</span>
                         </div>
                     </div>
                     <!-- Summary -->
@@ -642,3 +649,5 @@
 
     </div>
 </div>
+
+<floating-store-list></floating-store-list>

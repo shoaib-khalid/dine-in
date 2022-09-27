@@ -67,6 +67,15 @@ export class UserProfileValidationService {
     }
   
     static emailValidator(control) {
+
+        // if (!control.value){
+        //     return { required: true };
+        // }
+
+        if(control.value === null){
+            return null;
+        }
+      
         // RFC 2822 compliant regex
         if (
             control.value.match(
@@ -81,23 +90,20 @@ export class UserProfileValidationService {
 
     static phonenumberValidator(control) {
 
-        if (!control.value || control.value === null){
-          return { required: true };
+        if(control.value === null){
+            return null;
         }
 
-        // https://regexr.com/3c53v
         if (
-          // control.value.match(
-          //   /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/
-          // )
-          control.value.match(
-            /^\+?[0-9]+$/
-          )
+            control.value.match(
+                /^\+?[0-9]+$/
+            )
         ) {
-          return null;
+            return null;
         } else {
-          return { invalidPhonenumber: true };
+            return { invalidPhonenumber: true };
         }
+
     }
 
     static postcodeValidator(control) {

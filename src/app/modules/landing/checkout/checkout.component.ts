@@ -312,22 +312,20 @@ export class BuyerCheckoutComponent implements OnInit
                         .pipe(takeUntil(this._unsubscribeAll))
                         .subscribe((checkoutItems: CheckoutItems[])=>{
                             if (checkoutItems) { 
-                                
-                                console.log("checkoutItems", checkoutItems);
-                                
+                                                                
                                 this.checkoutItems = checkoutItems;
                                 let cartsWithDetailsTotalItemsArr = checkoutItems.map(item => item.selectedItemId.length);
                                 let cartsWithDetailsTotalItems = cartsWithDetailsTotalItemsArr.reduce((partialSum, a) => partialSum + a, 0);
                                 this.totalSelectedCartItem = cartsWithDetailsTotalItems;
 
+                                console.log("checkoutItems", checkoutItems);
+
                                 // Check if has self pickup 
-                                this.hasSelfPickup = true;
+                                this.hasSelfPickup = true
                                 
                                 // Get self pickup info
                                 let selfPickupIndex = checkoutItems.findIndex(item => item.selfPickupInfo.phoneNumber);
                                 if (selfPickupIndex > -1) this.selfPickupInfo = checkoutItems[selfPickupIndex].selfPickupInfo;
-
-                                console.log("this.selfPickupInfo", this.selfPickupInfo);
                                 
                             }
                             // Mark for check 

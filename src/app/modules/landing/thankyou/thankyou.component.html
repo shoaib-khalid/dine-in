@@ -84,10 +84,14 @@
             </ng-template>
         </div>
         <div class="flex items-center justify-center">
-            <ng-container *ngIf="(completionStatus === 'Payment_was_successful' || completionStatus === 'ORDER_CONFIRMED' || completionStatus === 'ORDER_PLACED'); else orderFailedInstruction">
+            <!-- <ng-container *ngIf="(completionStatus === 'Payment_was_successful' || completionStatus === 'ORDER_CONFIRMED' || completionStatus === 'ORDER_PLACED'); else orderFailedInstruction">
                 <span *ngIf="paymentType ==='COD' || paymentType ==='CASH'" class="text-center">You will be receiving a confirmation email with order details.</span>
                 <span *ngIf="paymentType === 'ONLINEPAYMENT'" class="text-gray-400 text-center pt-4 px-14">You will be receiving a confirmation email with payment details.</span>
+            </ng-container> -->
+
+            <ng-container *ngIf="(completionStatus === 'Payment_was_successful' || completionStatus === 'ORDER_CONFIRMED' || completionStatus === 'ORDER_PLACED'); else orderFailedInstruction">
             </ng-container>
+
             <ng-template #orderFailedInstruction>
                 <span class="text2xl text-center">Your order have failed due to {{completionStatus.replaceAll('_',' ')}}!</span>
             </ng-template>
@@ -96,7 +100,7 @@
             <button
                 class="flex flex-row items-center mt-8 font-medium bg-primary-500 py-2 px-4 rounded"
                 [routerLink]="['/order-history']">
-                <span class="pr-2 font-semibold">See Orders History</span>
+                <span class="pr-2 font-semibold">View Orders History</span>
                 <mat-icon
                     class="icon-size-5 text-black"
                     [svgIcon]="'heroicons_solid:shopping-cart'"></mat-icon>

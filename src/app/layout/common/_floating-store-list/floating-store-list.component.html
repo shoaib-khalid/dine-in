@@ -1,12 +1,14 @@
 <div
-    class="fixed flex items-center justify-center right-0 w-10 h-10 shadow-lg rounded-l-lg z-90 cursor-pointer bg-primary-600 bg-opacity-90 print:hidden"
+    class="fixed note flex items-center justify-center w-13 h-10 right-0 z-90 rounded-l-lg cursor-pointer bg-primary print:hidden"
     [class.lg:right-0]="config.layout === 'centered' || config.layout === 'material'"
     [class.lg:right-16]="config.layout !== 'centered' && config.layout !== 'material'"
-    style="top: 275px"
+    style="top: 200px"
     (click)="settingsDrawer.toggle()">
-    <mat-icon
+    <!-- <mat-icon
         class="icon-size-5 text-white"
-        [svgIcon]="'storefront'"></mat-icon>
+        [svgIcon]="'storefront'"></mat-icon> -->
+    <span class="text-sm text-white font-bold">More Stalls</span>
+    <!-- <img class="w-26" [src]="'assets/gif/More-Stalls.gif'" alt=""> -->
 </div>
 
 <fuse-drawer

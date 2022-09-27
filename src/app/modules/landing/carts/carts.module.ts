@@ -22,6 +22,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { SelfPickupInfoDialog } from './modal-self-pickup-info/modal-self-pickup-info.component';
 import { CartAddressComponent } from './modal-address/cart-addresses.component';
 import { CartAddressModule } from './modal-address/cart-addresses.module';
+import { FloatingStoreListModule } from 'app/layout/common/_floating-store-list/floating-store-list.module';
 
 @NgModule({
     declarations: [
@@ -46,7 +47,8 @@ import { CartAddressModule } from './modal-address/cart-addresses.module';
         ErrorBackgroundModule,
         FuseCardModule,
         MatRadioModule,
-        CartAddressModule
+        CartAddressModule,
+        FloatingStoreListModule
     ],
     providers: [
         CurrencyPipe,

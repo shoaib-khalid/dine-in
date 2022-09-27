@@ -12,6 +12,7 @@ import { UserProfileValidationService } from 'app/modules/customer/user-profile/
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.types';
 import { environment } from 'environments/environment';
+import { Address } from './modal-self-pickup-info.types';
 // import { UserProfileValidationService } from '../../user-profile.validation.service';
 
 @Component({
@@ -89,6 +90,11 @@ export class SelfPickupInfoDialog implements OnInit {
     user: User
     countryCode: string;
     countryName: string;
+    
+    requiredEmail: boolean = true;
+    requiredNumber: boolean = true;
+
+    address : Address;
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any,
@@ -105,10 +111,9 @@ export class SelfPickupInfoDialog implements OnInit {
 
         // Create the form
         this.addressForm = this._formBuilder.group({
-            name        : [''],
-            email       : ['', Validators.required],
+            // name        : [''],
+            email       : ['', UserProfileValidationService.emailValidator],
             phoneNumber : ['', [UserProfileValidationService.phonenumberValidator, Validators.maxLength(30)]],
-  
         });
 
         this._userService.user$
@@ -155,9 +160,45 @@ export class SelfPickupInfoDialog implements OnInit {
         // } else {
         //     this.addressForm.patchValue(this.data.customerAddress);
         // }
+
+        console.log("data", this.data);
+        if(this.data && this.data.carts) {
+
+            this.data.carts.map(item => { 
+                // map item if there is a self collect then the system need to show only phone number
+                if(item.dineInOption === 'SELFCOLLECT') {
+                    this.requiredEmail = false;
+                    this.requiredNumber = true;
+
+                    // this.addressForm.value.email = '';
+                    this.addressForm.get('email').patchValue(null);
+                }
+                // if there a voucher apply then need to show only email
+                if(item.dineInOption === 'SENDTOTABLE' && this.data.storeVoucherCode && this.data.storeVoucherCode !== null) {
+                    this.requiredEmail = true;
+                    this.requiredNumber = false;
+
+                    this.addressForm.get('phoneNumber').patchValue(null);
+                }
+                // map item if there is a self collect and voucher then the system need to show only phone number and email
+                if(item.dineInOption === 'SELFCOLLECT' && this.data.storeVoucherCode && this.data.storeVoucherCode !== null) {
+                    this.requiredEmail = true;
+                    this.requiredNumber = true;
+                }
+            });
+        }
         
-        if (this.data) {
-            this.addressForm.patchValue(this.data.user)
+        if (this.data && this.data.user) {
+            this.addressForm.patchValue(this.data.user);
+
+            // if email form value is null the email form need to be hidden
+            if(this.data.user.email === null){
+                this.requiredEmail = false;
+            }
+            // if phone number form value is null the phone number form need to be hidden
+            if(this.data.user.phoneNumber === null){
+                this.requiredNumber = false;
+            }
         }
 
     }

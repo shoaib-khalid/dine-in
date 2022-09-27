@@ -236,6 +236,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
     tableNumber: string;
     detailsNeeded: boolean = false;
+    showContactInfo: boolean = false;
 
     // -------------------------
     // Voucher
@@ -306,7 +307,6 @@ export class CartListComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
-
         this.tableNumber = this._diningService.tableNumber$;
 
         this.customerId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid ? this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid : null
@@ -613,6 +613,8 @@ export class CartListComponent implements OnInit, OnDestroy
             .subscribe(({matchingAliases}) => {
                 this.currentScreenSize = matchingAliases;
             });
+
+        this.scrollToTop()
     }
 
     /**
@@ -1600,37 +1602,41 @@ export class CartListComponent implements OnInit, OnDestroy
         // if (!isAllSelfPickup && !isAllDelivery && !this.selfPickupInfo)
 
         if (this.detailsNeeded && !this.selfPickupInfo){
-            const confirmation = this._fuseConfirmationService.open({
-                "title": "Required info is empty!",
-                "message": "Please add your address/contact information before checking out.",
-                "icon": {
-                "show": true,
-                "name": "heroicons_outline:exclamation",
-                "color": "warn"
-                },
-                "actions": {
-                "confirm": {
-                    "show": true,
-                    "label": "OK",
-                    "color": "primary"
-                },
-                "cancel": {
-                    "show": false,
-                    "label": "Cancel"
-                }
-                },
-                "dismissible": true
-            });
+            // const confirmation = this._fuseConfirmationService.open({
+            //     "title": "Required info is empty!",
+            //     "message": "Please add your address/contact information before checking out.",
+            //     "icon": {
+            //     "show": true,
+            //     "name": "heroicons_outline:exclamation",
+            //     "color": "warn"
+            //     },
+            //     "actions": {
+            //     "confirm": {
+            //         "show": true,
+            //         "label": "OK",
+            //         "color": "primary"
+            //     },
+            //     "cancel": {
+            //         "show": false,
+            //         "label": "Cancel"
+            //     }
+            //     },
+            //     "dismissible": true
+            // });
 
-            // Subscribe to the confirmation dialog closed action
-            confirmation.afterClosed().subscribe((result) => {
+            // // Subscribe to the confirmation dialog closed action
+            // confirmation.afterClosed().subscribe((result) => {
 
-                // If the confirm button pressed...
-                if ( result === 'confirmed' )
-                {
-                    this.addRequiredInfo(null) 
-                }
-            })
+            //     // If the confirm button pressed...
+            //     if ( result === 'confirmed' )
+            //     {
+            //         this.addRequiredInfo(null) 
+            //         this.showContactInfo = true
+            //     }
+            // })
+
+            this.addRequiredInfo(null);
+            this.showContactInfo = true;
             
             return;
         }
@@ -1752,6 +1758,9 @@ export class CartListComponent implements OnInit, OnDestroy
                         maxWidth: this.currentScreenSize.includes('sm') ? 'auto' : '100vw',  
                         maxHeight: this.currentScreenSize.includes('sm') ? 'auto' : '100vh',
                         disableClose: true,
+                        data: {
+                            carts: this.carts
+                        },
                     }
                 );    
                 dialogRef.afterClosed().subscribe(result=>{                
