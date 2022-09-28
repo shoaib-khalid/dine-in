@@ -99,7 +99,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
             this.isSearchOpened = true;
         } 
 
-        if (( this._router.url.split('/').length > 1 && (this._router.url.split('/')[1] === 'carts' || this._router.url.split('/')[1] === 'checkout') ) || (this._router.url === '/')){		
+        if (( this._router.url.split('/').length > 1 && (this._router.url.split('/')[1] === 'carts' || this._router.url.split('/')[1] === 'checkout' || this._router.url.split('/')[1] === 'getting-started') ) || (this._router.url === '/')){		
             this.floatingCartHidden = true;		
         }
 
