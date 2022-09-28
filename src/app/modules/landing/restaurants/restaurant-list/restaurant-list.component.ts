@@ -10,6 +10,7 @@ import { Platform } from 'app/core/platform/platform.types';
 import { StorePagination } from 'app/core/store/store.types';
 import { CurrentLocationService } from 'app/core/_current-location/current-location.service';
 import { CurrentLocation } from 'app/core/_current-location/current-location.types';
+import { SearchService } from 'app/layout/common/_search/search.service';
 import { Subject, takeUntil, map, merge, combineLatest } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -26,7 +27,7 @@ export class LandingRestaurantsComponent implements OnInit
     currentLocation: CurrentLocation;
     
     // Stores Details
-    storesDetailsTitle: string = "Shops"
+    storesDetailsTitle: string = "Food & Beverage Stalls"
     storesDetails: StoresDetails[] = [];
     storesDetailsPagination: StorePagination;
     storesDetailsPageOfItems: Array<any>;
@@ -39,6 +40,7 @@ export class LandingRestaurantsComponent implements OnInit
     currentScreenSize: string[] = [];
     isLoading: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    searchName: string;
 
     /**
      * Constructor
@@ -50,7 +52,9 @@ export class LandingRestaurantsComponent implements OnInit
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _locationService: LocationService,
         private _activatedRoute: ActivatedRoute,
-        private _navigate: NavigateService
+        private _navigate: NavigateService,
+        private _searchService: SearchService,
+
     )
     {
     }
@@ -60,6 +64,9 @@ export class LandingRestaurantsComponent implements OnInit
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+
+        // Set route to 'restaurant-list' on init		
+        this._searchService.route = 'restaurant-list'
 
         this._locationService.storesDetails$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -100,7 +107,8 @@ export class LandingRestaurantsComponent implements OnInit
                     this._activatedRoute.queryParams.subscribe(params => {
                         this.categoryId = params.categoryId ? params.categoryId : null;
                         this.storeTag = params.storeTag ? params.storeTag : null;
-
+                        this.searchName = params.keyword ? params.keyword : null;
+                        
                         if (this.storeTag) {
                         
                             // if there are value for categoryId OR locationId
@@ -118,6 +126,7 @@ export class LandingRestaurantsComponent implements OnInit
                             
                             // Get stores
                             this._locationService.getStoresDetails({
+                                storeName       : this.searchName,
                                 page            : this.oldStoresDetailsPaginationIndex,
                                 pageSize        : this.storesDetailsPageSize, 
                                 regionCountryId : this.platform.country, 
@@ -175,6 +184,7 @@ export class LandingRestaurantsComponent implements OnInit
                     switchMap(() => {
                         this.isLoading = true;
                         return this._locationService.getStoresDetails({
+                            storeName       : this.searchName,
                             page            : this.storesDetailsPageOfItems['currentPage'] - 1, 
                             pageSize        : this.storesDetailsPageOfItems['pageSize'], 
                             regionCountryId : this.platform.country, 
@@ -229,6 +239,7 @@ export class LandingRestaurantsComponent implements OnInit
                 // }
     
                 this._locationService.getStoresDetails({
+                    storeName       : this.searchName,
                     page            : this.storesDetailsPageOfItems['currentPage'] - 1, 
                     pageSize        : this.storesDetailsPageOfItems['pageSize'], 
                     regionCountryId : this.platform.country, 

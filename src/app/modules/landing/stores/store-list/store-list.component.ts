@@ -12,6 +12,7 @@ import { StoresService } from 'app/core/store/store.service';
 import { Store, StoreAssets, StorePagination } from 'app/core/store/store.types';
 import { CurrentLocationService } from 'app/core/_current-location/current-location.service';
 import { CurrentLocation } from 'app/core/_current-location/current-location.types';
+import { SearchService } from 'app/layout/common/_search/search.service';
 import { Subject, takeUntil, map, merge, combineLatest } from 'rxjs';
 import { switchMap, debounceTime } from 'rxjs/operators';
 
@@ -44,6 +45,7 @@ export class LandingStoresComponent implements OnInit
     currentScreenSize: string[] = [];
     isLoading: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    searchName: string;
 
     /**
      * Constructor
@@ -55,7 +57,8 @@ export class LandingStoresComponent implements OnInit
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _locationService: LocationService,
         private _activatedRoute: ActivatedRoute,
-        private _navigate: NavigateService
+        private _navigate: NavigateService,
+        private _searchService: SearchService,
     )
     {
     }
@@ -65,6 +68,9 @@ export class LandingStoresComponent implements OnInit
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+
+        // Set route to 'store-list' on init		
+        this._searchService.route = 'store-list'
 
         this._locationService.storesDetails$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -117,6 +123,7 @@ export class LandingStoresComponent implements OnInit
                     this._activatedRoute.queryParams.subscribe(params => {
                         this.categoryId = params.categoryId ? params.categoryId : null;
                         this.locationId = params.locationId ? params.locationId : null;
+                        this.searchName = params.keyword ? params.keyword : null;
 
                         // if there are value for categoryId OR locationId
                         // no need for lat long, since customer want to see stores that contain the query
@@ -155,6 +162,7 @@ export class LandingStoresComponent implements OnInit
                         
                                 // Get stores
                                 this._locationService.getStoresDetails({
+                                    storeName       : this.searchName,
                                     page            : this.oldStoresDetailsPaginationIndex,
                                     pageSize        : this.storesDetailsPageSize, 
                                     regionCountryId : this.platform.country, 

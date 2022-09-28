@@ -5,12 +5,12 @@ export const landingStoresRoutes: Route[] = [
     {
         path      : '',
         pathMatch : 'full',
-        redirectTo: '/'
+        redirectTo: 'restaurant-list'
     },
     {
         path     : 'restaurant-list',
         data: {
-            headerTitle: 'All Stores',
+            headerTitle: 'All Restaurants',
             breadcrumb: ''
         },
         component: LandingRestaurantsComponent

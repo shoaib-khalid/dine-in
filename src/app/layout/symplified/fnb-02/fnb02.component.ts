@@ -90,6 +90,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
         this._searchService.route = '';
         this._searchService.storeDetails = null;
         
+        // if inside store page
         if (this._router.url.split('/').length > 1 && this._router.url.split('/')[1] === 'store'){
             this.isStorePage = true;
         }
@@ -117,10 +118,16 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                 this.isSearchOpened = false
             }
 
+            // if in store page 
             if (route[1] === 'store') {
                 this._searchService.route = 'store';
                 this.isStorePage = true;
-            } else {
+            } 
+            // if in restaurant list page
+            else if (route[1] === 'restaurant') {
+                this._searchService.route = 'restaurant-list';
+            }
+            else {
                 // else set route and storeDetails to null
                 this._searchService.route = '';
                 this._searchService.storeDetails = null;

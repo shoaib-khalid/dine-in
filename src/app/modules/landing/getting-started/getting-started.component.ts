@@ -9,6 +9,7 @@ import { Title } from '@angular/platform-browser';
 import { MatDialog } from '@angular/material/dialog';
 import { ServiceTypeDialog } from './service-type-dialog/service-type-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DiningService } from 'app/core/_dining/dining.service';
 
 @Component({
     selector     : 'landing-getting-started',
@@ -26,6 +27,7 @@ export class LandingGettingStartedComponent implements OnInit
     isLoading: boolean = false;
     currentScreenSize: string[] = [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    tableNumber: any;
 
     /**
      * Constructor
@@ -38,7 +40,8 @@ export class LandingGettingStartedComponent implements OnInit
         private _dialog: MatDialog,
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
-        private _titleService: Title
+        private _titleService: Title,
+        private _diningService: DiningService
     )
     {
     }
@@ -46,6 +49,23 @@ export class LandingGettingStartedComponent implements OnInit
     ngOnInit(): void {
 
         this.storeTag = this._activatedRoute.snapshot.paramMap.get('store-tag');
+
+        this._activatedRoute.queryParams.subscribe(params => {
+            this.tableNumber = params['tableno'];
+            
+            if (this.tableNumber) {
+                this._diningService.tableNumber = this.tableNumber + "";
+                this._diningService.storeTag = this.storeTag;
+                this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
+            }
+            else {
+                setTimeout(() => {
+                    this.openDialog('dining');
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                }, 200);
+            }
+        })
 
         combineLatest([
             this._currentLocationService.currentLocation$,
@@ -74,11 +94,6 @@ export class LandingGettingStartedComponent implements OnInit
                 this._changeDetectorRef.markForCheck();
             });
 
-        setTimeout(() => {
-            this.openDialog('dining');
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        }, 200);
     }
 
     /**

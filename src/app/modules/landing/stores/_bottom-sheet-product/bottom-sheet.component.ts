@@ -6,7 +6,7 @@ import { Platform } from 'app/core/platform/platform.types';
 import { DOCUMENT } from '@angular/common';
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from 'ngx-gallery-9';
-import { Product, ProductAssets, ProductInventory, ProductInventoryItem } from 'app/core/product/product.types';
+import { Product, ProductAssets, ProductInventory, ProductInventoryItem, ProductPackageOption } from 'app/core/product/product.types';
 import { FormBuilder } from '@angular/forms';
 import { ProductsService } from 'app/core/product/product.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -45,7 +45,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
     @Input() banners: any;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     selectedProduct: Product = null
-    combos: any = [];
+    combos: ProductPackageOption[] = [];
     selectedCombo: any = [];
     selectedVariants: any = [];
     selectedVariant: any = [];
@@ -164,8 +164,19 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         // Initialize data
 
         if (this.combos.length > 0) {
-            this.combos.forEach(element => {
-                this.selectedCombo[element.id] = [];
+            this.combos.forEach(combo => {
+
+                const firstValue = combo.productPackageOptionDetail.reduce((previousValue, currentValue) => {
+                    if (currentValue.sequenceNumber === 1) {
+                        return currentValue.productId;
+                    }
+                    return previousValue;
+                }, []);
+                
+                this.selectedCombo[combo.id] = [];
+                if (firstValue !== undefined) {
+                    this.selectedCombo[combo.id].push(firstValue);
+                }
             });
         }
 
@@ -183,21 +194,21 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
             }
             else {
                 //get the cheapest price
-                this.selectedProductInventory = this.selectedProduct.productInventories.reduce((r, e) => r.price < e.price ? r : e);
+                this.selectedProductInventory = this.selectedProduct.productInventories.reduce((r, e) => r.dineInPrice < e.dineInPrice ? r : e);
             }
     
             // set initial selectedProductInventoryItems to the cheapest item
             this.selectedProductInventoryItems = this.selectedProductInventory.productInventoryItems;
             
             if (this.selectedProductInventoryItems) {
-                this.displayedProduct.price = this.selectedProductInventory.price;
+                this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
                 this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                 this.displayedProduct.sku = this.selectedProductInventory.sku;
                 this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
                 this.displayedProduct.discountedPrice = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountedPrice : null;
             } 
             else {
-                this.displayedProduct.price = this.selectedProductInventory.price;
+                this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
                 this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                 this.displayedProduct.sku = this.selectedProductInventory.sku;
                 this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
@@ -324,7 +335,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         }
 
         // Pre-check the product price
-        if (this.selectedProductInventory.price === 0) {
+        if (this.selectedProductInventory.dineInPrice === 0) {
             const confirmation = this._fuseConfirmationService.open({
                 "title": "Product Unavailable",
                 "message": "Sorry, this item is not available at the moment.",
@@ -747,7 +758,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
 
                 this.selectedProductInventory = selectedProductInventory;
 
-                this.displayedProduct.price = selectedProductInventory.price
+                this.displayedProduct.price = selectedProductInventory.dineInPrice
                 this.displayedProduct.itemCode = selectedProductInventory.itemCode
                 this.displayedProduct.sku = selectedProductInventory.sku
                 this.displayedProduct.discountAmount = selectedProductInventory.itemDiscount ? selectedProductInventory.itemDiscount.discountAmount : null;

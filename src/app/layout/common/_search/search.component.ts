@@ -52,7 +52,9 @@ export class _SearchComponent implements OnInit, OnDestroy
     currentLat  : number = null;
     currentLong : number = null;
 
+    isStorePage: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    routeName: string;
 
     /**
      * Constructor
@@ -96,17 +98,26 @@ export class _SearchComponent implements OnInit, OnDestroy
         this._searchService.route$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(response => {
-                if (response) { // response is not null if inside store page
-                    this.placeholder = 'Search products'
+                this.routeName = response;
+
+                if (response === 'store') { // response is not null if inside store page
+                    this.placeholder = 'Search products';
                     this._searchService.storeDetails$
                         .pipe(takeUntil(this._unsubscribeAll))
                         .subscribe((storeDetails: StoreDetails) => {
                             this.store = storeDetails;
+                            this.isStorePage = true;
                             // Mark for check
                             this._changeDetectorRef.markForCheck();
                         });
-                } else {
-                    this.placeholder = 'Search for food or restaurant';
+                } 
+                else if (response === 'restaurant-list') {
+                    this.placeholder = 'Search for food and beverage stall';
+                    this.isStorePage = false;
+                }
+                else {
+                    this.placeholder = 'Search for food and beverage stall';
+                    this.isStorePage = false;
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -350,7 +361,11 @@ export class _SearchComponent implements OnInit, OnDestroy
         // Route to respective page
         if (this.store) {
             this._router.navigate(['/store/' + this.store.domain], {queryParams: queryParams });
-        } else {
+        } 
+        else if (this.routeName === 'restaurant-list') {
+            this._router.navigate(['/restaurant/restaurant-list'], { queryParams: queryParams });
+        }
+        else {
             this._router.navigate(['/search'], {queryParams: queryParams });
         }
 
@@ -365,6 +380,7 @@ export class _SearchComponent implements OnInit, OnDestroy
 
         let queryParams = {
             keyword : result.searchText,
+            storeTag: this.storeTag,
             lat     : this.currentLat,
             lng     : this.currentLong
         }
@@ -381,6 +397,9 @@ export class _SearchComponent implements OnInit, OnDestroy
 
         if (result.domain) {
             this._router.navigate(['/store/' + result.domain], { queryParams: queryParams });
+        }
+        else if (this.routeName === 'restaurant-list') {
+            this._router.navigate(['/restaurant/restaurant-list'], { queryParams: queryParams });
         }
         else {
             this._router.navigate(['/search'], { queryParams: queryParams });
