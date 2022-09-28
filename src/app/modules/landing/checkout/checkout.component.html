@@ -86,20 +86,24 @@
                                             <img class="w-14 max-w-14 max-h-14 min-h-14 sm:w-18 sm:max-w-18 sm:h-18 sm:max-h-18 shadow rounded" [src]="cartItem.productAsset ? cartItem.productAsset.url : cartItem.productInventory.product.thumbnailUrl ? cartItem.productInventory.product.thumbnailUrl : displayStoreLogo(cart.store)">
                                             <div class="flex flex-col ml-2 items-start justify-start sm:justify-center gap-1">
                                                 <span (click)="redirect('product', cart.store, cartItem.productInventory.product.seoNameMarketplace)" class="text-md sm:text-md font-semibold line-clamp-2 hover:cursor-pointer">{{cartItem.productName}}</span>
-                                                <div class="flex flex-row items-center">
+                                                <div class="">
                                                     <!-- Display variants -->
                                                     <ng-container *ngIf="cartItem.productInventory.productInventoryItems.length > 0">
-                                                        <ng-container *ngFor="let variant of cartItem.productInventory.productInventoryItems">
-                                                            <span class="leading-tight text-xs lg:text-sm text-secondary flex flex-wrap">{{variant.productVariantAvailable.productVariant.name}}: {{variant.productVariantAvailable.value}}</span>
-                                                            <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span>
-                                                        </ng-container>
+                                                        <div class="flex flex-wrap items-center gap-1">
+                                                            <ng-container *ngFor="let variant of cartItem.productInventory.productInventoryItems; let isLast=last">
+                                                                <span class="truncate tracking-tight max-w-32 leading-tight text-xs lg:text-sm text-secondary">{{variant.productVariantAvailable.productVariant.name}}: {{variant.productVariantAvailable.value}}{{isLast ? '' : ', '}}</span>
+                                                                <!-- <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span> -->
+                                                            </ng-container>
+                                                        </div>
                                                     </ng-container>
                                                     <!-- Display Combo -->
                                                     <ng-container *ngIf="cartItem.cartSubItem.length > 0">
-                                                        <ng-container  *ngFor="let combo of cartItem.cartSubItem">
-                                                            <span class="leading-tight text-xs lg:text-sm text-secondary flex flex-wrap">{{combo.productName}}</span>
-                                                            <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span>
-                                                        </ng-container>
+                                                        <div class="flex flex-wrap items-center gap-1">
+                                                            <ng-container *ngFor="let combo of cartItem.cartSubItem; let isLast=last">
+                                                                <span class="truncate tracking-tight max-w-32 leading-tight text-xs lg:text-sm text-secondary">{{combo.productName}}{{isLast ? '' : ', '}}</span>
+                                                                <!-- <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span> -->
+                                                            </ng-container>
+                                                        </div>
                                                     </ng-container>
                                                 </div>
                                                 <!-- Display Special Instruction -->

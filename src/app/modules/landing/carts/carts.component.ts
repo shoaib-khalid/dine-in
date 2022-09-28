@@ -277,6 +277,8 @@ export class CartListComponent implements OnInit, OnDestroy
     hasSelfPickup: boolean;
     isGettingDeliveryPrices: boolean = false;
 
+    storeTag: string;
+
     /**
      * Constructor
      */
@@ -310,6 +312,8 @@ export class CartListComponent implements OnInit, OnDestroy
     ngOnInit(): void
     {
         this.tableNumber = this._diningService.tableNumber$;
+
+        this.storeTag = this._diningService.storeTag$        
 
         this.customerId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid ? this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid : null
 
@@ -454,7 +458,6 @@ export class CartListComponent implements OnInit, OnDestroy
                             this.selectedCart.selected = true;                            
                         }
                     } else {      
-                        console.log("B");                  
                         this.selectedCart = {
                             carts:  this.carts.map(item => {
                                 let storeIsClosed = this.isStoreClose(item.storeId); 
@@ -1812,6 +1815,10 @@ export class CartListComponent implements OnInit, OnDestroy
         if (countObject[refId] > 1) return true;
         else return false; 
         
+    }
+
+    changeTableNumber() {
+        this._router.navigate(['/getting-started/' + this.storeTag]);
     }
 
 }
