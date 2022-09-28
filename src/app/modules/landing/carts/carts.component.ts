@@ -193,7 +193,8 @@ export class CartListComponent implements OnInit, OnDestroy
         disabled: boolean 
     };
     totalSelectedCartItem: number = 0;
-    
+    totalQuantity: number = 0
+
     customerId: string = '';
 
     paymentDetails: CartDiscount = {
@@ -331,6 +332,8 @@ export class CartListComponent implements OnInit, OnDestroy
                     
                     this.carts = cartsWithDetails;
 
+                    console.log("this.carts", this.carts);
+                    
                     this.carts.map(item => {
                         if(item.store.dineInOption.includes("SELFCOLLECT")){
                             return this.detailsNeeded = true;
@@ -338,6 +341,18 @@ export class CartListComponent implements OnInit, OnDestroy
                             return this.detailsNeeded;
                         }
                     });
+                    
+                    this.carts.map(item => {
+                        item.cartItems.map(element => {
+                            console.log("xxx", element.quantity);
+
+                            this.totalQuantity = element.quantity;
+                            // return element.quantity
+                        })
+                    });
+                    
+                    console.log("this.totalQuantity", this.totalQuantity);
+                    
                     
                     this.storesOpening = [];
                     
@@ -348,24 +363,35 @@ export class CartListComponent implements OnInit, OnDestroy
                     let allSelected: boolean[] = [];
                     let allInCartSelected: { id: string; allSelected: boolean[]} = null;
                     if (this.selectedCart) {
+
+                        console.log("A");
+                        
                         // set all selected cart to false for every changes
                         this.selectedCart.selected = false;
 
                         this.carts.forEach(item => {                                 
 
-                            let storeIsClosed = this.isStoreClose(item.storeId);                    
+                            let storeIsClosed = this.isStoreClose(item.storeId);   
+                            
+                            console.log("storeIsClosed", storeIsClosed);
+                            
 
                             // check if the selectedCart cartId already exists
                             let cartIdIndex = this.selectedCart.carts.findIndex(element => element.id === item.id);
                             
                             if (cartIdIndex > -1) {
+                                console.log("A1");
                                 // set all seleted in cart to false first, later check for true again
                                 this.selectedCart.carts[cartIdIndex].selected = false;
 
                                 // disable if store is closed
                                 this.selectedCart.carts[cartIdIndex].disabled = storeIsClosed ? true : false;
                                 
+                                // set dine in option
                                 this.selectedCart.carts[cartIdIndex].dineInOption = item.dineInOption;
+
+                                // remove isclosed if 
+                                this.selectedCart.carts[cartIdIndex].id = !storeIsClosed ? this.selectedCart.carts[cartIdIndex].id : null;
 
                                 // get all selected boolean from cartItems
                                 allSelected = this.selectedCart.carts[cartIdIndex].cartItem.map(element => element.selected);
@@ -392,9 +418,10 @@ export class CartListComponent implements OnInit, OnDestroy
                                     }
                                 })
                                 
-                            } else {                                
+                            } else {
+                                console.log("A2");                          
                                 let cart = {
-                                    id: item.id, 
+                                    id: !storeIsClosed ? item.id : null, 
                                     storeId: item.storeId,
                                     cartItem: item.cartItems.map(element => {
                                         let obj = {
@@ -447,13 +474,16 @@ export class CartListComponent implements OnInit, OnDestroy
                             // set all selected cart to true since all items in cartItem is true
                             this.selectedCart.selected = true;                            
                         }
-                    } else {                        
+                    } else {      
+                        console.log("B");                  
                         this.selectedCart = {
                             carts:  this.carts.map(item => {
                                 let storeIsClosed = this.isStoreClose(item.storeId); 
 
+                                console.log("bbabbai", storeIsClosed);
+                                
                                 return {
-                                    id: item.id,
+                                    id: !storeIsClosed ? item.id : null,
                                     storeId: item.storeId,
                                     cartItem: item.cartItems.map(element => {
                                         let obj = {
@@ -466,7 +496,7 @@ export class CartListComponent implements OnInit, OnDestroy
                                             obj.disabled = true;
                                         }
                                         else if (storeIsClosed) {
-                                            obj.disabled = true;
+                                            obj.disabled = true;                                            
                                         }
                                         else {
                                             obj.disabled = false;
@@ -499,6 +529,9 @@ export class CartListComponent implements OnInit, OnDestroy
                             selected: false,
                             disabled: false
                         }
+
+                        console.log("B3", this.selectedCart);
+                        
                     }
 
                     this.selectAllItemsInCart();
@@ -622,6 +655,7 @@ export class CartListComponent implements OnInit, OnDestroy
             });
 
         this.scrollToTop()
+        
     }
 
     /**
@@ -793,7 +827,7 @@ export class CartListComponent implements OnInit, OnDestroy
             this._cartService.putCartItem(cartId, cartItemBody, cartItem.id)
                 .subscribe((response)=>{
                     this.carts[cartIndex].cartItems[cartItemIndex].quantity = quantity;
-                    this.initializeCheckoutList()
+                    this.initializeCheckoutList();
                 });
         }
     }
@@ -907,10 +941,9 @@ export class CartListComponent implements OnInit, OnDestroy
         
         this.selectedCart = 
             {
-                carts: this.cartIds.map((item)=>{
-                    
+                carts: this.cartIds.map((item)=>{                    
                     return {
-                        id: item.id, 
+                        id: (this.isStoreClose(this.carts[this.carts.findIndex(element => element.id === item.id)].storeId) === false) ? item.id : null, 
                         storeId: item.storeId,
                         cartItem: item.cartItems.map((element)=>{
                             return {
@@ -1110,9 +1143,13 @@ export class CartListComponent implements OnInit, OnDestroy
 
     initializeCheckoutList() {
 
+        console.log("this.selectedCart.carts", this.selectedCart.carts);
+        
         // to list out the array of selectedCart
         let checkoutListBody: CheckoutItems[] = this.selectedCart.carts.map(item => {
-                        
+                
+            console.log("item222", item);
+            
             return {
                 cartId: item.id,
                 selectedItemId: item.cartItem.map(element => {
@@ -1140,7 +1177,7 @@ export class CartListComponent implements OnInit, OnDestroy
             }
         // to remove if selected = false (undefined array of selectedItemId)
         }).filter(n => {
-            if (n.selectedItemId && n.selectedItemId.length > 0) {
+            if (n.cartId && n.selectedItemId && n.selectedItemId.length > 0) {
                 return n;
             }
         });
@@ -1154,10 +1191,17 @@ export class CartListComponent implements OnInit, OnDestroy
             return newCheckoutListBody;
         })
 
+        console.log("checkoutListBody", checkoutListBody);   
+
         // Get totalSelectedCartItem to be displayed
         // .reduce will sum up all number in the array of number created by .map
         this.totalSelectedCartItem = checkoutListBody.map(item => item.selectedItemId.length).reduce((partialSum, a) => partialSum + a, 0);
 
+        this.totalQuantity = this.carts.map(item => item.cartItems.map(element => element.quantity).reduce((partialSum, a) => partialSum + a, 0)).reduce((a, b) => a + b, 0);
+
+        console.log("xxx", this.totalQuantity);
+        
+        
         this.isPristine = (this.totalSelectedCartItem < 1) ? true : false;
 
         let checkoutParams = null;
