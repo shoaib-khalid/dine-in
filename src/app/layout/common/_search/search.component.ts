@@ -112,11 +112,11 @@ export class _SearchComponent implements OnInit, OnDestroy
                         });
                 } 
                 else if (response === 'restaurant-list') {
-                    this.placeholder = 'Search restaurants';
+                    this.placeholder = 'Search for food and beverage stall';
                     this.isStorePage = false;
                 }
                 else {
-                    this.placeholder = 'Search for food or restaurant';
+                    this.placeholder = 'Search for food and beverage stall';
                     this.isStorePage = false;
                 }
                 // Mark for check

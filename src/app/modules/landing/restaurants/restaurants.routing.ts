@@ -5,7 +5,7 @@ export const landingStoresRoutes: Route[] = [
     {
         path      : '',
         pathMatch : 'full',
-        redirectTo: '/'
+        redirectTo: 'restaurant-list'
     },
     {
         path     : 'restaurant-list',

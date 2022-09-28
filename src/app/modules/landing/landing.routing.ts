@@ -9,7 +9,7 @@ export const landingRoutes: Route[] = [
             landingDataResolver: LandingDataResolver
         },
         children   : [
-            {path: '', pathMatch : 'full', loadChildren: () => import('app/modules/landing/home/home.module').then(m => m.LandingHomeModule)},
+            // {path: '', pathMatch : 'full', loadChildren: () => import('app/modules/landing/home/home.module').then(m => m.LandingHomeModule)},
             // {path: 'promotion', data: { breadcrumb: 'Promo' }, loadChildren: () => import('app/modules/landing/promotion/promotion.module').then(m => m.LandingPromotionModule)},
             {path: 'search', data: { breadcrumb: 'Search' }, loadChildren: () => import('app/modules/landing/search/search.module').then(m => m.LandingSearchModule)},
             {path: 'category', data: { breadcrumb: 'Category' }, loadChildren: () => import('app/modules/landing/categories/categories.module').then(m => m.CategoriesModule)},
@@ -22,7 +22,7 @@ export const landingRoutes: Route[] = [
             {path: 'thankyou', data: { breadcrumb: 'Thankyou' }, loadChildren: () => import('app/modules/landing/thankyou/thankyou.module').then(m => m.LandingThankyouModule)},
             // {path: 'legal', loadChildren: () => import('app/modules/admin/docs/legal/legal.module').then(m => m.LegalModule)},
             {path: 'getting-started', data: { breadcrumb: 'Getting Started' }, loadChildren: () => import('app/modules/landing/getting-started/getting-started.module').then(m => m.LandingGettingStartedModule)},
-            {path: 'restaurant', data: { breadcrumb: 'Restaurant' }, loadChildren: () => import('app/modules/landing/restaurants/restaurants.module').then(m => m.LandingRestaurantsModule)},
+            {path: 'restaurant', data: { breadcrumb: 'Restaurants' }, loadChildren: () => import('app/modules/landing/restaurants/restaurants.module').then(m => m.LandingRestaurantsModule)},
             {path: 'order-history', data: { breadcrumb: 'Order History' }, loadChildren: () => import('app/modules/landing/orders-history/orders-history.module').then(m => m.OrdersHistoryModule)}
         ]
     },

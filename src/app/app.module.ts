@@ -16,6 +16,7 @@ import { AppConfig } from 'app/config/service.config';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { HttpClientModule } from '@angular/common/http';
+import { RedirectGuard } from './core/navigation/redirect.guard';
 
 const routerConfig: ExtraOptions = {
     preloadingStrategy       : PreloadAllModules,
@@ -64,6 +65,7 @@ const routerConfig: ExtraOptions = {
             deps: [AppConfig], 
             multi: true 
         },
+        RedirectGuard
     ]
 })
 export class AppModule
