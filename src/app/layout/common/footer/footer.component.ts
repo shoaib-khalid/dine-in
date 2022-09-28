@@ -195,7 +195,7 @@ export class FooterComponent implements OnInit
 
     goToUrl(){
         const phonenumber = this.marketplaceInfo.phonenumber.replace(/[^0-9]/g, '');
-        const message = encodeURI('Tell me more about joining Deliverin platform!')
+        const message = encodeURI('Tell me more about joining DeliverIn and DineIn platform!')
         window.open("https://wa.me/" + phonenumber + '?text=' + message, "_blank");
 
         // this._document.location.href = "https://wa.me/" + phonenumber + '?text=' + message;

@@ -436,9 +436,14 @@
                 </div>
             </div>
         </div>
+
         <!-- Border -->
         <!-- <div class="border-0 border-t border-white mt-4"></div> -->
         <ng-container *ngIf="platform">
+            <div class="flex flex-wrap justify-center gap-x-1 font-medium text-white text-xs">
+                <span>Interested in this ordering app on your premise?</span>
+                <span (click)="goToUrl()" class="underline">Chat with us!</span>
+            </div>
             <div class="relative flex flex-col gap-1 w-full items-center sm:justify-start justify-center mt-3 text-center">
                 <span class="font-medium text-white text-xs">
                     &copy; 2022 - Symple Business System S/B (#1436952-D)
