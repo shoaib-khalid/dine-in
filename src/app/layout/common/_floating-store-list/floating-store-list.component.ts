@@ -9,6 +9,7 @@ import { StoreAssets, StoresDetails } from 'app/core/location/location.types';
 import { DiningService } from 'app/core/_dining/dining.service';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 @Component({
     selector     : 'floating-store-list',
@@ -70,8 +71,7 @@ export class FloatingStoreListComponent implements OnInit, OnDestroy
                             pageSize        : 99, 
                             tagKeyword      : this.storeTag, 
                             regionCountryId : this.platform.country,
-                            isDineIn        : true, 
-                            isDelivery      : false
+                            isDineIn        : true
                         }).subscribe();
                     }
                     // Mark for check

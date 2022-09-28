@@ -170,7 +170,6 @@ export class LandingStoresComponent implements OnInit
                                     cityId          : this.adjacentLocationIds,
                                     latitude        : currentLat,
                                     longitude       : currentLong,
-                                    isDelivery      : false,
                                     isDineIn        : true
                                 })
                                 .subscribe((stores : StoresDetails[]) => {});
@@ -225,7 +224,6 @@ export class LandingStoresComponent implements OnInit
                             cityId          : this.adjacentLocationIds,
                             latitude        : currentLat,
                             longitude       : currentLong,
-                            isDelivery      : false,
                             isDineIn        : true
                         });
                     }),
@@ -279,7 +277,6 @@ export class LandingStoresComponent implements OnInit
                     cityId          : this.adjacentLocationIds,
                     latitude        : currentLat,
                     longitude       : currentLong,
-                    isDelivery      : false,
                     isDineIn        : true
                 })
                 .subscribe(()=>{

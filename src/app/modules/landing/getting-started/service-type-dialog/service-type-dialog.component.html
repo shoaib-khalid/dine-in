@@ -1,6 +1,6 @@
 <div class="flex flex-col w-full justify-center items-center max-w-100">
     <ng-container *ngIf="servingType === 'dining'">
-        <span class="font-semibold text-center text-lg">Key-in your Table No.</span>
+        <span class="font-semibold text-center text-lg">Key in your Table No.</span>
         <svg
             class="w-full"
             xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 893.68018 749.53003"
@@ -83,19 +83,19 @@
         <span class="font-semibold text-center text-lg">Please insert your table number where you will be waiting</span>
     </ng-container>
     <div class="flex flex-row items-center mt-4">
-        <span>Table number : &nbsp;</span>
+        <span>Table No. : &nbsp;</span>
         <input 
             [(ngModel)]="tableNumber"
             (input)="validateTableNumber($event.target.value)"
             (change)="validateTableNumber($event.target.value)"
-            class="w-10 h-10 border border-black rounded text-center" 
+            class="w-10 h-10 ring-1 ring-black rounded text-center" 
             type="integer" 
-            maxlength="2" 
+            maxlength="3" 
             matInput>
     </div>
     <button (click)="confirmTableNumber()" class="mt-4 w-full" mat-flat-button [color]="'primary'">Confirm</button>
     <mat-error class="text-sm mt-1" *ngIf="displayTableNumberErr">
-        Please input your table number
+        Please input your table no.
     </mat-error>
-    <span class="text-sm mt-2 text-gray-500">Please Note: Some of the food may need to Self Service from the Stall.</span>
+    <span class="text-sm mt-2 text-gray-500">Note: Some of the food need to Self Collect from the Stall.</span>
 </div>

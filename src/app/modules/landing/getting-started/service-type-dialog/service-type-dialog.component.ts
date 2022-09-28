@@ -40,7 +40,7 @@ export class ServiceTypeDialog implements OnInit
     
     validateTableNumber(tableNumber: number)
     {
-        this.tableNumber = (tableNumber > 99) ? 99 : tableNumber;
+        this.tableNumber = (tableNumber > 999) ? 999 : tableNumber;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

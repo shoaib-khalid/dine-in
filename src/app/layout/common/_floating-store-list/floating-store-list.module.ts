@@ -6,6 +6,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseDrawerModule } from '@fuse/components/drawer';
 import { FloatingStoreListComponent } from 'app/layout/common/_floating-store-list/floating-store-list.component';
 import { MatButtonModule } from '@angular/material/button';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
     declarations: [
@@ -17,7 +18,8 @@ import { MatButtonModule } from '@angular/material/button';
         MatIconModule,
         MatTooltipModule,
         FuseDrawerModule,
-        MatButtonModule
+        MatButtonModule,
+        DragDropModule
     ],
     exports     : [
         FloatingStoreListComponent

@@ -190,7 +190,6 @@ export class LandingSearchComponent implements OnInit
                             tagKeyword      : this.tagValue, 
                             latitude        : this.currentLat, 
                             longitude       : this.currentLong,
-                            isDelivery      : false,
                             isDineIn        : true
                         })
                         .subscribe((storesDetails: StoresDetails[])=>{
@@ -260,7 +259,6 @@ export class LandingSearchComponent implements OnInit
                             tagKeyword      : this.tagValue, 
                             latitude        : this.currentLat, 
                             longitude       : this.currentLong,
-                            isDelivery      : false,
                             isDineIn        : true
                         });
                     }),
@@ -322,7 +320,6 @@ export class LandingSearchComponent implements OnInit
                             tagKeyword      : this.tagValue, 
                             latitude        : this.currentLat, 
                             longitude       : this.currentLong,
-                            isDelivery      : false,
                             isDineIn        : true
                         })
                         .subscribe(()=>{

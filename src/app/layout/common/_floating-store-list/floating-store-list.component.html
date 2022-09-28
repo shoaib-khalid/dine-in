@@ -1,8 +1,10 @@
 <div
+    cdkDrag
+    cdkDragLockAxis="y" 
     class="fixed note flex items-center justify-center w-14 h-8 right-0 z-90 rounded-l-lg cursor-pointer bg-black hover:bg-primary print:hidden transition-colors p-1"
     [class.lg:right-0]="config.layout === 'centered' || config.layout === 'material'"
     [class.lg:right-16]="config.layout !== 'centered' && config.layout !== 'material'"
-    style="top: 200px"
+    style="top: 150px"
     (click)="settingsDrawer.toggle()">
     <mat-icon
         class="icon-size-4 text-white"
@@ -24,7 +26,7 @@
             <mat-icon
                 class="icon-size-7 text-current"
                 [svgIcon]="'storefront'"></mat-icon>
-            <div class="ml-3 text-lg font-semibold tracking-tight">Available store at {{ storeTag }}</div>
+            <div class="ml-3 text-lg font-semibold tracking-tight">Available Food & Beverage Stalls</div>
             <button
                 class="ml-auto"
                 mat-icon-button
@@ -34,7 +36,7 @@
                     [svgIcon]="'heroicons_outline:x'"></mat-icon>
             </button>
         </div>
-        <div class="flex flex-col w-full p-1">
+        <div class="flex flex-col w-full p-1 gap-0.5">
             <ng-container *ngFor="let store of stores">
                 <div
                     (click)="goToStore(store.domain);settingsDrawer.close()" 
