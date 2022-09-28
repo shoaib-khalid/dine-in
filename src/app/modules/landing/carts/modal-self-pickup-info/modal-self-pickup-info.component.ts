@@ -12,7 +12,6 @@ import { UserProfileValidationService } from 'app/modules/customer/user-profile/
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.types';
 import { environment } from 'environments/environment';
-import { Address } from './modal-self-pickup-info.types';
 // import { UserProfileValidationService } from '../../user-profile.validation.service';
 
 @Component({
@@ -94,8 +93,6 @@ export class SelfPickupInfoDialog implements OnInit {
     requiredEmail: boolean = true;
     requiredNumber: boolean = true;
 
-    address : Address;
-
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any,
         public dialogRef: MatDialogRef<SelfPickupInfoDialog>,
@@ -161,7 +158,6 @@ export class SelfPickupInfoDialog implements OnInit {
         //     this.addressForm.patchValue(this.data.customerAddress);
         // }
 
-        console.log("data", this.data);
         if(this.data && this.data.carts) {
 
             this.data.carts.map(item => { 

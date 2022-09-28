@@ -17,6 +17,7 @@ export interface CartWithDetails
     customerId?             : string;
     deliveryQuotationId?    : string;
     deliveryType?           : string;
+    dineInOption            : string;
     id                      : string;
     isOpen                  : boolean;
     store                   : Store;

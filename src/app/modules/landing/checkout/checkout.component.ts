@@ -26,6 +26,7 @@ import { AppConfig } from 'app/config/service.config';
 import { StoresService } from 'app/core/store/store.service';
 import { CustomerActivity } from 'app/core/analytic/analytic.types';
 import { Title } from '@angular/platform-browser';
+import { DiningService } from 'app/core/_dining/dining.service';
 
 @Component({
     selector     : 'buyer-checkout',
@@ -213,6 +214,8 @@ export class BuyerCheckoutComponent implements OnInit
 
     dineInPack: 'DINEIN' | 'TAKEAWAY' = "DINEIN";
 
+    tableNumber: string;
+
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -237,7 +240,8 @@ export class BuyerCheckoutComponent implements OnInit
         private _apiServer: AppConfig,
         private _platformLocation: PlatformLocation,
         private _storesService: StoresService,
-        private _titleService: Title
+        private _titleService: Title,
+        private _diningService: DiningService
 
     )
     {
@@ -252,6 +256,7 @@ export class BuyerCheckoutComponent implements OnInit
      */
     ngOnInit(): void
     {
+        this.tableNumber = this._diningService.tableNumber$;
 
         this.customerId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid ? this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid : null
 
@@ -311,14 +316,11 @@ export class BuyerCheckoutComponent implements OnInit
                     this._checkoutService.checkoutItems$
                         .pipe(takeUntil(this._unsubscribeAll))
                         .subscribe((checkoutItems: CheckoutItems[])=>{
-                            if (checkoutItems) { 
-                                                                
+                            if (checkoutItems) {                                                                 
                                 this.checkoutItems = checkoutItems;
                                 let cartsWithDetailsTotalItemsArr = checkoutItems.map(item => item.selectedItemId.length);
                                 let cartsWithDetailsTotalItems = cartsWithDetailsTotalItemsArr.reduce((partialSum, a) => partialSum + a, 0);
                                 this.totalSelectedCartItem = cartsWithDetailsTotalItems;
-
-                                console.log("checkoutItems", checkoutItems);
 
                                 // Check if has self pickup 
                                 this.hasSelfPickup = true
@@ -489,6 +491,10 @@ export class BuyerCheckoutComponent implements OnInit
         }
 
         this.checkoutItems.forEach(checkout => {
+            
+            let dineInOptions = checkout.dineInOption === 'SENDTOTABLE' ? 'Table No. :' + this.tableNumber  : checkout.dineInOption;
+
+            // by right shoul send checkout.orderNotes in customerNotes since we remove in order, we remove it as well
             const orderBody = {
                 cartId: checkout.cartId,
                 cartItems: checkout.selectedItemId.map(element => {
@@ -497,9 +503,15 @@ export class BuyerCheckoutComponent implements OnInit
                     }
                 }),
                 customerId         : this.customerId,
-                customerNotes      : checkout.orderNotes,
+                customerNotes      : dineInOptions,
                 dineInPack         : this.dineInPack,
                 orderShipmentDetails: {
+                    address:  '',
+                    city: '',
+                    zipcode: '',
+                    state: '',
+                    storePickup: true,
+
                     email: customerInfo.email,
                     phoneNumber: customerInfo.phoneNumber,
                 }

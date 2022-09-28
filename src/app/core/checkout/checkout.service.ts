@@ -187,7 +187,8 @@ export class CheckoutService
                         if (index > -1) {
                             let toMaintain = new Set(checkoutItems[index].selectedItemId);
                             toMaintainCartItems = item.cartItems.filter(element => toMaintain.has(element.id));
-                            item.orderNote = checkoutItems[index].orderNotes;                            
+                            item.orderNote = checkoutItems[index].orderNotes;
+                            item.dineInOption = checkoutItems[index].dineInOption                     
                         }
                         item.cartItems = toMaintainCartItems;
                     });

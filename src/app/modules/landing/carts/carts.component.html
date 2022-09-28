@@ -63,11 +63,11 @@
                     <!-- Title -->
                     <span class="text-lg sm:text-3xl font-semibold mb-2">Your Cart</span>
                     <!-- Header -->
-                    <div class="lg:hidden cart-title-grid grid w-full pb-2 px-2 border border-white">
+                    <!-- <div class="lg:hidden cart-title-grid grid w-full pb-2 px-2 border border-white">
                         <div class="flex flex-col justify-start ml-2">
                             <span class="font-medium text-base tracking-tight">Product</span>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="hidden lg:grid cart-grid w-full sticky py-2 border-b border-gray-600 tracking-tight">
                         <span class="font-semibold text-left ml-4">Product</span>
                         <span class="font-semibold text-center">Unit Price</span>
@@ -284,14 +284,14 @@
                                     </ng-container>
                                     <!-- Additional Info -->
                                     <div class="flex flex-col mt-4">
-                                        <span class="text-secondary">Additional Information</span>
+                                        <!-- <span class="text-secondary">Additional Information</span>
                                         <div class="w-full flex flex-row text-center items-center my-2 text-sm"> 
                                             <span class="mr-2">Order Notes (Optional)</span>
                                             <span  *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === true" (click)="close(cart.id)" class="text-primary cursor-pointer">Insert Order Notes</span>
                                             <span *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === false" (click)="open(cart.id)" class="text-primary cursor-pointer">Cancel</span>
-                                        </div>
-                                        <!-- Additional info -->
-                                        <mat-form-field *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === false"
+                                        </div> -->
+
+                                        <!-- <mat-form-field *ngIf="selectedCart && selectedCart.carts[i + pagination.startIndex].description.isOpen === false"
                                         @zoomIn @zoomOut class="w-full mt-2" floatLabel="always">
                                             <textarea
                                                 matInput
@@ -302,7 +302,7 @@
                                                 class="h-5 text-sm"
                                                 autocomplete="disabled"
                                                 matTextareaAutosize></textarea>
-                                        </mat-form-field>
+                                        </mat-form-field> -->
                                     </div>
                                     <!-- Store Address for self pickup  -->
                                     <ng-container *ngIf="selectedCart.carts[i + pagination.startIndex].isSelfPickup">

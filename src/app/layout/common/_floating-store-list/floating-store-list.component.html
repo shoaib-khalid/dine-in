@@ -1,13 +1,13 @@
 <div
-    class="fixed note flex items-center justify-center w-13 h-10 right-0 z-90 rounded-l-lg cursor-pointer bg-primary print:hidden"
+    class="fixed note flex items-center justify-center w-14 h-8 right-0 z-90 rounded-l-lg cursor-pointer bg-black hover:bg-primary print:hidden transition-colors p-1"
     [class.lg:right-0]="config.layout === 'centered' || config.layout === 'material'"
     [class.lg:right-16]="config.layout !== 'centered' && config.layout !== 'material'"
     style="top: 200px"
     (click)="settingsDrawer.toggle()">
-    <!-- <mat-icon
-        class="icon-size-5 text-white"
-        [svgIcon]="'storefront'"></mat-icon> -->
-    <span class="text-sm text-white font-bold">More Stalls</span>
+    <mat-icon
+        class="icon-size-4 text-white"
+        [svgIcon]="'storefront'"></mat-icon>
+    <span class="text-xs text-center leading-3 text-white font-bold ">More Stalls</span>
     <!-- <img class="w-26" [src]="'assets/gif/More-Stalls.gif'" alt=""> -->
 </div>
 

@@ -12,7 +12,7 @@ import { Platform } from 'app/core/platform/platform.types';
 import { Store, StoreSnooze, StoreTiming } from 'app/core/store/store.types';
 import { fuseAnimations } from '@fuse/animations';
 import { distinctUntilChanged, filter, Subject, takeUntil, combineLatest, merge } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { elementAt, map, switchMap } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { CartDiscount, CheckoutItems, DeliveryCharges, DeliveryProvider, DeliveryProviders } from 'app/core/checkout/checkout.types';
 import { PlatformService } from 'app/core/platform/platform.service';
@@ -174,6 +174,7 @@ export class CartListComponent implements OnInit, OnDestroy
                 value?: string
             },
             deliveryQuotationId: string,
+            dineInOption: string,
             deliveryType: string,
             deliveryProviderId: string,
             deliveryErrorMessage?: string,
@@ -327,6 +328,7 @@ export class CartListComponent implements OnInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((cartsWithDetails: CartWithDetails[]) => {
                 if (cartsWithDetails) {
+                    
                     this.carts = cartsWithDetails;
 
                     this.carts.map(item => {
@@ -349,7 +351,7 @@ export class CartListComponent implements OnInit, OnDestroy
                         // set all selected cart to false for every changes
                         this.selectedCart.selected = false;
 
-                        this.carts.forEach(item => {     
+                        this.carts.forEach(item => {                                 
 
                             let storeIsClosed = this.isStoreClose(item.storeId);                    
 
@@ -362,6 +364,8 @@ export class CartListComponent implements OnInit, OnDestroy
 
                                 // disable if store is closed
                                 this.selectedCart.carts[cartIdIndex].disabled = storeIsClosed ? true : false;
+                                
+                                this.selectedCart.carts[cartIdIndex].dineInOption = item.dineInOption;
 
                                 // get all selected boolean from cartItems
                                 allSelected = this.selectedCart.carts[cartIdIndex].cartItem.map(element => element.selected);
@@ -387,7 +391,8 @@ export class CartListComponent implements OnInit, OnDestroy
                                         }
                                     }
                                 })
-                            } else {
+                                
+                            } else {                                
                                 let cart = {
                                     id: item.id, 
                                     storeId: item.storeId,
@@ -409,6 +414,7 @@ export class CartListComponent implements OnInit, OnDestroy
                                         }
                                         return obj
                                     }),
+                                    dineInOption: item.dineInOption, 
                                     selected: false,
                                     description: {
                                         value: '',
@@ -441,7 +447,7 @@ export class CartListComponent implements OnInit, OnDestroy
                             // set all selected cart to true since all items in cartItem is true
                             this.selectedCart.selected = true;                            
                         }
-                    } else {
+                    } else {                        
                         this.selectedCart = {
                             carts:  this.carts.map(item => {
                                 let storeIsClosed = this.isStoreClose(item.storeId); 
@@ -474,6 +480,7 @@ export class CartListComponent implements OnInit, OnDestroy
                                         value: '',
                                         isOpen: false
                                     },
+                                    dineInOption: item.dineInOption,
                                     deliveryQuotationId: null,
                                     deliveryType: null,
                                     deliveryProviderId: null,
@@ -809,7 +816,7 @@ export class CartListComponent implements OnInit, OnDestroy
             // select all carts
             let cartsIds = carts.map(item => item.id);
             this.selectedCart.carts.forEach(item => {
-
+                
                 // Check if store close, if closed, selected is false
                 if (this.isStoreClose(item.storeId) || item.disabled) {
                     item.selected = false;
@@ -897,10 +904,11 @@ export class CartListComponent implements OnInit, OnDestroy
     selectAllItemsInCart()
     {
         this.cartIds = JSON.parse(this._cartService.cartIds$);
-
+        
         this.selectedCart = 
             {
                 carts: this.cartIds.map((item)=>{
+                    
                     return {
                         id: item.id, 
                         storeId: item.storeId,
@@ -918,6 +926,8 @@ export class CartListComponent implements OnInit, OnDestroy
                         description: {
                             isOpen: true
                         },
+                        // this is a function to find index of which dinein option. me myself not understand this at all
+                        dineInOption: this.carts.findIndex(element => element.id === item.id) > -1 ? this.carts[this.carts.findIndex(element => element.id === item.id)].dineInOption : 'SELFC',
                         deliveryQuotationId: null,
                         deliveryType: null,
                         deliveryProviderId: null,
@@ -1102,6 +1112,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
         // to list out the array of selectedCart
         let checkoutListBody: CheckoutItems[] = this.selectedCart.carts.map(item => {
+                        
             return {
                 cartId: item.id,
                 selectedItemId: item.cartItem.map(element => {
@@ -1112,6 +1123,7 @@ export class CartListComponent implements OnInit, OnDestroy
                 }).filter(x => x),
                 deliveryQuotationId : item.isSelfPickup ? null : item.deliveryQuotationId,
                 deliveryType : item.isSelfPickup ? 'PICKUP' : item.deliveryType,
+                dineInOption : item.dineInOption,
                 deliveryProviderId : item.isSelfPickup ? null : item.deliveryProviderId,
                 orderNotes : item.description.value,
                 platformVoucherCode: this.voucherApplied ? this.voucherApplied.voucher.voucherCode : null,

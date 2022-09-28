@@ -11,6 +11,7 @@ export interface DeliveryCharges
 
 export interface CheckoutItems
 {
+    dineInOption        : string;
     cartId              : string;
     selectedItemId      : string[];
     deliveryQuotationId : string;
