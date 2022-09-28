@@ -134,7 +134,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                 this.isStorePage = false;
             }
 
-            if ((route[1] === 'carts' || route[1] === 'checkout') || response.url === '/') {		
+            if ((route[1] === 'carts' || route[1] === 'checkout' || route[1] === 'getting-started') || response.url === '/') {		
                 this.floatingCartHidden = true;		
             } 
             else {		
