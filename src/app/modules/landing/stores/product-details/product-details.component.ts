@@ -344,17 +344,17 @@ export class LandingProductDetailsComponent implements OnInit
                                             if (this.combos.length > 0) {
                                                 this.combos.forEach(combo => {
                                     
-                                                    const firstValue = combo.productPackageOptionDetail.reduce((previousValue, currentValue) => {
-                                                        if (currentValue.sequenceNumber === 1) {
-                                                            return currentValue.productId;
-                                                        }
-                                                        return previousValue;
-                                                    }, []);
+                                                    // const firstValue = combo.productPackageOptionDetail.reduce((previousValue, currentValue) => {
+                                                    //     if (currentValue.sequenceNumber === 1) {
+                                                    //         return currentValue.productId;
+                                                    //     }
+                                                    //     return previousValue;
+                                                    // }, []);
                                                     
                                                     this.selectedCombo[combo.id] = [];
-                                                    if (firstValue !== undefined) {
-                                                        this.selectedCombo[combo.id].push(firstValue);
-                                                    }
+                                                    // if (firstValue !== undefined) {
+                                                    //     this.selectedCombo[combo.id].push(firstValue);
+                                                    // }
                                                 });
                                             }
             
@@ -580,7 +580,7 @@ export class LandingProductDetailsComponent implements OnInit
             let BreakException = {};
             try {
                 this.combos.forEach(item => {
-                    if (item.totalAllow !== this.selectedCombo[item.id].length) {
+                    if (item.totalAllow !== 0 && item.totalAllow !== this.selectedCombo[item.id].length) {
                         const confirmation = this._fuseConfirmationService.open({
                             "title": "Incomplete Product Combo selection",
                             "message": 'You need to select ' + item.totalAllow + ' item of <b>"' + item.title + '"</b>',

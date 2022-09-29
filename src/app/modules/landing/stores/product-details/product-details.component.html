@@ -160,7 +160,8 @@
                             [id]="combo.title" 
                             *ngFor="let combo of combos; let i = index;"
                             class="py-1">
-                            <label class="font-semibold" for="{{combo.title}}">{{combo.title | uppercase}} : (Select {{ combo.totalAllow }} of {{ combo.productPackageOptionDetail.length }})</label>
+                            <label *ngIf="combo.totalAllow !== 0" class="font-semibold text-sm" for="{{combo.title}}">{{combo.title | uppercase}}: (Select {{ combo.totalAllow }} of {{ combo.productPackageOptionDetail.length }})</label>
+                            <label *ngIf="combo.totalAllow === 0" class="font-semibold text-sm" for="{{combo.title}}">{{combo.title | uppercase}}: (Optional)</label>
                             <ul class="grid grid-cols-2">
                                 <li *ngFor="let option of combo.productPackageOptionDetail; let i = index;" class="flex items-center">
                                     <input type="checkbox" 
