@@ -1631,7 +1631,7 @@ export class CartListComponent implements OnInit, OnDestroy
         let isAllDelivery = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === false);
         // if (!isAllSelfPickup && !isAllDelivery && !this.selfPickupInfo)
         
-        if (this.detailsNeeded){
+        if (this.detailsNeeded && !this.selfPickupInfo){
             // const confirmation = this._fuseConfirmationService.open({
             //     "title": "Required info is empty!",
             //     "message": "Please add your address/contact information before checking out.",
