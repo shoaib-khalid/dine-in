@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe, DOCUMENT, ViewportScroller } from '@angular/common';
+import { CurrencyPipe, DatePipe, DOCUMENT, ViewportScroller, Location } from '@angular/common';
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -297,7 +297,8 @@ export class CartListComponent implements OnInit, OnDestroy
         private _datePipe: DatePipe,
         private _voucherService: VoucherService,
         private _diningService: DiningService,
-        private _titleService: Title
+        private _titleService: Title,
+        private _location: Location
     )
     {
     }
@@ -335,14 +336,6 @@ export class CartListComponent implements OnInit, OnDestroy
                 if (cartsWithDetails) {
                     
                     this.carts = cartsWithDetails;
-
-                    this.carts.map(item => {
-                        if(item.store.dineInOption.includes("SELFCOLLECT")){
-                            return this.detailsNeeded = true;
-                        } else {
-                            return this.detailsNeeded;
-                        }
-                    });
                     
                     this.storesOpening = [];
                     
@@ -511,14 +504,35 @@ export class CartListComponent implements OnInit, OnDestroy
                         }                        
                     }
 
-                    this.selectAllItemsInCart();
+                    // To track whether the popup is needed
+                    let needDetailsPopup: boolean[] = [];
+                    needDetailsPopup = this.selectedCart.carts.map(item => {
+                        if (item.dineInOption === "SELFCOLLECT" && item.id === null){
+                            return false;
+                        } else if(item.dineInOption === "SELFCOLLECT") {
+                            return true;                            
+                        } else {
+                            return false;
+                        }
+                    });
 
+                    this.detailsNeeded = needDetailsPopup.includes(true) ? true : false;
+
+                    console.log("needDetailsPopup", needDetailsPopup);
+                    
+
+                    console.log("ALBAMA", this.selectedCart.carts);
+
+                    console.log("CONNECTICUT", this.detailsNeeded);
+                    
+
+                    this.selectAllItemsInCart();
                 }
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
-
+        
         // Get the cart pagination
         this._cartService.cartsWithDetailsPagination$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -921,7 +935,7 @@ export class CartListComponent implements OnInit, OnDestroy
                 carts: this.cartIds.map((item)=>{                    
                     return {
                         id: (this.isStoreClose(this.carts[this.carts.findIndex(element => element.id === item.id)].storeId) === false) ? item.id : null, 
-                        storeId: item.storeId,
+                        storeId: item.storeId ? item.storeId : null,
                         cartItem: item.cartItems.map((element)=>{
                             return {
                                 id: element.id,
@@ -1624,8 +1638,8 @@ export class CartListComponent implements OnInit, OnDestroy
         let isAllSelfPickup = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === true);
         let isAllDelivery = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === false);
         // if (!isAllSelfPickup && !isAllDelivery && !this.selfPickupInfo)
-
-        if (this.detailsNeeded && !this.selfPickupInfo){
+        
+        if (this.detailsNeeded){
             // const confirmation = this._fuseConfirmationService.open({
             //     "title": "Required info is empty!",
             //     "message": "Please add your address/contact information before checking out.",
@@ -1722,6 +1736,7 @@ export class CartListComponent implements OnInit, OnDestroy
     }
 
     validateCustomerInfo(index: number) {
+        
         // For self pickup
         if (this.selectedCart.carts[index].isSelfPickup) {
             if (this.selfPickupInfo) {
@@ -1741,6 +1756,9 @@ export class CartListComponent implements OnInit, OnDestroy
         
         // Has index means to be updated, toEdit only used in Edit Info field, not in the Required Info button
         if ((index !== null) && (index > -1)) {
+
+            console.log("index", index);
+            
             // If self pickup, open popup to edit
             if (this.selectedCart.carts[index].isSelfPickup || toEdit) {
                 
@@ -1819,6 +1837,10 @@ export class CartListComponent implements OnInit, OnDestroy
 
     changeTableNumber() {
         this._router.navigate(['/getting-started/' + this.storeTag]);
+    }
+
+    goBack() {
+        this._location.back(); 
     }
 
 }

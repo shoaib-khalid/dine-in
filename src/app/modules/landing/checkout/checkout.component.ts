@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, NgForm, ValidationErrors, Validators } from '@angular/forms';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { CurrencyPipe, DatePipe, DOCUMENT, PlatformLocation } from '@angular/common'; 
+import { CurrencyPipe, DatePipe, DOCUMENT, PlatformLocation, Location } from '@angular/common'; 
 import { CartService } from 'app/core/cart/cart.service';
 import { Cart, CartItem, CartPagination, CartWithDetails, DiscountOfCartGroup } from 'app/core/cart/cart.types';
 import { Store, StoreSnooze, StoreTiming } from 'app/core/store/store.types';
@@ -241,8 +241,8 @@ export class BuyerCheckoutComponent implements OnInit
         private _platformLocation: PlatformLocation,
         private _storesService: StoresService,
         private _titleService: Title,
-        private _diningService: DiningService
-
+        private _diningService: DiningService,
+        private _location: Location
     )
     {
     }
@@ -924,5 +924,9 @@ export class BuyerCheckoutComponent implements OnInit
         if (countObject[refId] > 1) return true;
         else return false; 
         
+    }
+
+    goBack() {
+        this._location.back(); 
     }
 }
