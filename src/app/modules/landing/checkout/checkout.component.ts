@@ -619,7 +619,11 @@ export class BuyerCheckoutComponent implements OnInit
                         //     }
                         // }
 
-                        this._router.navigate(['/thankyou/1/CASH/ORDER_PLACED']);
+                        this._router.navigate(['/order-history']);
+
+                        this._cartService.cartIds = '';
+
+                        this._cartService.cartsHeaderWithDetails = [];
 
                         // Set Loading to false
                         this.isLoading = false;
