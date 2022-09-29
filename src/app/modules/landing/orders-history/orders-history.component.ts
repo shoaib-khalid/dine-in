@@ -382,10 +382,13 @@ export class OrdersHistoryComponent implements OnInit
     }
 
     redirectToProduct(storeId: string, storeDomain: string, seoName: string) {
-        let domainName = storeDomain.split(".")[0];
+
+        return
+
+        // let domainName = storeDomain.split(".")[0];
         
-        // this._document.location.href = url;
-        this._router.navigate(['store/' + domainName + '/' + 'all-products/' + seoName]);
+        // // this._document.location.href = url;
+        // this._router.navigate(['store/' + domainName + '/' + 'all-products/' + seoName]);
 
     }
 
