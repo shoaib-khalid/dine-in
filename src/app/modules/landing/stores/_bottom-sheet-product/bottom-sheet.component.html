@@ -28,7 +28,7 @@
                     </div>
                     <!-- Price -->
                     <div class="flex mt-2">
-                        <ng-container *ngIf="displayedProduct.discountAmount > 0; else noItemDiscount" >
+                        <ng-container *ngIf="false; else noItemDiscount" >
                             <div class="font-semibold flex flex-col shrink">
                                 <div class="text-xs items-center text-primary-100 flex justify-start items-center">
                                     <span class="py-0.5 px-1 w-auto flex bg-red-600 rounded">{{displayedProduct.discountAmount}}% Off</span>
@@ -96,6 +96,7 @@
                         <span class="font-semibold text-base">Special Instruction{{ selectedProduct.isNoteOptional === false ? ' (required)' : ''}}:</span> 
                         <mat-form-field class="mt-1 fuse-mat-textarea fuse-mat-no-subscript w-full" floatLabel="always">
                             <textarea
+                                style="resize: none;"
                                 class="text-sm"
                                 [ngClass]="'border border-red-600'"
                                 matInput

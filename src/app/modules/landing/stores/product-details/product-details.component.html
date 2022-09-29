@@ -112,7 +112,7 @@
                     </div> -->
                     <!-- Price -->
                     <div class="mt-2">
-                        <ng-container *ngIf="displayedProduct.discountAmount>0;else noItemDiscount" >
+                        <ng-container *ngIf="false ;else noItemDiscount" >
                             <p class="font-semibold items-center">Price: &nbsp; 
                                 <span style="text-decoration: line-through;" class="px-2">{{displayedProduct.price | currency: store.regionCountry.currencySymbol}}</span> 
                                 <span class="text-xl font-semibold text-primary px-2 ">{{displayedProduct.discountedPrice | currency: store.regionCountry.currencySymbol}}</span> 
@@ -217,6 +217,7 @@
                             <mat-form-field class="mt-2 fuse-mat-textarea w-full" floatLabel="always">
                                 <!-- [(ngModel)]="specialInstruction" -->
                                 <textarea
+                                    style="resize: none;"
                                     [ngClass]="'border border-red-600'"
                                     matInput
                                     [formControlName]="'specialInstructionValue'"
@@ -235,7 +236,7 @@
 
                     <div class="flex flex-row w-full justify-between mb-2">
                         <p class="font-semibold">Total:</p> 
-                        <ng-container *ngIf="displayedProduct.discountAmount>0;else noItemDiscountSubTotal">
+                        <ng-container *ngIf="false ;else noItemDiscountSubTotal">
                             <span class="text-xl font-semibold px-2 ">{{(displayedProduct.discountedPrice * quantity) | currency: store.regionCountry.currencySymbol}}</span>
                         </ng-container>
                         <ng-template #noItemDiscountSubTotal>
@@ -364,7 +365,7 @@
                         <span class="text-base md:text-lg font-semibold line-clamp-1">{{product.name}}</span>
                     </div>
                     <div class="flex flex-row items-end justify-between">
-                        <ng-container *ngIf="product.productInventories[0] && product.productInventories[0].itemDiscount; else noDiscount">
+                        <ng-container *ngIf="false; else noDiscount">
                             <span class="line-through text-sm font-semibold">{{product.productInventories[0].itemDiscount.normalPrice | currency: platform.currency}}</span>
                             <span class="text-lg font-semibold">{{product.productInventories[0].itemDiscount.discountedPrice | currency: platform.currency}}</span>
                         </ng-container>

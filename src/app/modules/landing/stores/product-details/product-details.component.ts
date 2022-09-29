@@ -238,14 +238,14 @@ export class LandingProductDetailsComponent implements OnInit
                                     this.selectedProductInventoryItems = this.selectedProductInventory.productInventoryItems;
             
                                     if (this.selectedProductInventoryItems) {
-                                        this.displayedProduct.price = this.selectedProductInventory.price;
+                                        this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
                                         this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                                         this.displayedProduct.sku = this.selectedProductInventory.sku;
                                         this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
                                         this.displayedProduct.discountedPrice = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountedPrice : null;
                                     } 
                                     else {
-                                        this.displayedProduct.price = this.selectedProductInventory.price;
+                                        this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
                                         this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                                         this.displayedProduct.sku = this.selectedProductInventory.sku;
                                         this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
@@ -927,7 +927,7 @@ export class LandingProductDetailsComponent implements OnInit
 
                 this.selectedProductInventory = selectedProductInventory;
 
-                this.displayedProduct.price = selectedProductInventory.price
+                this.displayedProduct.price = selectedProductInventory.dineInPrice
                 this.displayedProduct.itemCode = selectedProductInventory.itemCode
                 this.displayedProduct.sku = selectedProductInventory.sku
                 this.displayedProduct.discountAmount = selectedProductInventory.itemDiscount ? selectedProductInventory.itemDiscount.discountAmount : null;
