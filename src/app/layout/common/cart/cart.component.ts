@@ -35,7 +35,6 @@ export class CartComponent implements OnInit, OnDestroy
 
     cart: Cart;
     carts: CartWithDetails[] = [];
-    totalCartItems: number = 0;
     user: User;
     seeMoreCarts: boolean = true;
     customer:any;
@@ -89,9 +88,7 @@ export class CartComponent implements OnInit, OnDestroy
                 if (cartsWithDetails) {
 
                     this.carts = cartsWithDetails;
-                    // this.totalCartItems = carts.totalItem;
-
-                    this.totalCartList = cartsWithDetails.length;
+                    this.totalCartList = cartsWithDetails.map(item => item.cartItems.map(element => element.quantity).reduce((partialSum, a) => partialSum + a, 0)).reduce((a, b) => a + b, 0);        
     
                     // remove duplicate stores
                     let resArr = [];

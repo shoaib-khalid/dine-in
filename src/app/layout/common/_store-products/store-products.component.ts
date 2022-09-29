@@ -109,18 +109,19 @@ export class _StoreProductsComponent implements OnInit, OnDestroy
     }
 
     redirectToProduct(product: Product) {
-        if (this.currentScreenSize.includes('md'))
-            this._router.navigate(['store/' + this.storeSlug + '/' + this.catalogueSlug + '/' + product.seoNameMarketplace]);
-        else {
-            if (this.isProductOutOfStock(product)) {
+        // if has stock
+        if (this.isProductHasStock(product)) {
+            if (this.currentScreenSize.includes('md'))
+                this._router.navigate(['store/' + this.storeSlug + '/' + this.catalogueSlug + '/' + product.seoNameMarketplace]);
+            else {
                 this._productsService.selectProduct(product);
             }
-            else return
         }
+        else return
     }
 
     selectProduct(product: Product){
-        if (this.isProductOutOfStock(product)) {
+        if (this.isProductHasStock(product)) {
             this._productsService.selectProduct(product);
         }
         else return
@@ -135,7 +136,7 @@ export class _StoreProductsComponent implements OnInit, OnDestroy
         }
     }
     
-    isProductOutOfStock(product: Product): boolean
+    isProductHasStock(product: Product): boolean
     {
         if (product.allowOutOfStockPurchases === true) {
             return true;
