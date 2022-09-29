@@ -516,15 +516,7 @@ export class CartListComponent implements OnInit, OnDestroy
                         }
                     });
 
-                    this.detailsNeeded = needDetailsPopup.includes(true) ? true : false;
-
-                    console.log("needDetailsPopup", needDetailsPopup);
-                    
-
-                    console.log("ALBAMA", this.selectedCart.carts);
-
-                    console.log("CONNECTICUT", this.detailsNeeded);
-                    
+                    this.detailsNeeded = needDetailsPopup.includes(true) ? true : false;                  
 
                     this.selectAllItemsInCart();
                 }
@@ -1756,8 +1748,6 @@ export class CartListComponent implements OnInit, OnDestroy
         
         // Has index means to be updated, toEdit only used in Edit Info field, not in the Required Info button
         if ((index !== null) && (index > -1)) {
-
-            console.log("index", index);
             
             // If self pickup, open popup to edit
             if (this.selectedCart.carts[index].isSelfPickup || toEdit) {

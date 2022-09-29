@@ -108,6 +108,12 @@
                                         </div>
                                     </div>
                                 </div> -->
+                                
+                                <div 
+                                    *ngIf="isStoreClose(cart.storeId)"
+                                    class="w-full bg-black bg-opacity-50 absolute inset-0 h-14 rounded-t-lg lg:hidden">
+                                </div>
+
                                 <div 
                                     *ngIf="isStoreClose(cart.storeId)"
                                     class="bg-black bg-opacity-50 w-full rounded-b-lg absolute inset-0 top-14 z-10 lg:hidden">
@@ -123,7 +129,8 @@
                                 </div>
 
                                 <!-- Cart Header -->
-                                <div class="cart-title-grid grid w-full sticky border-b h-14 lg:h-16 items-center">
+                                <div    
+                                    class="cart-title-grid grid w-full sticky border-b h-14 lg:h-16 items-center">
                                     <div class="flex flex-col justify-start ml-2 md:ml-4">
                                         <div class="flex flex-row justify-between items-center">
                                             <div class="flex flex-col w-full">
@@ -132,7 +139,9 @@
                                                     (click)="redirect('store', cart.store, null)">
                                                     {{cart.store.name}}
                                                 </span>
-                                                <div class="flex flex-row">
+                                                <div 
+                                                [ngClass]="isStoreClose(cart.storeId) ? 'brightness-50 lg:brightness-100':''"
+                                                    class="flex flex-row">
                                                     <span class="text-sm">Food to be served:</span>
                                                     <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm text-primary">&nbsp;Send to table</span>
                                                     <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm text-primary">&nbsp;Self collect</span>
@@ -166,11 +175,11 @@
                                                 </div>
                                                 <!-- Remove Cart -->
                                                 <div class="flex w-[24px] md:w-[20px] xl:w-[30px] justify-center">
-                                                    <span class="flex justify-center items-center text-center px-1 cursor-pointer">
+                                                    <span class="flex justify-center items-center text-center p-1 cursor-pointer bg-stone-300 rounded">
                                                         <mat-icon 
                                                             [matTooltip]="'Delete cart'"
                                                             (click)="deleteCart(cart.id)"
-                                                            class="icon-size-4" 
+                                                            class="icon-size-4"
                                                             [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                                                     </span>
                                                 </div>
@@ -188,7 +197,7 @@
                                             <div class="flex flex-row grow items-center justify-start ml-3 md:ml-4">
                                                 <img class="w-14 max-w-14 max-h-14 min-h-14 sm:w-18 sm:max-w-18 sm:h-18 sm:max-h-18 shadow rounded" [src]="cartItem.productAsset ? cartItem.productAsset.url : cartItem.productInventory.product.thumbnailUrl ? cartItem.productInventory.product.thumbnailUrl : displayStoreLogo(cart.store)">
                                                 <div class="flex flex-col ml-2 items-start justify-start sm:justify-center gap-1">
-                                                    <span (click)="redirect('product', cart.store, cartItem.productInventory.product.seoNameMarketplace)" class="text-md sm:text-md font-semibold line-clamp-2 hover:cursor-pointer">{{cartItem.productName}}</span>
+                                                    <span class="text-md sm:text-md font-semibold line-clamp-2 hover:cursor-pointer">{{cartItem.productName}}</span>
                                                     <div class="">
                                                         <!-- Display variants -->
                                                         <ng-container *ngIf="cartItem.productInventory.productInventoryItems.length > 0">
@@ -283,7 +292,7 @@
                                                 <mat-icon 
                                                     [matTooltip]="'Delete item'"
                                                     (click)="deleteCartItem(cart.id, cartItem)"
-                                                    class="icon-size-4" 
+                                                    class="icon-size-4"
                                                     [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                                             </span>
                                             <!-- Total Price , Unit Price , Remove button for sm-->
@@ -293,7 +302,7 @@
                                                     <mat-icon
                                                         [matTooltip]="'Delete item'"
                                                         (click)="deleteCartItem(cart.id, cartItem)" 
-                                                        class="icon-size-4" 
+                                                        class="icon-size-4"
                                                         [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                                                 </span>
                                                 <div class="flex flex-col w-26 justify-end items-end">

@@ -84,9 +84,7 @@ export class FloatingStoreListComponent implements OnInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((stores: StoresDetails[]) => {
                 this.stores = stores;
-                
-                console.log("this.stores", this.stores);
-                
+                                
             });
         
         // Subscribe to config changes
