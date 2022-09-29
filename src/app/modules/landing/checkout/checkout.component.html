@@ -43,7 +43,15 @@
             <div class="flex flex-col w-full items-center">
                 <div class="grid w-full">
                     <!-- Title -->
-                    <span class="text-lg sm:text-3xl font-semibold mb-2">Checkout</span>
+                    <div class="flex flex-row items-center mb-2">
+                        <button class="flex flex-row items-center rounded border border-gray-300 p-0.5" (click)="goBack()">
+                            <mat-icon
+                                class="icon-size-5"
+                                [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
+                        </button>
+                        <!-- Title -->
+                        <span class="text-lg sm:text-3xl font-semibold ml-2">Checkout</span>
+                    </div>
                     <!-- Header -->
                     <div class="hidden lg:grid checkout-grid w-full sticky py-2 border-b border-gray-600 tracking-tight">
                         <!-- Checkbox all carts -->
@@ -68,6 +76,11 @@
                                 <span></span>
                                 <div class="flex flex-col justify-start">
                                     <span (click)="redirect('store', cart.store, null)" class="text-md sm:text-xl font-semibold hover:cursor-pointer">{{cart.store.name}}</span>
+                                    <div class="flex flex-row">
+                                        <span class="text-sm">Food to be served:</span>
+                                        <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm text-primary">&nbsp;Send to table</span>
+                                        <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm text-primary">&nbsp;Self collect</span>
+                                    </div>
                                     <!-- <span class="text-sm sm:text-sm text-secondary">Cart ID: {{cart.id}}</span> -->
                                     <!-- <span class="text-sm sm:text-sm text-secondary">Last Updated: {{cart.updated | date:'MMM dd, h:mm a'}}</span> -->
                                 </div>
@@ -115,15 +128,15 @@
                                         </div>
                                         <!-- Unit Price -->
                                         <div class="hidden sm:flex flex-col justify-center items-center text-center px-1 min-w-15">
-                                            <span class="text-xs md:text-sm line-through">{{cartItem.normalPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
-                                            <span class="font-semibold text-sm md:text-md">{{cartItem.productPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                            <!-- <span class="text-xs md:text-sm line-through">{{cartItem.normalPrice | currency: cart.store.regionCountry.currencySymbol}}</span> -->
+                                            <span class="font-semibold text-sm md:text-md">{{cartItem.productInventory.dineInPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
                                         </div>
                                         <!-- Quantity -->
                                         <div class="hidden sm:flex flex-col text-sm md:text-md justify-center items-center mx-2 min-w-15">
                                             <span> x {{cartItem.quantity}}</span>
                                         </div>
                                         <!-- Total Price -->
-                                        <span class="hidden sm:flex justify-center items-center font-semibold text-center text-sm md:text-md truncate min-w-15">{{cartItem.price | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                        <span class="hidden sm:flex justify-center items-center font-semibold text-center text-sm md:text-md truncate min-w-15">{{cartItem.productInventory.dineInPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
                                         <!-- Remove Item -->
                                         <span></span>
                                         <!-- Total Price , Unit Price , Remove button for sm-->
@@ -131,11 +144,11 @@
                                             <div class="flex flex-col w-26 justify-end items-end">
                                                 <!-- Unit Price -->
                                                 <div class="flex flex-col justify-center items-end text-center px-1">
-                                                    <span class="text-xs md:text-sm line-through">{{cartItem.normalPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
-                                                    <span class="text-sm md:text-xs">{{cartItem.quantity}} x {{cartItem.productPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                                    <!-- <span class="text-xs md:text-sm line-through">{{cartItem.normalPrice | currency: cart.store.regionCountry.currencySymbol}}</span> -->
+                                                    <span class="text-sm md:text-xs">{{cartItem.quantity}} x {{cartItem.productInventory.dineInPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
                                                 </div>
                                                 <!-- Total Price -->
-                                                <span class="flex justify-center items-center font-semibold text-center text-sm md:text-md px-1">{{cartItem.price | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                                <span class="flex justify-center items-center font-semibold text-center text-sm md:text-md px-1">{{cartItem.productInventory.dineInPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -170,21 +183,7 @@
                                     </div>
                                 </div>
                                 <!-- Store Address for self pickup  -->
-                                <ng-container *ngIf="getDeliveryFee(cart.id).deliveryType === 'PICKUP'">
-                                    <div class="flex flex-col gap-1 w-full mt-2">
-                                        <div class="rounded border w-full flex flex-col p-3 gap-1 bg-primary-100">
-                                            <span class="font-medium text-base">Store Address</span>
-                                            <div class="flex flex-row font-base gap-1 items-center justify-between w-full">
-                                                <!-- Address  -->
-                                                <div class="flex flex-col text-sm gap-1">
-                                                    <span class="">{{cart.store.name}}</span>
-                                                    <span class="">{{cart.store.phoneNumber}}</span>
-                                                    <span class="">{{cart.store.address}}, {{cart.store.postcode}}, {{cart.store.city}}, {{cart.store.regionCountryStateId}}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ng-container>
+                            
                             </ng-container>
                             <ng-template #noCartItem>
                                 <!-- Main -->
