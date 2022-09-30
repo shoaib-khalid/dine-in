@@ -28,6 +28,7 @@ import { SelfPickupInfoDialog } from './modal-self-pickup-info/modal-self-pickup
 import { CartAddressComponent } from './modal-address/cart-addresses.component';
 import { Title } from '@angular/platform-browser';
 import { DiningService } from 'app/core/_dining/dining.service';
+import { ServiceTypeDialog } from '../getting-started/service-type-dialog/service-type-dialog.component';
 
 @Component({
     selector     : 'carts',
@@ -284,6 +285,9 @@ export class CartListComponent implements OnInit, OnDestroy
         showPhoneNo: false,
         showEmail: false
     }
+
+    serviceType: 'tableService' | 'selfPickup';
+
     /**
      * Constructor
      */
@@ -1834,7 +1838,23 @@ export class CartListComponent implements OnInit, OnDestroy
     }
 
     changeTableNumber() {
-        this._router.navigate(['/getting-started/' + this.storeTag]);
+
+        const dialogRef = this._dialog.open( 
+            ServiceTypeDialog, {
+                data: {
+                    servingType : 'dining',
+                    serviceType : this.serviceType,
+                    storeTag    : this.storeTag
+                },
+                disableClose: true
+            },
+        );    
+        dialogRef.afterClosed().subscribe(result=>{ 
+            this.tableNumber = this._diningService.tableNumber$             
+           // Mark for check
+           this._changeDetectorRef.markForCheck();
+        });
+        // this._router.navigate(['/getting-started/' + this.storeTag]);
     }
 
     goBack() {
