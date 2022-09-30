@@ -136,7 +136,7 @@
                                             <span> x {{cartItem.quantity}}</span>
                                         </div>
                                         <!-- Total Price -->
-                                        <span class="hidden sm:flex justify-center items-center font-semibold text-center text-sm md:text-md truncate min-w-15">{{cartItem.productInventory.dineInPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                        <span class="hidden sm:flex justify-center items-center font-semibold text-center text-sm md:text-md truncate min-w-15">{{cartItem.price | currency: cart.store.regionCountry.currencySymbol}}</span>
                                         <!-- Remove Item -->
                                         <span></span>
                                         <!-- Total Price , Unit Price , Remove button for sm-->
@@ -148,7 +148,7 @@
                                                     <span class="text-sm md:text-xs">{{cartItem.quantity}} x {{cartItem.productInventory.dineInPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
                                                 </div>
                                                 <!-- Total Price -->
-                                                <span class="flex justify-center items-center font-semibold text-center text-sm md:text-md px-1">{{cartItem.productInventory.dineInPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
+                                                <span class="flex justify-center items-center font-semibold text-center text-sm md:text-md px-1">{{cartItem.price | currency: cart.store.regionCountry.currencySymbol}}</span>
                                             </div>
                                         </div>
                                     </div>
