@@ -37,7 +37,7 @@
                             </mat-error>
                     </mat-form-field>
                     <mat-form-field *ngIf="requiredNumber" class="fuse-mat-emphasized-affix w-full sm:w-1/2" floatLabel="always">
-                        <mat-label>Phone Number</mat-label>
+                        <mat-label>Mobile Phone Number</mat-label>
                         <input
                             [formControlName]="'phoneNumber'"
                             [placeholder]="dialingCode + '123456789 (for order update)'"
@@ -45,10 +45,10 @@
                             (change)="addressForm.get('phoneNumber').patchValue(sanitizePhoneNumber(addressForm.get('phoneNumber').value))"
                             matInput>
                         <mat-error *ngIf="addressForm.get('phoneNumber').hasError('required')">
-                            Phone number is required
+                            Mobile Phone number is required
                         </mat-error>
                         <mat-error *ngIf="addressForm.get('phoneNumber').hasError('invalidPhonenumber')">
-                            Invalid phone number
+                            Invalid Mobile phone number
                         </mat-error>
                     </mat-form-field>                    
                 </div>

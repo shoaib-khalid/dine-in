@@ -326,7 +326,7 @@ export class BuyerCheckoutComponent implements OnInit
                                 this.hasSelfPickup = true
                                 
                                 // Get self pickup info
-                                let selfPickupIndex = checkoutItems.findIndex(item => item.selfPickupInfo.phoneNumber);
+                                let selfPickupIndex = checkoutItems.findIndex(item => item.selfPickupInfo);
                                 if (selfPickupIndex > -1) this.selfPickupInfo = checkoutItems[selfPickupIndex].selfPickupInfo;
                                 
                             }

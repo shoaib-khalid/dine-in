@@ -5,7 +5,7 @@
         <!-- Carts -->
         <ng-container *ngIf="carts && carts.length; else noCarts">
             <!-- Store pickup info (MOBILE)  -->
-            <ng-container *ngIf="selfPickupInfo  && hasSelfPickup">
+            <ng-container *ngIf="selfPickupInfo">
                 <div class="block md:hidden flex flex-col justify-center items-center border rounded-lg p-2 mb-2">
                     <!-- Header -->
                     <div class="flex flex-row border-b justify-start items-center pb-2 w-full">

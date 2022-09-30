@@ -5,7 +5,7 @@
         <!-- Carts -->
         <ng-container *ngIf="carts && (carts.length > 0); else noCarts">
             <!-- Store pickup info (MOBILE)  -->
-            <ng-container *ngIf="detailsNeeded && showContactInfo">
+            <ng-container *ngIf="selfPickupInfo">
                 <div class="block md:hidden w-full flex flex-col justify-center items-start border rounded-lg p-2 mb-2">
                     <!-- Header -->
                     <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
@@ -27,7 +27,7 @@
                             <!-- Button -->
                             <div class="flex w-full justify-center items-center">
                                 <button 
-                                    (click)="addRequiredInfo(0, true)"
+                                    (click)="addRequiredInfo(0)"
                                     class="my-2 w-full bg-primary-500 hover:bg-primary-600 rounded-md flex flex-row items-center justify-center p-1"
                                 >
                                     <mat-icon 
@@ -340,7 +340,7 @@
                                         </mat-form-field> -->
                                     </div>
                                     <!-- Store Address for self pickup  -->
-                                    <ng-container *ngIf="selectedCart.carts[i + pagination.startIndex].isSelfPickup">
+                                    <ng-container *ngIf="selectedCart.carts[i + pagination.startIndex].isSelfCollect">
                                         <div class="flex flex-col gap-1 w-full mt-1">
                                             <div class="rounded border w-full flex flex-col p-3 gap-1 bg-primary-100">
                                                 <div class="flex flex-row items-center gap-2">

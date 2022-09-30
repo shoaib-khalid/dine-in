@@ -195,6 +195,7 @@ export interface Tag
 {
     id      : string;
     keyword : string;
+    description: string;
 }
 
 export interface TagPagination

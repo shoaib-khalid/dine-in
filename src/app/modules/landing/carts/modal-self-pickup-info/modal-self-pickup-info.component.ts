@@ -12,6 +12,7 @@ import { UserProfileValidationService } from 'app/modules/customer/user-profile/
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.types';
 import { environment } from 'environments/environment';
+import { CartWithDetails } from 'app/core/cart/cart.types';
 // import { UserProfileValidationService } from '../../user-profile.validation.service';
 
 @Component({
@@ -94,7 +95,17 @@ export class SelfPickupInfoDialog implements OnInit {
     requiredNumber: boolean = true;
 
     constructor(
-        @Inject(MAT_DIALOG_DATA) public data: any,
+        @Inject(MAT_DIALOG_DATA) public data: {
+            selfPickupInfo: {
+                name: string,
+                email: string,
+                phoneNumber: string
+            },
+            infoType: {
+                showPhoneNo: boolean,
+                showEmail: boolean
+            }
+        },
         public dialogRef: MatDialogRef<SelfPickupInfoDialog>,
         private _formBuilder: FormBuilder,
         private _platformsService: PlatformService,
@@ -108,7 +119,7 @@ export class SelfPickupInfoDialog implements OnInit {
 
         // Create the form
         this.addressForm = this._formBuilder.group({
-            // name        : [''],
+            name        : [null],
             email       : ['', UserProfileValidationService.emailValidator],
             phoneNumber : ['', [UserProfileValidationService.phonenumberValidator, Validators.maxLength(30)]],
         });
@@ -149,53 +160,23 @@ export class SelfPickupInfoDialog implements OnInit {
                 }
         });
 
-        // if(this.data.type === "create"){
-        //     this.addressForm.get('customerId').setValue(this.data.customerId);
-        //     this.addressForm.get('isDefault').setValue(false);
-        //     this.addressForm.get('country').setValue(this.countryName);
-        //     this.addressForm.get('email').setValue(this.data.user.email);
-        // } else {
-        //     this.addressForm.patchValue(this.data.customerAddress);
-        // }
+        this.addressForm.patchValue(this.data.selfPickupInfo);
+        
+        if (this.data) {
 
-        if(this.data && this.data.carts) {
+            this.requiredEmail = this.data.infoType.showEmail;
+            this.requiredNumber = this.data.infoType.showPhoneNo;
 
-            this.data.carts.map(item => { 
-                // map item if there is a self collect then the system need to show only phone number
-                if(item.dineInOption === 'SELFCOLLECT') {
-                    this.requiredEmail = false;
-                    this.requiredNumber = true;
+            if (this.requiredEmail && !this.requiredNumber) {
+                this.addressForm.get('phoneNumber').disable();
+            }
+            else if (!this.requiredEmail && this.requiredNumber) {
+                this.addressForm.get('email').disable();
+            }
 
-                    // this.addressForm.value.email = '';
-                    this.addressForm.get('email').patchValue(null);
-                }
-                // if there a voucher apply then need to show only email
-                if(item.dineInOption === 'SENDTOTABLE' && this.data.storeVoucherCode && this.data.storeVoucherCode !== null) {
-                    this.requiredEmail = true;
-                    this.requiredNumber = false;
 
-                    this.addressForm.get('phoneNumber').patchValue(null);
-                }
-                // map item if there is a self collect and voucher then the system need to show only phone number and email
-                if(item.dineInOption === 'SELFCOLLECT' && this.data.storeVoucherCode && this.data.storeVoucherCode !== null) {
-                    this.requiredEmail = true;
-                    this.requiredNumber = true;
-                }
-            });
         }
         
-        if (this.data && this.data.user) {
-            this.addressForm.patchValue(this.data.user);
-
-            // if email form value is null the email form need to be hidden
-            if(this.data.user.email === null){
-                this.requiredEmail = false;
-            }
-            // if phone number form value is null the phone number form need to be hidden
-            if(this.data.user.phoneNumber === null){
-                this.requiredNumber = false;
-            }
-        }
 
     }
 

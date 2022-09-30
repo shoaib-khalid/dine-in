@@ -238,7 +238,6 @@ export class CartListComponent implements OnInit, OnDestroy
 
     tableNumber: string;
     detailsNeeded: boolean = false;
-    showContactInfo: boolean = false;
 
     // -------------------------
     // Voucher
@@ -278,7 +277,13 @@ export class CartListComponent implements OnInit, OnDestroy
     isGettingDeliveryPrices: boolean = false;
 
     storeTag: string;
-
+    infoType: {
+        showPhoneNo: boolean,
+        showEmail: boolean
+    } = {
+        showPhoneNo: false,
+        showEmail: false
+    }
     /**
      * Constructor
      */
@@ -1191,7 +1196,42 @@ export class CartListComponent implements OnInit, OnDestroy
             }
             // If guest
             else if (!this.customerId) {
-                // "This is a guess";
+                
+                if (this.selfPickupInfo) {
+                    checkoutParams = {
+                        platformVoucherCode: this.voucherApplied ? this.voucherApplied.voucher.voucherCode : null,
+                        customerId: null, 
+                        email: this.selfPickupInfo.email
+                    }
+                }
+                else {
+                    let isAllSelfCollect = this.selectedCart.carts.every(cart => cart.dineInOption === 'SELFCOLLECT');
+                    let isAllSendToTable = this.selectedCart.carts.every(cart => cart.dineInOption === 'SENDTOTABLE');
+
+                    if (isAllSelfCollect){
+                        this.infoType.showEmail = true;
+                        this.infoType.showPhoneNo = true;
+
+                        this.addRequiredInfo();
+                        return;
+                    }
+                    else if (isAllSendToTable) {
+                        this.infoType.showEmail = true;
+                        this.infoType.showPhoneNo = false;
+
+                        this.addRequiredInfo();
+                        return;
+                    }
+                    // if mix dine in option
+                    else {
+                        this.infoType.showEmail = true;
+                        this.infoType.showPhoneNo = true;
+
+                        this.addRequiredInfo();
+                        return;
+                    }
+                }
+
             }
         } else {
             checkoutParams = {
@@ -1626,49 +1666,57 @@ export class CartListComponent implements OnInit, OnDestroy
             return;
         }
 
-        // Check if all delivery, true if got delivery, false if all self pickup
-        let isAllSelfPickup = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === true);
-        let isAllDelivery = this.selectedCart.carts.filter(x => x.showRequiredInfo).every(cart => cart.isSelfPickup === false);
-        // if (!isAllSelfPickup && !isAllDelivery && !this.selfPickupInfo)
+        let isAllSelfCollect = this.selectedCart.carts.every(cart => cart.dineInOption === 'SELFCOLLECT');
+        let isAllSendToTable = this.selectedCart.carts.every(cart => cart.dineInOption === 'SENDTOTABLE');
+        if (this.voucherApplied) {
+            if (!this.selfPickupInfo) {
+                if (isAllSelfCollect){
+                    this.infoType.showEmail = true;
+                    this.infoType.showPhoneNo = true;
         
-        if (this.detailsNeeded && !this.selfPickupInfo){
-            // const confirmation = this._fuseConfirmationService.open({
-            //     "title": "Required info is empty!",
-            //     "message": "Please add your address/contact information before checking out.",
-            //     "icon": {
-            //     "show": true,
-            //     "name": "heroicons_outline:exclamation",
-            //     "color": "warn"
-            //     },
-            //     "actions": {
-            //     "confirm": {
-            //         "show": true,
-            //         "label": "OK",
-            //         "color": "primary"
-            //     },
-            //     "cancel": {
-            //         "show": false,
-            //         "label": "Cancel"
-            //     }
-            //     },
-            //     "dismissible": true
-            // });
-
-            // // Subscribe to the confirmation dialog closed action
-            // confirmation.afterClosed().subscribe((result) => {
-
-            //     // If the confirm button pressed...
-            //     if ( result === 'confirmed' )
-            //     {
-            //         this.addRequiredInfo(null) 
-            //         this.showContactInfo = true
-            //     }
-            // })
-
-            this.addRequiredInfo(null);
-            this.showContactInfo = true;
-            
-            return;
+                    this.addRequiredInfo();
+                    return;
+                }
+                else if (isAllSendToTable && !this.selfPickupInfo) {
+                    this.infoType.showEmail = true;
+                    this.infoType.showPhoneNo = false;
+        
+                    this.addRequiredInfo();
+                    return;
+                }
+                // mix dine in option
+                else {
+                    this.infoType.showEmail = true;
+                    this.infoType.showPhoneNo = true;
+        
+                    this.addRequiredInfo();
+                    return;
+                }
+            }
+        }
+        else {
+            if (!this.selfPickupInfo) {
+                if (isAllSelfCollect) {
+                    this.infoType.showEmail = false;
+                    this.infoType.showPhoneNo = true;
+        
+                    this.addRequiredInfo();
+                    return;
+                }
+                else if (isAllSendToTable) {
+                    this.infoType.showEmail = false;
+                    this.infoType.showPhoneNo = false;
+        
+                }
+                // mix dine in option
+                else {
+                    this.infoType.showEmail = false;
+                    this.infoType.showPhoneNo = true;
+        
+                    this.addRequiredInfo();
+                    return;
+                }
+            }
         }
 
         this.initializeCheckoutList();
@@ -1744,66 +1792,26 @@ export class CartListComponent implements OnInit, OnDestroy
         }
     }
 
-    addRequiredInfo(index?: number, toEdit: boolean = false) {
-        
-        // Has index means to be updated, toEdit only used in Edit Info field, not in the Required Info button
-        if ((index !== null) && (index > -1)) {
-            
-            // If self pickup, open popup to edit
-            if (this.selectedCart.carts[index].isSelfPickup || toEdit) {
-                
-                const dialogRef = this._dialog.open( 
-                    SelfPickupInfoDialog, {
-                        width: this.currentScreenSize.includes('sm') ? 'auto' : '100%',
-                        height: this.currentScreenSize.includes('sm') ? 'auto' : 'auto',
-                        maxWidth: this.currentScreenSize.includes('sm') ? 'auto' : '100vw',  
-                        maxHeight: this.currentScreenSize.includes('sm') ? 'auto' : '100vh',
-                        disableClose: true,
-                        data: {
-                            user: this.selfPickupInfo
-                        },
-                    }
-                );    
-                dialogRef.afterClosed().subscribe(result=>{                
-                    if (result) {
-                        this.selfPickupInfo = result;
-                        this.initializeCheckoutList();
-                    }
-                });
+    addRequiredInfo(index?: number) {
+        const dialogRef = this._dialog.open( 
+            SelfPickupInfoDialog, {
+                width: this.currentScreenSize.includes('sm') ? 'auto' : '100%',
+                height: this.currentScreenSize.includes('sm') ? 'auto' : 'auto',
+                maxWidth: this.currentScreenSize.includes('sm') ? 'auto' : '100vw',  
+                maxHeight: this.currentScreenSize.includes('sm') ? 'auto' : '100vh',
+                disableClose: true,
+                data: {
+                    infoType: this.infoType,
+                    selfPickupInfo: this.selfPickupInfo
+                },
             }
-            // if delivery, navigate to self address
-            else {
+        );    
+        dialogRef.afterClosed().subscribe(result=>{                
+            if (result) {
+                this.selfPickupInfo = result;
+                this.initializeCheckoutList();
             }
-
-        }
-        else {
-            // Check if all delivery, true if got delivery, false if all self pickup
-            let isAllDelivery = this.selectedCart.carts.filter(x => x.showRequiredInfo).some(cart => cart.isSelfPickup === false)
-            
-            
-            // For self pickup
-            if (!isAllDelivery) {
-                const dialogRef = this._dialog.open( 
-                    SelfPickupInfoDialog, {
-                        width: this.currentScreenSize.includes('sm') ? 'auto' : '100%',
-                        height: this.currentScreenSize.includes('sm') ? 'auto' : 'auto',
-                        maxWidth: this.currentScreenSize.includes('sm') ? 'auto' : '100vw',  
-                        maxHeight: this.currentScreenSize.includes('sm') ? 'auto' : '100vh',
-                        disableClose: true,
-                        data: {
-                            carts: this.carts
-                        },
-                    }
-                );    
-                dialogRef.afterClosed().subscribe(result=>{                
-                    if (result) {
-                        this.selfPickupInfo = result;
-                        this.initializeCheckoutList();
-                    }
-                });
-            } else {
-            }
-        }
+        });
     }
 
     checkCombineShipping(index: number) {
