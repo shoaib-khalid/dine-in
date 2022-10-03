@@ -11,7 +11,7 @@ import { AuthService } from './core/auth/auth.service';
 import { AppConfig } from './config/service.config';
 import { SwUpdate } from '@angular/service-worker';
 import { UserService } from './core/user/user.service';
-import { UserSession } from './core/user/user.types';
+import { User, UserSession } from './core/user/user.types';
 import { CustomerActivity } from './core/analytic/analytic.types';
 import { CurrentLocationService } from './core/_current-location/current-location.service';
 import { CurrentLocation } from './core/_current-location/current-location.types';
@@ -27,9 +27,10 @@ declare let gtag: Function;
 })
 export class AppComponent
 {
-    platform: Platform;
-    store: Store;
-    ipAddress  : string;
+    platform    : Platform;
+    store       : Store;
+    ipAddress   : string;
+    user        : User;
     userSession : UserSession;
     customerActivity: CustomerActivity = {};
 
@@ -171,6 +172,17 @@ export class AppComponent
                 this._changeDetectorRef.markForCheck();
             });
 
+        this._userService.user$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((user: User)=>{
+                if (user) {
+                    this.user = user;
+                    this.customerActivity.customerId = user.id;
+                }
+                // Mark for Check
+                this._changeDetectorRef.markForCheck();
+            });
+
         this._currentLocationService.currentLocation$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((response: CurrentLocation)=>{
@@ -181,18 +193,6 @@ export class AppComponent
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
-        
-        this._router.events.forEach((event) => {   
-            if(event instanceof RoutesRecognized) {
-                // set store id
-                if (this.store && this.store.id !== "") this.customerActivity.storeId = this.store.id;
-                // set page visited
-                this.customerActivity.pageVisited = 'https://' + this._apiServer.settings.marketplaceDomain + event["urlAfterRedirects"];
-                
-                this._analyticService.customerActivity = this.customerActivity;
-                this._analyticService.postActivity(this.customerActivity).subscribe();           
-            }        
-        });
 
         // Get searches from url parameter 
         this._activatedRoute.queryParams.subscribe(params => {
@@ -210,6 +210,19 @@ export class AppComponent
             }
             
             this.customerActivity.channel = channel
+        });
+        
+        // check router 
+        this._router.events.forEach((event) => {   
+            if(event instanceof RoutesRecognized) {
+                // set store id
+                if (this.store && this.store.id !== "") this.customerActivity.storeId = this.store.id;
+                // set page visited
+                this.customerActivity.pageVisited = 'https://' + this._apiServer.settings.marketplaceDomain + event["urlAfterRedirects"];
+                
+                this._analyticService.customerActivity = this.customerActivity;
+                // this._analyticService.postActivity(this.customerActivity).subscribe();           
+            }        
         });
     }
 }
