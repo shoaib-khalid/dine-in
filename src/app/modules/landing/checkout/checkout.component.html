@@ -302,9 +302,9 @@
                         <span class="text-md font-semibold">{{paymentDetails.cartGrandTotal | currency: platform.currency}}</span>
                     </div>
 
-                    <!-- Checkout -->
+                    <!-- Comfirm order -->
                     <button 
-                        [disabled]="false"
+                        [disabled]="isLoading"
                         class="bg-primary text-white py-2 px-4 rounded w-full mt-2"
                         [ngClass]="{ 'cursor-wait bg-gray-400' : isLoading, 
                                      'cursor-pointer bg-primary' : !isLoading}"

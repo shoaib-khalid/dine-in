@@ -478,7 +478,7 @@ export class BuyerCheckoutComponent implements OnInit
     onlinePay(){
 
         // Set Loading to true
-        // this.isLoading = true;
+        this.isLoading = true;
         
         let orderBodies = [];
         let platformVoucherCode = null;
@@ -622,11 +622,11 @@ export class BuyerCheckoutComponent implements OnInit
                         //         console.error("Provider id not configured");
                         //     }
                         // }
+                        
 
                         this._router.navigate(['/order-history']);
 
                         this._cartService.cartIds = '';
-
                         this._cartService.cartsHeaderWithDetails = [];
 
                         // Set Loading to false
