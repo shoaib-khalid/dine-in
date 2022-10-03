@@ -21,14 +21,10 @@
                     <div class="relative flex items-center justify-between w-full h-12 md:h-16">
                         <!-- Logo -->
                         <ng-container *ngIf="platform">
-                            <div class="flex items-center justify-start">
-                                <!-- (click)="goToHome()" -->
-                                <img
-                                    class="h-12 md:h-16 py-1.5 object-contain cursor-pointer"
-                                    [src]="platform.logo + '?original=true'"
-                                    alt="Logo image">
-                                <!-- <span class="block md:hidden">{{headerTitle}}</span> -->
-                            </div>
+                            <img
+                                class="h-12 w-auto md:h-14 py-2 object-contain cursor-pointer"
+                                [src]="platform.logo + '?original=true'"
+                                alt="Logo image">
                         </ng-container>
                         <!-- <search class="w-1/2 hidden sm:block"></search> -->
                         <!-- <vertical-mode></vertical-mode> -->
