@@ -216,6 +216,8 @@ export class BuyerCheckoutComponent implements OnInit
 
     tableNumber: string;
 
+    totalQuantity: number = 0
+
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -321,6 +323,8 @@ export class BuyerCheckoutComponent implements OnInit
                                 let cartsWithDetailsTotalItemsArr = checkoutItems.map(item => item.selectedItemId.length);
                                 let cartsWithDetailsTotalItems = cartsWithDetailsTotalItemsArr.reduce((partialSum, a) => partialSum + a, 0);
                                 this.totalSelectedCartItem = cartsWithDetailsTotalItems;
+                                
+                                this.totalQuantity = this.carts.map(item => item.cartItems.map(element => element.quantity).reduce((partialSum, a) => partialSum + a, 0)).reduce((a, b) => a + b, 0);
 
                                 // Check if has self pickup 
                                 this.hasSelfPickup = true
@@ -830,6 +834,16 @@ export class BuyerCheckoutComponent implements OnInit
             return cartItems.reduce((partialSum, item) => partialSum + item.price, 0);
         } else {
             return cartItemsTotal;
+        }
+    }
+
+    getCartTotalQuantities(cartItems: CartItem[]) : number {
+
+        let cartQuantitiesTotal: number;
+        if (cartItems.length && cartItems.length > 0) {
+            return cartItems.map(item => item.quantity).reduce((partialSum, a) => partialSum + a, 0);
+        } else {
+            return cartQuantitiesTotal;
         }
     }
 
