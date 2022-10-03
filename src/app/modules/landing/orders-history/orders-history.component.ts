@@ -460,10 +460,10 @@ export class OrdersHistoryComponent implements OnInit
         );
 
         if (sum > 1) {
-            return sum + " items"
+            return "Qty:" + sum
         }
         else 
-            return sum + " item"
+            return "Qty:" + sum
         
     }
 
