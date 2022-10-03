@@ -288,6 +288,8 @@ export class CartListComponent implements OnInit, OnDestroy
 
     serviceType: 'tableService' | 'selfPickup';
 
+    selectedAvailableCart: any [] = []
+
     /**
      * Constructor
      */
@@ -1183,7 +1185,16 @@ export class CartListComponent implements OnInit, OnDestroy
         // .reduce will sum up all number in the array of number created by .map
         this.totalSelectedCartItem = checkoutListBody.map(item => item.selectedItemId.length).reduce((partialSum, a) => partialSum + a, 0);
 
-        this.totalQuantity = this.carts.map(item => item.cartItems.map(element => element.quantity).reduce((partialSum, a) => partialSum + a, 0)).reduce((a, b) => a + b, 0);        
+        //Firstly we Remove selected cart with null id to create new array with an Ids only
+        let filteredSelectedCart = this.selectedCart.carts.filter(x => x.id !== null);
+        //Then we Merge this.selectedCart and this.carts with the same Id 
+        let filteredCart = filteredSelectedCart.map(item => {
+            let selectedCart = this.carts.find(element => element.id === item.id)
+            return { ...item, ...selectedCart }
+        });
+
+        // from the filtered cart with null id we can get the total quantities from array with an Ids only
+        this.totalQuantity = filteredCart.map(item => item.cartItems.map(element => element.quantity).reduce((partialSum, a) => partialSum + a, 0)).reduce((a, b) => a + b, 0);        
         
         this.isPristine = (this.totalSelectedCartItem < 1) ? true : false;
 

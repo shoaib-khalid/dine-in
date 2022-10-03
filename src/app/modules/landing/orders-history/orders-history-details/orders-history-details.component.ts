@@ -46,6 +46,8 @@ export class OrderHistoryDetailsComponent implements OnInit
 
     orderId: string;
     orderDetails: OrderDetails;
+
+    totalQuantity: number;
         
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -76,6 +78,8 @@ export class OrderHistoryDetailsComponent implements OnInit
             .subscribe((orderByIdResponse)=>{      
                                 
                 this.orderDetails = orderByIdResponse;
+
+                this.totalQuantity = this.orderDetails.orderItemWithDetails.map(item => item.quantity).reduce((partialSum, a) => partialSum + a, 0);                
             });
         
         this._platformService.platform$
