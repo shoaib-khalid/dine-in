@@ -99,7 +99,7 @@ export class FloatingBannerService
             
                     this.setSmallBanner(this._apiServer.settings.apiServer.assetsService + '/store-assets/SignUp_Now_Button_Click_GIF.gif', redirectUrl).subscribe();
                     // this.setBigBanner(this._apiServer.settings.apiServer.assetsService + '/store-assets/Sign-Up-PopUp-Banner_600x750.jpg', redirectUrl).subscribe();
-                    this.setBigBanner().subscribe();
+                    // this.setBigBanner().subscribe();
                     
                 }
                 else {
