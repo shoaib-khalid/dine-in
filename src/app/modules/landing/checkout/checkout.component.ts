@@ -518,7 +518,14 @@ export class BuyerCheckoutComponent implements OnInit
 
         this.checkoutItems.forEach(checkout => {
             
-            let dineInOptions = checkout.dineInOption === 'SENDTOTABLE' ? 'Table No. :' + this.tableNumber  : checkout.dineInOption;
+            let dineInOptions = "";
+            if (checkout.dineInOption === 'SENDTOTABLE') { 
+                'Table No. :' + this.tableNumber;
+            } else if (checkout.dineInOption === 'SELFCOLLECT'){
+                dineInOptions = "Seft Collect";
+            } else {
+                console.error("Should not happen")
+            }
 
             // by right shoul send checkout.orderNotes in customerNotes since we remove in order, we remove it as well
             const orderBody = {
