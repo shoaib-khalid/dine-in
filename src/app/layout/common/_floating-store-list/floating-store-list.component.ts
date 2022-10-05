@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { FuseConfigService } from '@fuse/services/config';
@@ -28,10 +28,13 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 })
 export class FloatingStoreListComponent implements OnInit, OnDestroy
 {
-    storeTag: string = "";
-    platform: Platform;
-    config: AppConfig;
-    stores: StoresDetails[] = [];
+
+    @Input() displayFloating: 'none' | 'single' | 'multiple' = 'multiple';
+
+    storeTag    : string = "";
+    platform    : Platform;
+    config      : AppConfig;
+    stores      : StoresDetails[] = [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -83,8 +86,7 @@ export class FloatingStoreListComponent implements OnInit, OnDestroy
         this._locationService.storesDetails$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((stores: StoresDetails[]) => {
-                this.stores = stores;
-                                
+                this.stores = stores;                
             });
         
         // Subscribe to config changes

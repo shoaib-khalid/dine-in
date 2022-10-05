@@ -29,6 +29,8 @@ import { CartAddressComponent } from './modal-address/cart-addresses.component';
 import { Title } from '@angular/platform-browser';
 import { DiningService } from 'app/core/_dining/dining.service';
 import { ServiceTypeDialog } from '../getting-started/service-type-dialog/service-type-dialog.component';
+import { LocationService } from 'app/core/location/location.service';
+import { StoresDetails } from 'app/core/location/location.types';
 
 @Component({
     selector     : 'carts',
@@ -140,6 +142,8 @@ export class CartListComponent implements OnInit, OnDestroy
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
 
     platform: Platform;
+
+    displayFloating: 'none' | 'single' | 'multiple' = 'none';
 
     // Quantity Selector
     quantity: number = 1;
@@ -300,6 +304,7 @@ export class CartListComponent implements OnInit, OnDestroy
         private _fuseConfirmationService: FuseConfirmationService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _changeDetectorRef: ChangeDetectorRef,
+        private _locationService: LocationService,
         private _router: Router,
         private _cartService: CartService,
         private _jwtService: JwtService,
@@ -576,6 +581,24 @@ export class CartListComponent implements OnInit, OnDestroy
                     })
                 }
 
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+
+        // Get List of stores
+        this._locationService.storesDetails$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((stores: StoresDetails[]) => {
+                if (stores) {
+                    if (stores.length === 1) {
+                        this.displayFloating = 'single';
+                    } else if (stores.length > 1) {
+                        this.displayFloating = 'multiple';
+                    } else {
+                        this.displayFloating = 'none';
+                    }
+                }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });

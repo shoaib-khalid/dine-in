@@ -71,7 +71,13 @@ export class LandingRestaurantsComponent implements OnInit
         this._locationService.storesDetails$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((stores: StoresDetails[]) => { 
-                this.storesDetails = stores;             
+                if (stores) {
+                    this.storesDetails = stores;
+                    if (stores.length === 1) {
+                        this.storesDetailsTitle = "Food & Beverage";
+                    }
+                }
+                // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
 

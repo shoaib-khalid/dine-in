@@ -26,6 +26,8 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { JwtService } from 'app/core/jwt/jwt.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { _BottomSheetComponent } from '../_bottom-sheet-product/bottom-sheet.component';
+import { LocationService } from 'app/core/location/location.service';
+import { StoresDetails } from 'app/core/location/location.types';
 
 @Component({
     selector     : 'landing-shop',
@@ -181,6 +183,8 @@ export class LandingShopComponent implements OnInit
     isScreenSmall: boolean;
     currentScreenSize: string[] = [];
 
+    displayFloating: 'none' | 'single' | 'multiple' = 'none';
+
     store: Store
     storeCategories: StoreCategory[];
     selectedCategory: StoreCategory = null;
@@ -236,6 +240,7 @@ export class LandingShopComponent implements OnInit
         private _searchService: SearchService,
         private _datePipe: DatePipe,
         private _shopService: ShopService,
+        private _locationService: LocationService,
         private _fuseConfirmationService: FuseConfirmationService,
         private _apiServer: AppConfig,
         private _cartService: CartService,
@@ -372,6 +377,15 @@ export class LandingShopComponent implements OnInit
                             
                     this.checkStoreTiming(store);
                 }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get List of stores
+        this._locationService.storesDetails$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((stores: StoresDetails[]) => {
+                this.displayFloating = stores && stores.length > 1 ? 'multiple' : 'none';                    
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });

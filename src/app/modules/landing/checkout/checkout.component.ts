@@ -27,6 +27,8 @@ import { StoresService } from 'app/core/store/store.service';
 import { CustomerActivity } from 'app/core/analytic/analytic.types';
 import { Title } from '@angular/platform-browser';
 import { DiningService } from 'app/core/_dining/dining.service';
+import { LocationService } from 'app/core/location/location.service';
+import { StoresDetails } from 'app/core/location/location.types';
 
 @Component({
     selector     : 'buyer-checkout',
@@ -216,7 +218,9 @@ export class BuyerCheckoutComponent implements OnInit
 
     tableNumber: string;
 
-    totalQuantity: number = 0
+    totalQuantity: number = 0;
+
+    displayFloating: 'none' | 'single' | 'multiple' = 'none';
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -239,6 +243,7 @@ export class BuyerCheckoutComponent implements OnInit
         private _userService: UserService,
         private _datePipe: DatePipe,
         private _analyticService: AnalyticService,
+        private _locationService: LocationService,
         private _apiServer: AppConfig,
         private _platformLocation: PlatformLocation,
         private _storesService: StoresService,
@@ -391,6 +396,23 @@ export class BuyerCheckoutComponent implements OnInit
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck()
+            });
+
+        // Get List of stores
+        this._locationService.storesDetails$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((stores: StoresDetails[]) => {
+                if (stores) {
+                    if (stores.length === 1) {
+                        this.displayFloating = 'single';
+                    } else if (stores.length > 1) {
+                        this.displayFloating = 'multiple';
+                    } else {
+                        this.displayFloating = 'none';
+                    }
+                }                   
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
             });
 
         // once selectCart() is triggered, it will set isLoading to true

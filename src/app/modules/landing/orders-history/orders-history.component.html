@@ -253,6 +253,7 @@
                                                             <h3 class="font-bold cursor-pointer" (click)="redirectToStore(orderDetails.store.domain)">{{orderDetails.store.name}}</h3>
                                                             <h3 class="text-gray-400 text-xs">Order ID : {{orderDetails.invoiceId}}</h3>
                                                             <h3 class="text-gray-400 text-xs">Order Placed : {{ convertDate(orderDetails.orderTimeConverted) | date:'MMM dd, h:mm a' }}</h3>
+                                                            <h3 class="text-blue-700 text-xs font-semibold">Notes : {{ orderDetails.customerNotes }}</h3>
                                                         </div>
                                                     </div>
                                                 </div>
