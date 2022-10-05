@@ -522,7 +522,7 @@ export class BuyerCheckoutComponent implements OnInit
             if (checkout.dineInOption === 'SENDTOTABLE') { 
                 'Table No. :' + this.tableNumber;
             } else if (checkout.dineInOption === 'SELFCOLLECT'){
-                dineInOptions = "Seft Collect";
+                dineInOptions = "Self Collect";
             } else {
                 console.error("Should not happen")
             }
