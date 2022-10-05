@@ -61,13 +61,13 @@
                         [svgIcon]="'mat_outline:storefront'"></mat-icon>
                     <span class="text-base md:text-lg line-clamp-1">{{store.name}}</span>
                 </div>
-                <div class="flex flex-row items-center ml-0.5">
+                <!-- <div class="flex flex-row items-center ml-0.5">
                     <mat-icon
                         class="icon-size-4 text-gray-400 mr-1.5"
                         [svgIcon]="'heroicons_solid:location-marker'"></mat-icon>
                     <span class="text-gray-600 font-normal text-sm">{{store.regionCityDetails.name}}</span> &nbsp;
                     <span *ngIf="store.distanceInMeter/1000 > 0" class="text-sm text-gray-600 font-normal">({{store.distanceInMeter/1000 | number : '1.1-2'}}KM)</span>
-                </div>
+                </div> -->
                 <span class="w-full border-b py-0.5"></span>
                 <span class="flex flex-row text-gray-400 font-normal text-sm line-clamp-3 mt-1" [innerHTML]="store.storeDescription"></span>
             </div>
