@@ -5,19 +5,12 @@ import { LayoutComponent } from 'app/layout/layout.component';
 import { PlatformSetupResolver, BrowserCompatibilityResolver } from 'app/app.resolvers';
 import { UserRole } from 'app/core/user/user.roles';
 import { CartsResolver } from './modules/landing/carts/carts.resolver';
-import { RedirectGuard } from './core/navigation/redirect.guard';
 
 // @formatter:off
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 export const appRoutes: Route[] = [
 
-    { path: '', pathMatch : 'full', redirectTo: 'external-redirect' },
-    {
-        path: 'external-redirect',
-        canActivate: [RedirectGuard],
-        component: RedirectGuard,
-    },
     // Landing routes
     {
         path       : '',

@@ -45,7 +45,6 @@ export class StoresResolver implements Resolve<any>
                 map((store: Store) => {                        
                     if (!store) {
                         this._displayErrorService.show({title: "Store Not Found", type: '4xx', message: "The store you are looking for might have been removed, had its name changed or is temporarily unavailable.", code: "404"});
-
                     } 
                 })
             );

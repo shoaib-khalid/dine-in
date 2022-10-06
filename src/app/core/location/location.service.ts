@@ -803,17 +803,23 @@ export class LocationService
         pageSize        : number, 
         sortByCol       : string, 
         sortingOrder    : 'ASC' | 'DESC' | '',
-        latitude        : number,
-        longitude       : number
+        latitude?       : number,
+        longitude?      : number,
+        tagKeyword      : string
     } = {
         page            : 0, 
         pageSize        : 0, 
         sortByCol       : "keyword", 
         sortingOrder    : 'ASC',
         latitude        : 0,
-        longitude       : 0
+        longitude       : 0,
+        tagKeyword      : ""
     }): Observable<Tag[]> 
     {        
+
+        console.log("Assaasa");
+        
+
         let locationService = this._apiServer.settings.apiServer.locationService;
         let accessToken = this._authService.publicToken;
 

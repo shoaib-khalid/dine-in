@@ -27,7 +27,7 @@ export class LandingRestaurantsComponent implements OnInit
     currentLocation: CurrentLocation;
     
     // Stores Details
-    storesDetailsTitle: string = "Food & Beverage Stalls"
+    storesDetailsTitle: string;
     storesDetails: StoresDetails[] = [];
     storesDetailsPagination: StorePagination;
     storesDetailsPageOfItems: Array<any>;
@@ -73,9 +73,6 @@ export class LandingRestaurantsComponent implements OnInit
             .subscribe((stores: StoresDetails[]) => { 
                 if (stores) {
                     this.storesDetails = stores;
-                    if (stores.length === 1) {
-                        this.storesDetailsTitle = "Food & Beverage";
-                    }
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();

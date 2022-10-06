@@ -7,7 +7,8 @@
             class="fixed note flex items-center justify-center w-14 h-8 right-0 z-90 rounded-l-lg cursor-pointer bg-black hover:bg-primary print:hidden transition-colors p-1"
             [class.lg:right-0]="config.layout === 'centered' || config.layout === 'material'"
             [class.lg:right-16]="config.layout !== 'centered' && config.layout !== 'material'"
-            style="top: 80px">
+            style="top: 80px"
+            (click)="goToStore(stores[0].domain)">
             <mat-icon
                 class="icon-size-4 text-white"
                 [svgIcon]="'storefront'"></mat-icon>

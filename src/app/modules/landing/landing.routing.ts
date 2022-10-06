@@ -9,7 +9,7 @@ export const landingRoutes: Route[] = [
             landingDataResolver: LandingDataResolver
         },
         children   : [
-            // {path: '', pathMatch : 'full', loadChildren: () => import('app/modules/landing/home/home.module').then(m => m.LandingHomeModule)},
+            {path: '', pathMatch : 'full', loadChildren: () => import('app/modules/landing/home/home.module').then(m => m.LandingHomeModule)},
             // {path: 'promotion', data: { breadcrumb: 'Promo' }, loadChildren: () => import('app/modules/landing/promotion/promotion.module').then(m => m.LandingPromotionModule)},
             {path: 'search', data: { breadcrumb: 'Search' }, loadChildren: () => import('app/modules/landing/search/search.module').then(m => m.LandingSearchModule)},
             {path: 'category', data: { breadcrumb: 'Category' }, loadChildren: () => import('app/modules/landing/categories/categories.module').then(m => m.CategoriesModule)},

@@ -10,6 +10,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ServiceTypeDialog } from './service-type-dialog/service-type-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DiningService } from 'app/core/_dining/dining.service';
+import { LocationService } from 'app/core/location/location.service';
+import { Tag } from 'app/core/location/location.types';
 
 @Component({
     selector     : 'landing-getting-started',
@@ -21,13 +23,15 @@ export class LandingGettingStartedComponent implements OnInit
 
     platform: Platform;
     currentLocation: CurrentLocation;
-    storeTag: string;
+    storeTag    : string;
+    tagType     : string;
 
     serviceType: 'tableService' | 'selfPickup';
     isLoading: boolean = false;
     currentScreenSize: string[] = [];
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
     tableNumber: any;
+
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
      * Constructor
@@ -40,6 +44,7 @@ export class LandingGettingStartedComponent implements OnInit
         private _dialog: MatDialog,
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
+        private _locationService: LocationService,
         private _titleService: Title,
         private _diningService: DiningService
     )
@@ -66,6 +71,19 @@ export class LandingGettingStartedComponent implements OnInit
                 }, 200);
             }
         })
+
+        this._locationService.tags$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response: Tag[]) => {
+                if (response && response.length) {
+                    let index = response[0].tagConfig.findIndex(item => item.property === "type");
+                    if (index > -1) {
+                        this.tagType = response[0].tagConfig[index].content;
+                    }
+                }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
 
         combineLatest([
             this._currentLocationService.currentLocation$,
@@ -121,7 +139,11 @@ export class LandingGettingStartedComponent implements OnInit
         );    
         dialogRef.afterClosed().subscribe(result=>{                
             if (result) {
-                this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
+                if (this.tagType && this.tagType === "restaurant") {
+                    this._router.navigate(['/store/' + this.storeTag +'/all-products']);
+                } else {
+                    this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
+                }
             }
         });
     }

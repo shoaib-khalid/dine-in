@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, Input, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { StoresService } from 'app/core/store/store.service';
 import { Store, StoreAssets, StoreCategory } from 'app/core/store/store.types';
@@ -112,26 +112,21 @@ export class _SwiperBannerComponent
 {    
 
     @ViewChild(SwiperComponent) swiper: SwiperComponent;
-    
+    @Input() galleryImages: Banner[] = [];
+    @Input() mobileGalleryImages: Banner[] = [];
+
     store: Store;
 
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
-
-    galleryImages: Banner[] = [];
-    mobileGalleryImages: Banner[] = [];
     currentScreenSize: string[];
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
     
     /**
      * Constructor
      */
     constructor(
-        private _changeDetectorRef: ChangeDetectorRef,
-        private _fuseMediaWatcherService: FuseMediaWatcherService,
-        private _router: Router,
-        private _adsService: AdsService,
-        private _apiServer: AppConfig,
         @Inject(DOCUMENT) private _document: Document,
-
+        private _changeDetectorRef: ChangeDetectorRef,
+        private _fuseMediaWatcherService: FuseMediaWatcherService
     )
     {
         
@@ -150,56 +145,6 @@ export class _SwiperBannerComponent
     */
     ngOnInit(): void
     {
-
-        // Get banners
-        this._adsService.bannersDesktop$
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((banner: Banner[]) => {
-            if (banner) {
-                this.galleryImages = banner;
-            }
-            // set default banner here
-            else {
-                this.galleryImages = [
-                    {
-                        id: 1,
-                        bannerUrl: this._apiServer.settings.apiServer.assetsService + '/store-assets/Landing-Page-Banner_1440X370.png',
-                        regionCountryId: '',
-                        type: 'DESKTOP',
-                        actionUrl: null,
-                        sequence: 1,
-                        delayDisplay: 10
-                    }
-                ]
-            }
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        });
-
-        // Get banners
-        this._adsService.bannersMobile$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((banner: Banner[]) => {
-                if (banner) {
-                    this.mobileGalleryImages = banner;
-                }
-                // set default banner here
-                else {
-                    this.mobileGalleryImages = [
-                        {
-                            id: 1,
-                            bannerUrl: this._apiServer.settings.apiServer.assetsService + '/store-assets/Landing-Page-Banner_304X224.png',
-                            regionCountryId: '',
-                            type: 'MOBILE',
-                            actionUrl: null,
-                            sequence: 1,
-                            delayDisplay: 10
-                        }
-                    ]
-                }
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
  
         this._fuseMediaWatcherService.onMediaChange$
             .pipe(takeUntil(this._unsubscribeAll))

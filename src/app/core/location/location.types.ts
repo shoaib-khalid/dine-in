@@ -193,9 +193,17 @@ export interface LocationArea
 
 export interface Tag
 {
-    id      : string;
-    keyword : string;
-    description: string;
+    id          : string;
+    keyword     : string;
+    tagConfig   : TagConfig[];
+}
+
+export interface TagConfig
+{
+    id      : number;
+    property: string;
+    content : string;
+    tagId   : string;
 }
 
 export interface TagPagination

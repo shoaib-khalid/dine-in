@@ -1,15 +1,17 @@
 import { Route } from '@angular/router';
 import { LandingHomeComponent } from 'app/modules/landing/home/home.component';
-import { StoresResolver } from '../stores/stores.resolvers';
+import { RedirectGuard } from 'app/core/navigation/redirect.guard';
 
 export const landingHomeRoutes: Route[] = [
     {
-        path     : '',  
-        children   : [
+        path        : '',  
+        // canActivate : [RedirectGuard],
+        // component   : RedirectGuard,
+        children    : [
             {
                 path: '',
                 component: LandingHomeComponent,
             }
-        ],
+        ]
     },
 ];

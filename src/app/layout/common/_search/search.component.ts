@@ -12,6 +12,7 @@ import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
 import { LocationService } from 'app/core/location/location.service';
 import { Tag } from 'app/core/location/location.types';
+import { Banner } from 'app/core/ads/ads.types';
 
 
 @Component({
@@ -37,7 +38,6 @@ export class _SearchComponent implements OnInit, OnDestroy
     @Input() store: StoreDetails;
 
     platform: Platform;
-    tags: Tag[];
     searchControl: FormControl = new FormControl();
     resultSets: any[];
     autoCompleteList: any[]
@@ -47,15 +47,23 @@ export class _SearchComponent implements OnInit, OnDestroy
     placeholder = 'Search for food or restaurant';
     currentScreenSize: string[] = [];
     route: string;
-
+    
+    tags        : Tag[];
+    tagTitle    : string;
+    tagType     : string;
+    tagBanner   : string[] = [];
     storeTag    : string;
     currentLat  : number = null;
     currentLong : number = null;
 
     isStorePage: boolean = false;
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
     routeName: string;
 
+    galleryImages: Banner[] = [];
+    mobileGalleryImages: Banner[] = [];
+    
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    
     /**
      * Constructor
      */
@@ -90,6 +98,51 @@ export class _SearchComponent implements OnInit, OnDestroy
             .subscribe((response: Tag[]) => {
                 if (response) {
                     this.tags = response;
+
+                    // Tag Title
+                    let titleIndex = this.tags[0].tagConfig.findIndex(item => item.property === 'title');
+                    if (titleIndex > -1) {
+                        this.tagTitle = this.tags[0].tagConfig[titleIndex].content;
+                    }
+
+                    // Tag Type
+                    let typeIndex = this.tags[0].tagConfig.findIndex(item => item.property === 'type');
+                    if (typeIndex > -1) {
+                        this.tagType = this.tags[0].tagConfig[typeIndex].content;
+                    }
+
+                    // Tag Banner
+                    let bannerIndex = this.tags[0].tagConfig.findIndex((item) => item.property === 'banner');
+                    if (bannerIndex > -1) {
+                        this.tagBanner = this.tags[0].tagConfig.map(item => {
+                            return item.property === "banner" ? item.content : null;
+                        }).filter(n => n);
+
+                        this.galleryImages = this.tags[0].tagConfig.map((item, iteration) => {
+                            return item.property === "banner" ? {
+                                id: iteration + 1,
+                                bannerUrl: item.content,
+                                regionCountryId: '',
+                                type: 'DESKTOP',
+                                actionUrl: null,
+                                sequence: iteration + 1,
+                                delayDisplay: 10
+                            } : null;
+                        }).filter(n => n);
+
+                        this.mobileGalleryImages = this.tags[0].tagConfig.map((item, iteration) => {
+                            return item.property === "bannerMobile" ? {
+                                id: iteration + 1,
+                                bannerUrl: item.content,
+                                regionCountryId: '',
+                                type: 'MOBILE',
+                                actionUrl: null,
+                                sequence: iteration + 1,
+                                delayDisplay: 10
+                            } : null;
+                        }).filter(n => n);
+                    }                    
+
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();

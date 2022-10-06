@@ -85,7 +85,7 @@ export class DiningService
     {
         return of(true).pipe(
             tap(()=>{
-                this.storeTag = storeTag;
+                this.storeTag = storeTag;                
             })
         );
     }

@@ -7,13 +7,14 @@ import { Platform, PlatformTag } from 'app/core/platform/platform.types';
 import { StorePagination } from 'app/core/store/store.types';
 import { Subject, takeUntil, combineLatest } from 'rxjs';
 import { AdsService } from 'app/core/ads/ads.service';
-import { Ad } from 'app/core/ads/ads.types';
+import { Ad, Banner } from 'app/core/ads/ads.types';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { NavigateService } from 'app/core/navigate-url/navigate.service';
 import { CurrentLocationService } from 'app/core/_current-location/current-location.service';
 import { CurrentLocation } from 'app/core/_current-location/current-location.types';
 import { BottomPopUpService } from 'app/layout/common/_bottom-popup/bottom-popup.service';
 import { Title } from '@angular/platform-browser';
+import { AppConfig } from 'app/config/service.config';
 
 @Component({
     selector     : 'landing-home',
@@ -48,6 +49,9 @@ export class LandingHomeComponent implements OnInit
 
     currentLocation: CurrentLocation;
 
+    galleryImages: Banner[] = [];
+    mobileGalleryImages: Banner[] = [];
+
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -61,13 +65,13 @@ export class LandingHomeComponent implements OnInit
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _currentLocationService: CurrentLocationService,
         private _navigate: NavigateService,
-        private _bottomPopUpService: BottomPopUpService,
+        private _apiServer: AppConfig,
         private _titleService: Title
     )
     {
     }
 
-    ngOnInit(): void {
+    ngOnInit(): void {        
 
         combineLatest([
             this._currentLocationService.currentLocation$,
@@ -193,13 +197,67 @@ export class LandingHomeComponent implements OnInit
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Get banners
+        // ----------------------
+        // Banner
+        // ----------------------
+
+        // Popup Banner
         this._adsService.ads$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((ads: Ad[]) => {
                 if (ads) {
                     // to show only 8
                     this.ads = ads;
+                }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get Swipping banners (Desktop)
+        this._adsService.bannersDesktop$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((banner: Banner[]) => {
+                if (banner) {
+                    this.galleryImages = banner;
+                }
+                // set default banner here
+                else {
+                    this.galleryImages = [
+                        {
+                            id: 1,
+                            bannerUrl: this._apiServer.settings.apiServer.assetsService + '/store-assets/Landing-Page-Banner_1440X370.png',
+                            regionCountryId: '',
+                            type: 'DESKTOP',
+                            actionUrl: null,
+                            sequence: 1,
+                            delayDisplay: 10
+                        }
+                    ];
+                }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get Swipping banners (Mobile)
+        this._adsService.bannersMobile$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((banner: Banner[]) => {
+                if (banner) {
+                    this.mobileGalleryImages = banner;
+                }
+                // set default banner here
+                else {
+                    this.mobileGalleryImages = [
+                        {
+                            id: 1,
+                            bannerUrl: this._apiServer.settings.apiServer.assetsService + '/store-assets/Landing-Page-Banner_304X224.png',
+                            regionCountryId: '',
+                            type: 'MOBILE',
+                            actionUrl: null,
+                            sequence: 1,
+                            delayDisplay: 10
+                        }
+                    ];
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -218,6 +276,7 @@ export class LandingHomeComponent implements OnInit
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+        
     }
 
     /**
