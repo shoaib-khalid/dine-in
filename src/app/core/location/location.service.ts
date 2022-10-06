@@ -805,12 +805,9 @@ export class LocationService
         let tagKeyword;
         if ((this._diningService.storeTag$ && this._diningService.storeTag$ !== "") || storeTag) {
             if (storeTag) {
-                tagKeyword = storeTag;
-                console.log(1);
-                
+                tagKeyword = storeTag;                
             } else {
                 tagKeyword = this._diningService.storeTag$;
-                console.log(2);
             }
         } else {
             console.error("No store tag detected, cannot resolve tag");
@@ -820,7 +817,6 @@ export class LocationService
         return of(true).pipe(
             tap(()=>{
                 this.getTags({ page:0, pageSize: 1, sortByCol: "keyword", sortingOrder: "ASC", tagKeyword: tagKeyword}).subscribe();
-                console.log(3);
             })
         );
     }
