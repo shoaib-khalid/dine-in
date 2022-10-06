@@ -55,6 +55,19 @@ export class LandingGettingStartedComponent implements OnInit
 
         this.storeTag = this._activatedRoute.snapshot.paramMap.get('store-tag');
 
+        this._locationService.tags$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response: Tag[]) => {
+                if (response && response.length) {
+                    let index = response[0].tagConfig.findIndex(item => item.property === "type");
+                    if (index > -1) {
+                        this.tagType = response[0].tagConfig[index].content;
+                    }
+                }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
         this._activatedRoute.queryParams.subscribe(params => {
             this.tableNumber = params['tableno'];
             
@@ -70,20 +83,7 @@ export class LandingGettingStartedComponent implements OnInit
                     this._changeDetectorRef.markForCheck();
                 }, 200);
             }
-        })
-
-        this._locationService.tags$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((response: Tag[]) => {
-                if (response && response.length) {
-                    let index = response[0].tagConfig.findIndex(item => item.property === "type");
-                    if (index > -1) {
-                        this.tagType = response[0].tagConfig[index].content;
-                    }
-                }
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+        });
 
         combineLatest([
             this._currentLocationService.currentLocation$,

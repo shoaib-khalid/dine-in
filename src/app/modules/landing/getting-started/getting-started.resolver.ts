@@ -33,6 +33,7 @@ export class StoreTagResolver implements Resolve<any>
     {
         let storeTagArray: string[] = state.url.split("/");
         let storeTag = storeTagArray[2] ? storeTagArray[2] : "";
+        storeTag = storeTag.split("?")[0];
         
         // Fork join multiple API endpoint calls to wait all of them to finish
         return forkJoin([
