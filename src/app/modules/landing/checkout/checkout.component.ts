@@ -518,9 +518,7 @@ export class BuyerCheckoutComponent implements OnInit
 
         this.checkoutItems.forEach(checkout => {
             
-            let dineInOptions = "";
-            console.log("checkout.dineInOption", checkout.dineInOption);
-            
+            let dineInOptions = "";            
             if (checkout.dineInOption === 'SENDTOTABLE') { 
                 dineInOptions = 'Table No. :' + this.tableNumber;
             } else if (checkout.dineInOption === 'SELFCOLLECT'){
