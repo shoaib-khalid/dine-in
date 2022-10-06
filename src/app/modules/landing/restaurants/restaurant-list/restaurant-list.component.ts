@@ -2,8 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation } fr
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
+import { Banner } from 'app/core/ads/ads.types';
 import { LocationService } from 'app/core/location/location.service';
-import { LandingLocation, LocationArea, StoresDetailPagination, StoresDetails } from 'app/core/location/location.types';
+import { LandingLocation, LocationArea, StoresDetailPagination, StoresDetails, Tag } from 'app/core/location/location.types';
 import { NavigateService } from 'app/core/navigate-url/navigate.service';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
@@ -39,8 +40,17 @@ export class LandingRestaurantsComponent implements OnInit
         
     currentScreenSize: string[] = [];
     isLoading: boolean = false;
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
     searchName: string;
+
+    tags        : Tag[];
+    tagTitle    : string;
+    tagType     : string;
+    tagBanner   : string[] = [];
+
+    galleryImages: Banner[] = [];
+    mobileGalleryImages: Banner[] = [];
+
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
      * Constructor
@@ -53,8 +63,7 @@ export class LandingRestaurantsComponent implements OnInit
         private _locationService: LocationService,
         private _activatedRoute: ActivatedRoute,
         private _navigate: NavigateService,
-        private _searchService: SearchService,
-
+        private _searchService: SearchService
     )
     {
     }
@@ -84,6 +93,62 @@ export class LandingRestaurantsComponent implements OnInit
             .subscribe((pagination: StoresDetailPagination) => {
                 // Update the pagination
                 this.storesDetailsPagination = pagination;                   
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get tags
+        this._locationService.tags$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response: Tag[]) => {
+                if (response && response.length) {
+                    this.tags = response;
+
+                    // Tag Title
+                    let titleIndex = this.tags[0].tagConfig.findIndex(item => item.property === 'title');
+                    if (titleIndex > -1) {
+                        this.tagTitle = this.tags[0].tagConfig[titleIndex].content;
+                    }
+
+                    // Tag Type
+                    let typeIndex = this.tags[0].tagConfig.findIndex(item => item.property === 'type');
+                    if (typeIndex > -1) {
+                        this.tagType = this.tags[0].tagConfig[typeIndex].content;
+                    }
+
+                    // Tag Banner
+                    let bannerIndex = this.tags[0].tagConfig.findIndex((item) => item.property === 'banner');
+                    if (bannerIndex > -1) {
+                        this.tagBanner = this.tags[0].tagConfig.map(item => {
+                            return item.property === "banner" ? item.content : null;
+                        }).filter(n => n);
+
+                        this.galleryImages = this.tags[0].tagConfig.map((item, iteration) => {
+                            return item.property === "banner" ? {
+                                id: iteration + 1,
+                                bannerUrl: item.content,
+                                regionCountryId: '',
+                                type: 'DESKTOP',
+                                actionUrl: null,
+                                sequence: iteration + 1,
+                                delayDisplay: 10
+                            } : null;
+                        }).filter(n => n);
+
+                        this.mobileGalleryImages = this.tags[0].tagConfig.map((item, iteration) => {
+                            return item.property === "bannerMobile" ? {
+                                id: iteration + 1,
+                                bannerUrl: item.content,
+                                regionCountryId: '',
+                                type: 'MOBILE',
+                                actionUrl: null,
+                                sequence: iteration + 1,
+                                delayDisplay: 10
+                            } : null;
+                        }).filter(n => n);
+                    }                    
+
+                }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });

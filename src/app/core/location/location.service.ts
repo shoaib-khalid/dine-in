@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, catchError, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { AppConfig } from 'app/config/service.config';
 import { LogService } from '../logging/log.service';
 import { CategoryPagination, ChildCategory, LandingLocation, LocationArea, LocationPagination, ParentCategory, ProductDetailPagination, ProductDetails, StoresDetailPagination, StoresDetails, Tag, TagPagination } from './location.types';
 import { ProductPagination, StorePagination } from '../store/store.types';
+import { DiningService } from '../_dining/dining.service';
 
 @Injectable({
     providedIn: 'root'
@@ -54,6 +55,7 @@ export class LocationService
     constructor(
         private _httpClient: HttpClient,
         private _authService: AuthService,
+        private _diningService: DiningService,
         private _apiServer: AppConfig,
         private _logging: LogService
     )
@@ -798,6 +800,27 @@ export class LocationService
             );
     }
 
+    resolveTag(storeTag?: string) : Observable<any>
+    {
+        let tagKeyword;
+        if (this._diningService.storeTag$ && this._diningService.storeTag$ !== "") {
+            if (storeTag) {
+                tagKeyword = storeTag;                
+            } else {
+                tagKeyword = this._diningService.storeTag$;
+            }
+        } else {
+            console.error("No store tag detected, cannot resolve tag");
+            return of(false);
+        }
+
+        return of(true).pipe(
+            tap(()=>{
+                this.getTags({ page:0, pageSize: 1, sortByCol: "keyword", sortingOrder: "ASC", tagKeyword: tagKeyword}).subscribe();
+            })
+        );
+    }
+
     getTags(params: {
         page            : number, 
         pageSize        : number, 
@@ -816,10 +839,7 @@ export class LocationService
         tagKeyword      : ""
     }): Observable<Tag[]> 
     {        
-
-        console.log("Assaasa");
         
-
         let locationService = this._apiServer.settings.apiServer.locationService;
         let accessToken = this._authService.publicToken;
 

@@ -8,7 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { SharedModule } from 'app/shared/shared.module';
 import { _SearchComponent } from 'app/layout/common/_search/search.component';
-import { _SwiperBannerModule } from '../_swiper-banner/swiper-banner.module';
 
 @NgModule({
     declarations: [
@@ -21,7 +20,6 @@ import { _SwiperBannerModule } from '../_swiper-banner/swiper-banner.module';
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
-        _SwiperBannerModule,
         SharedModule
     ],
     exports     : [
