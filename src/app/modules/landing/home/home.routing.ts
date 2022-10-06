@@ -5,13 +5,13 @@ import { RedirectGuard } from 'app/core/navigation/redirect.guard';
 export const landingHomeRoutes: Route[] = [
     {
         path        : '',  
-        // canActivate : [RedirectGuard],
-        // component   : RedirectGuard,
-        children    : [
-            {
-                path: '',
-                component: LandingHomeComponent,
-            }
-        ]
+        canActivate : [RedirectGuard],
+        component   : RedirectGuard,
+        // children    : [
+        //     {
+        //         path: '',
+        //         component: LandingHomeComponent,
+        //     }
+        // ]
     },
 ];
