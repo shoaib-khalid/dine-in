@@ -63,27 +63,37 @@ export class LandingGettingStartedComponent implements OnInit
                     if (index > -1) {
                         this.tagType = response[0].tagConfig[index].content;
                     }
+
+                    // Check param after we know that store tag exists
+                    this._activatedRoute.queryParams.subscribe(params => {
+                        this.tableNumber = params['tableno'];
+                        
+                        if (this.tableNumber) {
+                            this._diningService.tableNumber = this.tableNumber + "";
+                            this._diningService.storeTag = this.storeTag;
+            
+            
+                            if (this.tagType && this.tagType === "restaurant") {                                
+                                this._router.navigate(['/store/' + this.storeTag +'/all-products']);
+                            } else {
+                                this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
+                            }
+                            
+                        }
+                        else {
+                            setTimeout(() => {
+                                this.openDialog('dining');
+                                // Mark for check
+                                this._changeDetectorRef.markForCheck();
+                            }, 200);
+                        }
+                    });
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
 
-        this._activatedRoute.queryParams.subscribe(params => {
-            this.tableNumber = params['tableno'];
-            
-            if (this.tableNumber) {
-                this._diningService.tableNumber = this.tableNumber + "";
-                this._diningService.storeTag = this.storeTag;
-                this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
-            }
-            else {
-                setTimeout(() => {
-                    this.openDialog('dining');
-                    // Mark for check
-                    this._changeDetectorRef.markForCheck();
-                }, 200);
-            }
-        });
+        
 
         combineLatest([
             this._currentLocationService.currentLocation$,
@@ -139,7 +149,7 @@ export class LandingGettingStartedComponent implements OnInit
         );    
         dialogRef.afterClosed().subscribe(result=>{                
             if (result) {
-                if (this.tagType && this.tagType === "restaurant") {
+                if (this.tagType && this.tagType === "restaurant") {                    
                     this._router.navigate(['/store/' + this.storeTag +'/all-products']);
                 } else {
                     this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
