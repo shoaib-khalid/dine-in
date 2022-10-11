@@ -45,70 +45,35 @@ export class CheckoutService
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Setter for saveMyInfo
-     */
-    set saveMyInfo(value: string) {
-        localStorage.setItem('saveMyInfo', value);
-    }
+    /** Local Storage Setter for saveMyInfo  */
+    set saveMyInfo(value: string) { localStorage.setItem('saveMyInfo', value); }
 
-    /**
-     * Getter for cartId
-     */
-    get saveMyInfo$(): string
-    {
-        return localStorage.getItem('saveMyInfo') ?? '';
-    }
+    /** Local Storage Getter for cartId */
+    get saveMyInfo$(): string { return localStorage.getItem('saveMyInfo') ?? ''; }
 
-    /**
-    * Getter for orders
-    */
-    get customerAddress$(): Observable<any>
-    {
-        return this._address.asObservable();
-    }
+    /** Getter for customerAddress */
+    get customerAddress$(): Observable<any> { return this._address.asObservable(); }
+    /** Getter for customerAddresses */
+    get customerAddresses$(): Observable<Address[]> { return this._addresses.asObservable(); }
 
-    get customerAddresses$(): Observable<Address[]>
-    {
-        return this._addresses.asObservable();
-    }
+    /** Getter for cartWithDetails */
+    get cartWithDetails$(): Observable<CartWithDetails> { return this._cartWithDetails.asObservable(); }
+    /** Setter for cartWithDetails */
+    set cartWithDetails(value: CartWithDetails) { this._cartWithDetails.next(value); }
+    /** Getter for cartsWithDetails */
+    get cartsWithDetails$(): Observable<CartWithDetails[]> { return this._cartsWithDetails.asObservable(); }
+    /** Setter for cartsWithDetails */
+    set cartsWithDetails(value: CartWithDetails[]) { this._cartsWithDetails.next(value); }
+    /** Getter for cartsWithDetailsPagination */
+    get cartsWithDetailsPagination$(): Observable<CartPagination> { return this._cartsWithDetailsPagination.asObservable(); }
+    
+    /** Getter for checkoutItems */
+    get checkoutItems$(): Observable<CheckoutItems[]> { return this._checkoutItems.asObservable(); }
 
-    get cartWithDetails$(): Observable<CartWithDetails>
-    {
-        return this._cartWithDetails.asObservable();
-    }
-
-    get cartsWithDetails$(): Observable<CartWithDetails[]>
-    {
-        return this._cartsWithDetails.asObservable();
-    }
-
-    get checkoutItems$(): Observable<CheckoutItems[]>
-    {
-        return this._checkoutItems.asObservable();
-    }
-
-    /**
-    * Getter for cart pagination
-    */
-    get cartsWithDetailsPagination$(): Observable<CartPagination>
-    {
-        return this._cartsWithDetailsPagination.asObservable();
-    }
-
-    /**
-     * Cart Summary
-     */
-
-    get cartSummary$(): Observable<DiscountOfCartGroup>
-    {
-        return this._cartSummary.asObservable();
-    }
-
-    set cartSummary(value: DiscountOfCartGroup)
-    {
-        this._cartSummary.next(value);
-    }
+    /** Getter for cartSummary */
+    get cartSummary$(): Observable<DiscountOfCartGroup> { return this._cartSummary.asObservable(); }
+    /** Setter for cartSummary */
+    set cartSummary(value: DiscountOfCartGroup) { this._cartSummary.next(value); }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods

@@ -497,7 +497,7 @@ export class BuyerCheckoutComponent implements OnInit
     // @ Public method
     // -----------------------------------------------------------------------------------------------------
 
-    onlinePay(){
+    placeOrder(){
 
         // Set Loading to true
         this.isLoading = true;
@@ -657,6 +657,8 @@ export class BuyerCheckoutComponent implements OnInit
 
                         this._cartService.cartIds = '';
                         this._cartService.cartsHeaderWithDetails = [];
+                        this._checkoutService.cartsWithDetails = null;
+                        this._cartService.cartsWithDetails = null;
 
                         // Set Loading to false
                         this.isLoading = false;

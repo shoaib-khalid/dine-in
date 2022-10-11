@@ -45,8 +45,12 @@ export class CartService
 
     /** Getter for cartWithDetails  */
     get cartWithDetails$(): Observable<CartWithDetails> { return this._cartWithDetails.asObservable(); }
+    /** Setter for cartWithDetails */
+    set cartWithDetails(value: CartWithDetails) { this._cartWithDetails.next(value); }
     /** Getter for cartsWithDetails  */
     get cartsWithDetails$(): Observable<CartWithDetails[]> { return this._cartsWithDetails.asObservable(); }
+    /** Setter for cartsWithDetails */
+    set cartsWithDetails(value: CartWithDetails[]) { this._cartsWithDetails.next(value); }
     /** Getter for cartsWithDetailsPagination pagination */
     get cartsWithDetailsPagination$(): Observable<CartPagination> { return this._cartsWithDetailsPagination.asObservable(); }
 
