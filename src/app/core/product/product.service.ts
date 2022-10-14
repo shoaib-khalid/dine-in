@@ -173,6 +173,8 @@ export class ProductsService
             params: params
         };
 
+        header.params['platformType'] = 'dinein';
+
         // Delete empty value
         Object.keys(header.params).forEach(key => {
             if (Array.isArray(header.params[key])) {
