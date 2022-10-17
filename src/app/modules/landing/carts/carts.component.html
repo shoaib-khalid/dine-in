@@ -143,8 +143,8 @@
                                                 [ngClass]="isStoreClose(cart.storeId) ? 'brightness-50 lg:brightness-100':''"
                                                     class="flex flex-row">
                                                     <span class="text-sm">Food to be served:</span>
-                                                    <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm text-primary">&nbsp;Send to table</span>
-                                                    <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm text-primary">&nbsp;Self collect</span>
+                                                    <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm font-medium text-primary">&nbsp;Send to table</span>
+                                                    <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm font-medium text-primary">&nbsp;Self collect</span>
                                                 </div>
                                             </div>
                                             <div class="flex flex-row items-center gap-2">
@@ -400,7 +400,7 @@
                         </div>
                         <div class="flex flex-col text-center">
                             <span class="font-semibold">Table No.:&nbsp;{{tableNumber}}</span>
-                            <span class="text-gray-500 text-xs">Wrong table no. ?</span>
+                            <span class="text-gray-500 text-xs">Wrong table no.?</span>
                             <span (click)="changeTableNumber()" class="text-primary text-xs underline cursor-pointer">change here</span>
                         </div>
                     </div>
@@ -605,7 +605,7 @@
                     <div class="flex flex-row justify-between mt-2">
                         <div class="flex flex-col">
                             <span class="text-md text-secondary">Grand Total</span>
-                            <span class="text-sm text-secondary tracking-tight">(excluding Service Charge & SST)</span>
+                            <span class="text-xs text-red-500 tracking-tight">(Excluding Service Charge & SST)</span>
                         </div>
                         <span class="text-md font-semibold">{{paymentDetails.cartGrandTotal | currency: platform.currency}}</span>
                     </div>

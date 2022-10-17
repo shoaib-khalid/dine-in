@@ -78,8 +78,8 @@
                                     <span (click)="redirect('store', cart.store, null)" class="text-md sm:text-xl font-semibold hover:cursor-pointer">{{cart.store.name}}</span>
                                     <div class="flex flex-row">
                                         <span class="text-sm">Food to be served:</span>
-                                        <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm text-primary">&nbsp;Send to table</span>
-                                        <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm text-primary">&nbsp;Self collect</span>
+                                        <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm text-primary font-medium">&nbsp;Send to table</span>
+                                        <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm text-primary font-medium">&nbsp;Self collect</span>
                                     </div>
                                     <!-- <span class="text-sm sm:text-sm text-secondary">Cart ID: {{cart.id}}</span> -->
                                     <!-- <span class="text-sm sm:text-sm text-secondary">Last Updated: {{cart.updated | date:'MMM dd, h:mm a'}}</span> -->
@@ -300,7 +300,7 @@
                     <div class="flex flex-row justify-between mt-2">
                         <div class="flex flex-col">
                             <span class="text-md text-secondary">Grand Total</span>
-                            <span class="text-sm text-secondary tracking-tight">(excluding Service Charge & SST)</span>
+                            <span class="text-xs text-red-500 tracking-tight">(Excluding Service Charge & SST)</span>
                         </div>
                         <span class="text-md font-semibold">{{paymentDetails.cartGrandTotal | currency: platform.currency}}</span>
                     </div>
@@ -312,7 +312,7 @@
                         [ngClass]="{ 'cursor-wait bg-gray-400' : isLoading, 
                                      'cursor-pointer bg-primary' : !isLoading}"
                         (click)="placeOrder()">
-                        Confirm Order
+                        Place Order
                     </button>
                 </div>
                 <!-- Store pickup info (md)  -->
