@@ -864,28 +864,26 @@ export class LandingShopComponent implements OnInit
             
             // get product package if exists
             this._productsService.getProductPackageOptions(this.store.id, product.id)
-            .subscribe((response)=>{
-                
-                if (response.length > 0) {
-                    this.combos = response;
-                    this.openDrawer();
+                .subscribe((response)=>{
+                    if (response.length > 0) {
+                        this.combos = response;
+                        this.openDrawer();
+                    }
 
                     // Mark for check
                     this._changeDetectorRef.markForCheck();
-                }
-
-            });
+                });
         }
         else if (product.hasAddOn === true) {
 
             this._productsService.getAddOnItemsOnProduct({productId: product.id})
                 .subscribe((addOnsResp: AddOnProduct[]) => {
-
-                    console.log('addons', addOnsResp);
-
                     if (addOnsResp.length > 0) {
                         this.addOns = addOnsResp;
+                        this.openDrawer();
                     }
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
                 })
         }
         // Normal/variant product

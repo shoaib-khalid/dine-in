@@ -146,7 +146,17 @@ export class LandingRestaurantsComponent implements OnInit
                                 delayDisplay: 10
                             } : null;
                         }).filter(n => n);
-                    }                    
+
+                        if (this.galleryImages.length > 0 && this.mobileGalleryImages.length > 0) {
+                            // Do nothing still backend response both "banner" & "bannerMobile"
+                        } else if (this.galleryImages.length > 0 && this.mobileGalleryImages.length === 0) {
+                            this.mobileGalleryImages = this.galleryImages;
+                        } else if (this.galleryImages.length === 0 && this.mobileGalleryImages.length > 0) {
+                            this.galleryImages = this.mobileGalleryImages;
+                        } else {
+                            // Do nothing since there are no image at all
+                        }
+                    }
 
                 }
                 // Mark for check
