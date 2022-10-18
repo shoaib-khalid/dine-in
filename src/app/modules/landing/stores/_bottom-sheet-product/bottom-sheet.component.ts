@@ -6,7 +6,7 @@ import { Platform } from 'app/core/platform/platform.types';
 import { DOCUMENT } from '@angular/common';
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from 'ngx-gallery-9';
-import { Product, ProductAssets, ProductInventory, ProductInventoryItem, ProductPackageOption } from 'app/core/product/product.types';
+import { AddOnProduct, Product, ProductAssets, ProductInventory, ProductInventoryItem, ProductPackageOption } from 'app/core/product/product.types';
 import { FormBuilder } from '@angular/forms';
 import { ProductsService } from 'app/core/product/product.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -42,7 +42,6 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
 {
 
     platform: Platform;
-    @Input() banners: any;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     selectedProduct: Product = null
     combos: ProductPackageOption[] = [];
@@ -75,6 +74,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         specialInstructionValue     : ['']
     });
     store: Store
+    addOns: AddOnProduct[] = [];
 
     /**
      * Constructor
@@ -100,6 +100,8 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
     {
         this.selectedProduct = data.product;
         this.combos = data.combos;
+        this.addOns = data.addOns;
+        
         // set galleryOptions
         this.galleryOptions = [
             {
@@ -821,6 +823,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                 this.quantity = this.maxQuantity;
         }
     }
+    
     closeSheet() {
         this._bottomSheet.dismiss();
     }
