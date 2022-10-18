@@ -663,10 +663,52 @@ export class BuyerCheckoutComponent implements OnInit
                         // Set Loading to false
                         this.isLoading = false;
                     }, (error) => {
+                        
+                        const confirmation = this._fuseConfirmationService.open({
+                            title  : 'Error ' + error.error.status,
+                            message: error.error.message,
+                            icon: {
+                                show: true,
+                                name: "heroicons_outline:exclamation",
+                                color: "warn"
+                            },
+                            actions: {
+                                confirm: {
+                                    label: 'Okay',
+                                    color: "warn",
+                                },
+                                cancel: {
+                                    show: false,
+                                }
+                            },
+                            dismissible: true
+                        });
+
                         // Set Loading to false
                         this.isLoading = false;
                     });
             }, (error) => {
+
+                const confirmation = this._fuseConfirmationService.open({
+                    title  : 'Error ' + error.error.status,
+                    message: error.error.message,
+                    icon: {
+                        show: true,
+                        name: "heroicons_outline:exclamation",
+                        color: "warn"
+                    },
+                    actions: {
+                        confirm: {
+                            label: 'Okay',
+                            color: "warn",
+                        },
+                        cancel: {
+                            show: false,
+                        }
+                    },
+                    dismissible: true
+                });
+
                 // Set Loading to false
                 this.isLoading = false;
             });
