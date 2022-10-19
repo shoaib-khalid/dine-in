@@ -221,9 +221,10 @@ export class LandingShopComponent implements OnInit
     }[] = [];
 
     combos: any = [];
-    selectedProduct: Product = null
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
     addOns: AddOnProduct[] = [];
+    selectedProduct: Product = null;
+
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
      * Constructor
@@ -897,11 +898,13 @@ export class LandingShopComponent implements OnInit
 
     openDrawer(){
         setTimeout(() => {
-            let bottomSheet = this._bottomSheet.open(_BottomSheetComponent, { data: {
-                product: this.selectedProduct,
-                combos : this.combos,
-                addOns : this.addOns }
-            })
+            let bottomSheet = this._bottomSheet.open(_BottomSheetComponent, { 
+                data: {
+                    product: this.selectedProduct,
+                    combos : this.combos,
+                    addOns : this.addOns 
+                }
+            });
             bottomSheet.afterDismissed()
             .subscribe(() => 
                 {
