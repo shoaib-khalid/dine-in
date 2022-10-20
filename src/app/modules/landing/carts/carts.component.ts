@@ -1898,4 +1898,17 @@ export class CartListComponent implements OnInit, OnDestroy
         this._location.back(); 
     }
 
+    calculateAddonPrice(cartItem: CartItem) {
+        
+        if (cartItem.cartItemAddOn.length > 0) {
+            let sumAddOnItems = cartItem.cartItemAddOn.map((item: any )=> item.productAddOn.dineInPrice).reduce((partialSum, a) => partialSum + a, 0);
+            let sumAddOnItemsMulti = cartItem.cartItemAddOn.map((item: any )=> item.price).reduce((partialSum, a) => partialSum + a, 0);
+
+            return {
+                subtotal: sumAddOnItems + cartItem.productPrice,
+                total:  sumAddOnItemsMulti + cartItem.price
+            }
+        }
+    }
+
 }

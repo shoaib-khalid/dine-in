@@ -74,6 +74,7 @@ export interface CartItem
         url: string;
     }
     SKU?: string;
+    cartItemAddOn?: [];
 }
 
 export interface ProductInventory
