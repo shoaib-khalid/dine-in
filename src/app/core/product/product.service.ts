@@ -217,6 +217,33 @@ export class ProductsService
         );
     }
 
+        /**
+     * Get products
+     */
+    getProductsById( storeId: string, productId: string): Observable<Product>
+    {
+        let productService = this._apiServer.settings.apiServer.productService;
+        //let accessToken = this._jwt.getJwtPayload(this.accessToken).act;
+        let accessToken = "accessToken";
+
+        const header = {
+            headers: new HttpHeaders().set("Authorization", `Bearer ${accessToken}`),
+            params: {
+                "platformType": "dinein"
+            }
+        };
+
+        return this._httpClient.get<any>(productService +'/stores/' + storeId + '/products/' + productId, header).pipe(
+            map((response) => {
+
+                this._logging.debug("Response from ProductsService (getProductsById)" ,response);
+
+                return response.data;
+
+            })
+        );
+    }
+
     /**
      * Get product by id
      */
@@ -229,7 +256,7 @@ export class ProductsService
                 // Find the product
                 const product = products.find(item => item.id === id) || null;
 
-                this._logging.debug("Response from ProductsService (Current Product)",product);
+                this._logging.debug("Response from ProductsService (getStoreProductById)",product);
 
                 // Update the product
                 this._product.next(product);

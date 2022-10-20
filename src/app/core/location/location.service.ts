@@ -551,7 +551,10 @@ export class LocationService
         latitude?           : number,
         longitude?          : number,
         status?             : string[],
-        storeTagKeyword?    : string
+        storeTagKeyword?    : string,
+        isMainLevel?        : boolean,
+        isDelivery?         : boolean,
+        isDineIn?           : boolean
     } = {
         name            : null,
         parentCategoryId: null,
@@ -570,7 +573,10 @@ export class LocationService
         latitude        : 0,
         longitude       : 0,
         status          : ['ACTIVE', 'OUTOFSTOCK'],
-        storeTagKeyword : null
+        storeTagKeyword : null,
+        isMainLevel     : false,
+        isDelivery      : true,
+        isDineIn        : true
     }) 
         : Observable<ProductDetails[]>
     {

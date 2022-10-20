@@ -184,7 +184,9 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
             });
         }
 
-        if (this.selectedProduct) {            
+        if (this.selectedProduct) {
+            console.log('this.aku sdiri', this.selectedProduct);
+            
             // Reset quantity on getting new product
             this.quantity = 1;
     

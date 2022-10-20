@@ -24,6 +24,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { FuseScrollbarModule } from '@fuse/directives/scrollbar';
 import { _BottomPopUpModule } from 'app/layout/common/_bottom-popup/bottom-popup.module';
 import { _SwiperBannerModule } from 'app/layout/common/_swiper-banner/swiper-banner.module';
+import { _FeaturedProductsModule } from 'app/layout/common/_featured-products/featured-products.module';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { _BottomSheetModule } from './_bottom-sheet-product/bottom-sheet.module';
+import { FloatingStoreListModule } from 'app/layout/common/_floating-store-list/floating-store-list.module';
 
 @NgModule({
     declarations: [
@@ -45,13 +49,17 @@ import { _SwiperBannerModule } from 'app/layout/common/_swiper-banner/swiper-ban
         ErrorBackgroundModule,
         _SearchModule,
         _FeaturedStoresModule,
+        _FeaturedProductsModule,
         _StoreProductsModule,
         _StoreCategoriesModule,
         _SwiperBannerModule,
         NgxGalleryModule,
         MatTabsModule,
         FuseScrollbarModule,
-        _BottomPopUpModule
+        _BottomPopUpModule,
+        _BottomSheetModule,
+        MatBottomSheetModule,
+        FloatingStoreListModule
     ],
     providers: [
         // CurrencyPipe,

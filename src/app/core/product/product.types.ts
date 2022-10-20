@@ -3,6 +3,7 @@ export interface Product
     id: string;
     name: string;
     description: string;
+    storeDetails: StoresDetails;
     storeId: string;
     categoryId: string;
     status: string;
@@ -205,5 +206,15 @@ export interface AddOnItemProduct
     status              : string;
     name                : string;
     productAddonGroupId : string;
+}
+
+export interface StoresDetails
+{
+    id              : string;
+    name            : string;
+    city            : string;
+    state           : string;
+    postcode        : string;
+    regionCountryId : string;
 }
  
