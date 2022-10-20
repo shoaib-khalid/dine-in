@@ -75,6 +75,7 @@ export interface CartItem
     }
     SKU?: string;
     cartItemAddOn?: [];
+    totalPrice? : number;
 }
 
 export interface ProductInventory

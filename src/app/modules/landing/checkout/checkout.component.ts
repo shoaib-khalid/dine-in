@@ -904,7 +904,7 @@ export class BuyerCheckoutComponent implements OnInit
     getCartItemsTotal(cartItems: CartItem[]) : number {
         let cartItemsTotal: number;
         if (cartItems.length && cartItems.length > 0) {
-            return cartItems.reduce((partialSum, item) => partialSum + item.price, 0);
+            return cartItems.reduce((partialSum, item) => partialSum + item.totalPrice, 0);
         } else {
             return cartItemsTotal;
         }
