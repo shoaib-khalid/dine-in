@@ -266,12 +266,12 @@
                                             </div>
                                             <!-- Unit Price -->
                                             <div class="hidden sm:flex flex-col justify-center items-center text-center px-1">
-                                                <ng-container *ngIf="cartItem.cartItemAddOn.length > 0; else noAddonPrice">
+                                                <ng-container *ngIf="cartItem.cartItemAddOn.length > 0; else noAddonPriceDesktop">
                                                     <span class="font-semibold text-sm md:text-md">
                                                     {{cartItem.totalPrice / cartItem.quantity | currency: cart.store.regionCountry.currencySymbol}}</span>
 
                                                 </ng-container>
-                                                <ng-template #noAddonPrice>
+                                                <ng-template #noAddonPriceDesktop>
                                                     <span class="font-semibold text-sm md:text-md">
                                                         {{cartItem.productPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
                                                 </ng-template>
