@@ -1,19 +1,23 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Banner } from 'app/core/ads/ads.types';
 import { LocationService } from 'app/core/location/location.service';
-import { LandingLocation, LocationArea, StoresDetailPagination, StoresDetails, Tag } from 'app/core/location/location.types';
+import { LandingLocation, LocationArea, ProductDetailPagination, ProductDetails, StoresDetailPagination, StoresDetails, Tag } from 'app/core/location/location.types';
 import { NavigateService } from 'app/core/navigate-url/navigate.service';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
+import { ProductsService } from 'app/core/product/product.service';
+import { AddOnProduct, Product } from 'app/core/product/product.types';
 import { StorePagination } from 'app/core/store/store.types';
 import { CurrentLocationService } from 'app/core/_current-location/current-location.service';
 import { CurrentLocation } from 'app/core/_current-location/current-location.types';
 import { SearchService } from 'app/layout/common/_search/search.service';
 import { Subject, takeUntil, map, merge, combineLatest } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { _BottomSheetComponent } from '../_bottom-sheet-product/bottom-sheet.component';
 
 @Component({
     selector     : 'landing-restaurants',
@@ -23,6 +27,8 @@ import { switchMap } from 'rxjs/operators';
 export class LandingRestaurantsComponent implements OnInit
 {
     @ViewChild("storesPaginator", {read: MatPaginator}) private _paginator: MatPaginator;
+    @ViewChild("productsDetailsPaginator", {read: MatPaginator}) private _productsDetailsPaginator: MatPaginator;
+
     
     platform: Platform;
     currentLocation: CurrentLocation;
@@ -34,6 +40,14 @@ export class LandingRestaurantsComponent implements OnInit
     storesDetailsPageOfItems: Array<any>;
     storesDetailsPageSize: number = 30;
     oldStoresDetailsPaginationIndex: number = 0;
+
+    // product detauls
+    productsDetailsTitle: string = "Foods";
+    productsDetails: ProductDetails[] = [];
+    productsDetailsPagination: ProductDetailPagination;
+    productsDetailsPageOfItems: Array<any>;
+    productsDetailsPageSize: number = 20;
+    oldProductsDetailsPaginationIndex: number = 0;
     
     categoryId  : string;
     storeTag    : string;
@@ -50,6 +64,15 @@ export class LandingRestaurantsComponent implements OnInit
     galleryImages: Banner[] = [];
     mobileGalleryImages: Banner[] = [];
 
+    displayProduct: boolean = false;
+    displayStore: boolean = true;
+
+    selectedProduct: Product = null;
+    combos: any = [];
+    addOns: AddOnProduct[] = [];
+
+    displayFloating: 'none' | 'single' | 'multiple' = 'none';
+
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -62,8 +85,10 @@ export class LandingRestaurantsComponent implements OnInit
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _locationService: LocationService,
         private _activatedRoute: ActivatedRoute,
+        private _bottomSheet: MatBottomSheet,
         private _navigate: NavigateService,
-        private _searchService: SearchService
+        private _searchService: SearchService,
+        private _productsService: ProductsService
     )
     {
     }
@@ -82,6 +107,8 @@ export class LandingRestaurantsComponent implements OnInit
             .subscribe((stores: StoresDetails[]) => { 
                 if (stores) {
                     this.storesDetails = stores;
+                    this.displayFloating = this.storesDetails && this.storesDetails.length > 1 ? 'multiple' : 'none';
+
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -93,6 +120,26 @@ export class LandingRestaurantsComponent implements OnInit
             .subscribe((pagination: StoresDetailPagination) => {
                 // Update the pagination
                 this.storesDetailsPagination = pagination;                   
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get Products Details
+        this._locationService.productsDetails$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products : ProductDetails[]) => {                
+                this.productsDetails = products;
+                                
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get the product Details pagination
+        this._locationService.productDetailPagination$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((pagination: ProductDetailPagination) => {
+                // Update the pagination
+                this.productsDetailsPagination = pagination;                   
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -215,8 +262,31 @@ export class LandingRestaurantsComponent implements OnInit
                                 isDineIn        : true
                             })
                             .subscribe((stores : StoresDetails[]) => {});
+
+                            // Get products
+                            this._locationService.getProductsDetails({ 
+                                name            : this.searchName, 
+                                page            : this.oldProductsDetailsPaginationIndex,
+                                pageSize        : this.productsDetailsPageSize,
+                                status          : ['ACTIVE, OUTOFSTOCK'],
+                                regionCountryId : this.platform.country, 
+                                parentCategoryId: this.categoryId, 
+                                storeTagKeyword : this.storeTag,
+                                latitude        : currentLat,
+                                longitude       : currentLong,
+                                isDineIn        : true
+                            })
+                            .subscribe((response)=>{});
                         } else {
 
+                        }
+
+                        if(this.searchName && this.searchName !== '') {                               
+                            this.displayProduct = true;
+                            this.displayStore = false;
+                        } else {
+                            this.displayProduct = false;
+                            this.displayStore = true;
                         }
                     });
                 }
@@ -232,6 +302,20 @@ export class LandingRestaurantsComponent implements OnInit
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+
+        this._productsService.selectedProduct$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((product: Product) => {
+                if (product) {
+                    
+                    this.selectedProduct = product;
+                    this.preLoadProduct(product)
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                }
+                
+            });
     }
 
     /**
@@ -240,14 +324,14 @@ export class LandingRestaurantsComponent implements OnInit
     ngAfterViewInit(): void
     {
         setTimeout(() => {
+            // handle if user allow location
+            let currentLat = this.currentLocation.isAllowed ? this.currentLocation.location.lat : null;
+            let currentLong = this.currentLocation.isAllowed ? this.currentLocation.location.lng : null;
+
             if (this._paginator)
             {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
-
-                // handle if user allow location
-                let currentLat = this.currentLocation.isAllowed ? this.currentLocation.location.lat : null;
-                let currentLong = this.currentLocation.isAllowed ? this.currentLocation.location.lng : null;
 
                 // if there are value for categoryId OR locationId
                 // no need for lat long, since customer want to see stores that contain the query
@@ -277,6 +361,33 @@ export class LandingRestaurantsComponent implements OnInit
                     })
                 ).subscribe();
             }
+            if (this._productsDetailsPaginator )
+            {
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+
+                // Get products if sort or page changes
+                merge(this._productsDetailsPaginator.page).pipe(
+                    switchMap(() => {
+                        this.isLoading = true;
+                        return this._locationService.getProductsDetails({ 
+                            name            : this.searchName, 
+                            page            : this.productsDetailsPageOfItems['currentPage'] - 1, 
+                            pageSize        : this.productsDetailsPageOfItems['pageSize'],
+                            status          : ['ACTIVE, OUTOFSTOCK'],
+                            regionCountryId : this.platform.country, 
+                            parentCategoryId: this.categoryId, 
+                            // cityId          : this.adjacentLocationIds,
+                            latitude        : currentLat,
+                            longitude       : currentLong,
+                            isDineIn        : true
+                        });
+                    }),
+                    map(() => {
+                        this.isLoading = false;
+                    })
+                ).subscribe();
+            }
         }, 0);
     }
 
@@ -288,6 +399,8 @@ export class LandingRestaurantsComponent implements OnInit
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
+        this._productsService.selectProduct(null);
+
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -297,15 +410,15 @@ export class LandingRestaurantsComponent implements OnInit
     onChangePage(pageOfItems: Array<any>) {
         // update current page of items
         this.storesDetailsPageOfItems = pageOfItems;
+        // handle if user allow location
+        let currentLat = this.currentLocation.isAllowed ? this.currentLocation.location.lat : null;
+        let currentLong = this.currentLocation.isAllowed ? this.currentLocation.location.lng : null;
 
         if(this.storesDetailsPagination && this.storesDetailsPageOfItems['currentPage']) {
             if (this.storesDetailsPageOfItems['currentPage'] - 1 !== this.storesDetailsPagination.page) {
                 // set loading to true
                 this.isLoading = true;
 
-                // handle if user allow location
-                let currentLat = this.currentLocation.isAllowed ? this.currentLocation.location.lat : null;
-                let currentLong = this.currentLocation.isAllowed ? this.currentLocation.location.lng : null;
 
                 // if there are value for categoryId OR locationId
                 // no need for lat long, since customer want to see stores that contain the query
@@ -317,7 +430,7 @@ export class LandingRestaurantsComponent implements OnInit
                 this._locationService.getStoresDetails({
                     storeName       : this.searchName,
                     page            : this.storesDetailsPageOfItems['currentPage'] - 1, 
-                    pageSize        : this.storesDetailsPageOfItems['pageSize'], 
+                    pageSize        : this.storesDetailsPageOfItems['pageSize'],
                     regionCountryId : this.platform.country, 
                     parentCategoryId: this.categoryId, 
                     // cityId          : this.adjacentLocationIds,
@@ -329,6 +442,32 @@ export class LandingRestaurantsComponent implements OnInit
                     // set loading to false
                     this.isLoading = false;
                 });
+            }
+        }
+
+        // update current page of items
+        this.productsDetailsPageOfItems = pageOfItems;
+        if( this.productsDetailsPagination && this.productsDetailsPageOfItems['currentPage']) {
+            if (this.productsDetailsPageOfItems['currentPage'] - 1 !== this.productsDetailsPagination.page) {
+                // set loading to true
+                this.isLoading = true;
+    
+                this._locationService.getProductsDetails({ 
+                        storeName       : this.searchName, 
+                        page            : this.productsDetailsPageOfItems['currentPage'] - 1, 
+                        pageSize        : this.productsDetailsPageOfItems['pageSize'], 
+                        status          : ['ACTIVE, OUTOFSTOCK'],
+                        regionCountryId : this.platform.country, 
+                        parentCategoryId: this.categoryId, 
+                        // cityId          : this.adjacentLocationIds,
+                        latitude        : currentLat,
+                        longitude       : currentLong,
+                        isDineIn        : true
+                    })
+                    .subscribe(()=>{
+                        // set loading to false
+                        this.isLoading = false;
+                    });
             }
         }
         
@@ -358,6 +497,66 @@ export class LandingRestaurantsComponent implements OnInit
             div.setAttribute("class","hidden")
             return false;
         }
+    }
+
+    preLoadProduct(product: Product){
+        
+        // Precheck for combo
+        if (product.isPackage) {
+            this.combos = null;
+            
+            // get product package if exists
+            this._productsService.getProductPackageOptions(product.storeId, product.id)
+                .subscribe((response)=>{
+                    if (response.length > 0) {
+                        this.combos = response;
+                        this.openDrawer();
+                    }
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                });
+        }
+        else if (product.hasAddOn === true) {
+
+            this._productsService.getAddOnItemsOnProduct({productId: product.id})
+                .subscribe((addOnsResp: AddOnProduct[]) => {
+                    if (addOnsResp.length > 0) {
+                        this.addOns = addOnsResp;
+                        this.openDrawer();
+                    }
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                })
+        }
+        // Normal/variant product
+        else {
+            this.openDrawer();
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+        }
+        
+    }
+
+    openDrawer(){
+        setTimeout(() => {
+            let bottomSheet = this._bottomSheet.open(_BottomSheetComponent, { 
+                data: {
+                    product: this.selectedProduct,
+                    combos : this.combos,
+                    addOns : this.addOns 
+                }
+            });
+            bottomSheet.afterDismissed()
+            .subscribe(() => 
+                {
+                    this._productsService.selectProduct(null);
+                }
+            )
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+        }, 0);
+        
     }
 
     scrollToTop(){        

@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
 import { DOCUMENT } from '@angular/common';
-import { StoreAssets } from 'app/core/store/store.types';
+import { Store, StoreAssets } from 'app/core/store/store.types';
 import { ProductDetails } from 'app/core/location/location.types';
 import { StoresService } from 'app/core/store/store.service';
-import { Product } from 'app/core/product/product.types';
+import { Product, StoresDetails } from 'app/core/product/product.types';
+import { ProductsService } from 'app/core/product/product.service';
 
 @Component({
     selector     : 'featured-products',
@@ -18,6 +19,8 @@ export class _FeaturedProductsComponent implements OnInit, OnDestroy
 {
 
     platform: Platform;
+    selectedProduct: Product;
+
     @Input() products: Product[] | ProductDetails[];
     @Input() title: string = "Product";
     @Input() showViewAll: boolean = false;
@@ -32,6 +35,7 @@ export class _FeaturedProductsComponent implements OnInit, OnDestroy
         @Inject(DOCUMENT) private _document: Document,
         private _platformService: PlatformService,
         private _router: Router,
+        private _productsService: ProductsService,
         private _storesService: StoresService
     )
     {
@@ -93,6 +97,49 @@ export class _FeaturedProductsComponent implements OnInit, OnDestroy
         // this._document.location.href = url;
         this._router.navigate(['store/' + domainName + '/' + 'all-products/' + seoName]);
 
+    }
+
+    selectProduct(product: Product){
+        this._productsService.getProductsById(product.storeDetails.id, product.id)
+            .subscribe((selectedProduct: Product) => {
+                this.selectedProduct = selectedProduct;
+                //api get bys store by id
+                
+                this._storesService.getStoreById(this.selectedProduct.storeId)
+                    .subscribe((storeDetails:Store) => {
+                        //set the valueofstore details
+                        this.selectedProduct.storeDetails = <any>storeDetails;
+
+                        if (this.isProductHasStock(this.selectedProduct)) {
+                            this._productsService.selectProduct(this.selectedProduct);
+                        }
+                        else return
+                    })
+
+            });
+            
+        
+    }
+
+    isProductHasStock(product: Product): boolean
+    {   
+        
+        if (product.allowOutOfStockPurchases === true) {
+            return true;
+        } else {
+            if (product.productInventories.length > 0) {
+                let productInventoryQuantities = product.productInventories.map(item => item.quantity);
+                let totalProductInventoryQuantity = productInventoryQuantities.reduce((partialSum, a) => partialSum + a, 0);
+    
+                if (totalProductInventoryQuantity > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
     }
 
     displayStoreLogo(storeAssets: StoreAssets[]) {
