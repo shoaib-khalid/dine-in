@@ -32,7 +32,7 @@
             <p class="font-semibold text-center text-white text-2xl">Out of Stock</p>
         </div>
         <fuse-card
-            (click)="selectProduct(product); $event.stopPropagation()"
+            (click)="redirectToProduct(product); $event.stopPropagation()"
             class="flex flex-col rounded-lg border border-gray-300 h-[210px] md:h-[220px] cursor-pointer filter-article z-0">
             <div class="relative w-full">
                 <ng-container *ngIf="!product.thumbnailUrl" >

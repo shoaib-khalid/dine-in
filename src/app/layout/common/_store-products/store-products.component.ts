@@ -26,9 +26,10 @@ export class _StoreProductsComponent implements OnInit, OnDestroy
     @Input() productViewOrientation: string = "grid"; 
     @Input() catalogueSlug: any;
     @Input() storeSlug: any;
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
-    currentScreenSize: string[];
 
+    currentScreenSize: string[];
+    
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
     /**
      * Constructor
      */
@@ -75,7 +76,6 @@ export class _StoreProductsComponent implements OnInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
 
             });
-    
     }
 
     /**

@@ -1,5 +1,5 @@
-import { Component, Inject, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { combineLatest, Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
@@ -9,6 +9,7 @@ import { ProductDetails } from 'app/core/location/location.types';
 import { StoresService } from 'app/core/store/store.service';
 import { Product, StoresDetails } from 'app/core/product/product.types';
 import { ProductsService } from 'app/core/product/product.service';
+import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 
 @Component({
     selector     : 'featured-products',
@@ -26,6 +27,8 @@ export class _FeaturedProductsComponent implements OnInit, OnDestroy
     @Input() showViewAll: boolean = false;
     @Input() redirectURL: { categoryId?: string, locationId?: string } = null;
 
+    currentScreenSize: string[];
+
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -36,7 +39,9 @@ export class _FeaturedProductsComponent implements OnInit, OnDestroy
         private _platformService: PlatformService,
         private _router: Router,
         private _productsService: ProductsService,
-        private _storesService: StoresService
+        private _storesService: StoresService,
+        private _changeDetectorRef: ChangeDetectorRef,
+        private _fuseMediaWatcherService: FuseMediaWatcherService
     )
     {
     }
@@ -58,7 +63,18 @@ export class _FeaturedProductsComponent implements OnInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((platform: Platform)=>{
                 this.platform = platform;
-            })           
+            });
+
+        // Subscribe to media changes
+        this._fuseMediaWatcherService.onMediaChange$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(({matchingAliases}) => {
+                this.currentScreenSize = matchingAliases;
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+
+            });
     }
 
     /**
@@ -91,34 +107,33 @@ export class _FeaturedProductsComponent implements OnInit, OnDestroy
         this._router.navigate(['/store/' + slug]);
     }
 
-    redirectToProduct(storeId: string, storeDomain: string, seoName: string) {
-        let domainName = storeDomain.split(".")[0];
-        
-        // this._document.location.href = url;
-        this._router.navigate(['store/' + domainName + '/' + 'all-products/' + seoName]);
+    redirectToProduct(productDetails: ProductDetails) {
 
-    }
+        const storeSlug = productDetails.storeDetails.domain.split(".")[0];
 
-    selectProduct(product: Product){
-        this._productsService.getProductsById(product.storeDetails.id, product.id)
-            .subscribe((selectedProduct: Product) => {
-                this.selectedProduct = selectedProduct;
-                //api get bys store by id
-                
-                this._storesService.getStoreById(this.selectedProduct.storeId)
-                    .subscribe((storeDetails:Store) => {
-                        //set the valueofstore details
-                        this.selectedProduct.storeDetails = <any>storeDetails;
+        combineLatest([
+            this._productsService.getProductsById(productDetails.storeDetails.id, productDetails.id),
+            this._storesService.getStoreById(productDetails.storeDetails.id)
+        ])
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe(([product, store] : [Product,Store]) =>{
+            if (product && store) {
 
-                        if (this.isProductHasStock(this.selectedProduct)) {
-                            this._productsService.selectProduct(this.selectedProduct);
-                        }
-                        else return
-                    })
+                this.selectedProduct = product;
+                // set the valueofstore details
+                this.selectedProduct.storeDetails = <any>store;
 
-            });
-            
-        
+                // if has stock
+                if (this.isProductHasStock(product)) {
+                    if (this.currentScreenSize.includes('md'))
+                        this._router.navigate(['store/' + storeSlug + '/all-products/' + product.seoNameMarketplace]);
+                    else {
+                        this._productsService.selectProduct(product);
+                    }
+                }
+                else return
+            }
+        });
     }
 
     isProductHasStock(product: Product): boolean
