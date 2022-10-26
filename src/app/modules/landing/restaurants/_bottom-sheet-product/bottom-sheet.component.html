@@ -6,7 +6,7 @@
         </div>
         <div class="content pt-1">
             <!-- Content -->
-            <div class="flex flex-col mb-4 mt-1">
+            <div class="flex flex-col mb-0 mt-1">
                 <!-- Product Assets -->
                 <div class="flex justify-center md:w-140 lg:w-1/2 md:max-h-120 md:min-h-120 mb-2">
                     <ngx-gallery 
@@ -30,7 +30,7 @@
                     <div class="flex mt-2">
                         <ng-container *ngIf="false; else noItemDiscount" >
                             <div class="font-semibold flex flex-col shrink">
-                                <div class="text-xs items-center text-primary-100 flex justify-start">
+                                <div class="text-xs items-center text-primary-100 flex justify-start items-center">
                                     <span class="py-0.5 px-1 w-auto flex bg-red-600 rounded">{{displayedProduct.discountAmount}}% Off</span>
                                 </div> 
                                 <span class="mt-[0.15rem] text-xs line-through">{{displayedProduct.price | currency: selectedProduct.storeDetails.regionCountry.currencySymbol}}</span> 
@@ -72,7 +72,7 @@
                     <ng-container *ngFor="let addOn of addOns; let i = index;">
                         <div 
                             [id]="addOn.title" 
-                            class="py-1 flex flex-col gap-1">
+                            class="py-1 flex flex-col gap-2">
                             <label class="font-semibold text-sm" for="{{addOn.title}}">
                                 <span *ngIf="addOn.minAllowed !== 0">
                                     {{addOn.title | uppercase}}: (Select {{ addOn.minAllowed }} of {{ addOn.productAddOnItemDetail.length }})
@@ -80,18 +80,24 @@
                                 <span *ngIf="addOn.minAllowed === 0">{{addOn.title | uppercase}}: (Optional)</span>
                                 <span *ngIf="addOn.maxAllowed !== addOn.minAllowed" class="ml-0.5">Max {{addOn.maxAllowed}}</span>
                             </label>
-                            <ul class="grid grid-cols-2 gap-1">
+                            <ul class="grid grid-cols-1 gap-2.5 ml-2">
                                 <li *ngFor="let option of addOn.productAddOnItemDetail; let i = index;" class="flex items-center">
                                     <input type="checkbox" 
                                         [id]="'addon-checkbox-' + addOn.id + '-' + option.id"
                                         [value]="option.id" 
                                         [name]="'addon-checkbox-' + addOn.id + '-' + option.id"
-                                        [checked]="selectedAddOn[addOn.id].indexOf(option.id) > -1"
-                                        (change)="onChangeAddOn(addOn.id, option.id, $event)"
-                                    >
-                                    <label class="pl-2 leading-tight text-sm" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
-                                        {{option.name}}
-                                    </label>
+                                        (change)="onChangeAddOn(addOn, option, $event)"
+                                        [checked]="validateCheckbox(option.id, addOn.id)"
+                                        >
+                                        <!-- [checked]="selectedAddOn[addOn.id].indexOf(option.id) > -1" -->
+                                    <div class="flex justify-between w-full">
+                                        <label class="ml-4 leading-tight text-sm" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
+                                            {{option.name}}
+                                        </label>
+                                        <label class="mr-6 leading-tight text-sm text-secondary" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
+                                            {{ option.dineInPrice < 0 ? '' + (option.dineInPrice  | currency: selectedProduct.storeDetails.regionCountry.currencySymbol) : '+' + (option.dineInPrice  | currency: selectedProduct.storeDetails.regionCountry.currencySymbol)}}
+                                        </label>
+                                    </div>
                                 </li>
                             </ul>
                         </div>
@@ -145,7 +151,7 @@
                     </div>
                 </form>
                 <!-- Quantity/Add to Cart -->
-                <div class="flex flex-row w-full mt-3 gap-2 px-[0.1rem]">
+                <div class="flex flex-row w-full mt-3 gap-2 px-[0.1rem] sticky bottom-0 bg-white pt-3 pb-4 border-t">
                     <!-- Quantity -->
                     <div class="flex w-1/3 flex-row justify-between items-center gap-2">
                         <div class="flex flex-row h-9 w-24 rounded ring-1 ring-primary relative bg-white">
@@ -173,14 +179,16 @@
                             class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
                             mat-button>
                         <label 
-                            class="flex items-center justify-center h-9 px-2 rounded cursor-pointer bg-primary group hover:bg-primary-600 w-full ring-1 ring-primary"
+                            class="flex items-center gap-1 text-white group-hover:text-black justify-center h-9 px-2 rounded cursor-pointer bg-primary group hover:bg-primary-600 w-full ring-1 ring-primary"
                             for="add-to-cart-button"
                             (click)="addToCart(); $event.stopPropagation()"
                             matRipple>
                             <mat-icon
                                 class="pr-1 text-white transform scale-75 group-hover:text-black"
                                 [svgIcon]="'heroicons_solid:shopping-cart'"></mat-icon>
-                            <span class="text-sm font-semibold text-white group-hover:text-black">Add to Cart</span>
+                            <span class="text-sm font-medium">Add to Cart</span>
+                            <span class="text-sm">&#8226;</span>
+                            <span class="text-sm">{{displayedProduct.price | currency: selectedProduct.storeDetails.regionCountry.currencySymbol}}</span>
                         </label>
                     </div>
                 </div>

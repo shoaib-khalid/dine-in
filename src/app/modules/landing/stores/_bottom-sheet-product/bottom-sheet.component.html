@@ -95,8 +95,7 @@
                                             {{option.name}}
                                         </label>
                                         <label class="mr-6 leading-tight text-sm text-secondary" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
-                                            {{ option.dineInPrice === 0 ? 'Free' : 
-                                                option.dineInPrice < 0 ? '' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol) : '+' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol)}}
+                                            {{ option.dineInPrice < 0 ? '' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol) : '+' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol)}}
                                         </label>
                                     </div>
                                 </li>

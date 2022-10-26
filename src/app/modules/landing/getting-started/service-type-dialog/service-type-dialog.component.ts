@@ -14,7 +14,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 export class ServiceTypeDialog implements OnInit 
 {
 
-    tableNumber: number;
+    tableNumber: string;
     displayTableNumberErr: boolean = false;
     storeTag: string;
     servingType: string;
@@ -38,9 +38,14 @@ export class ServiceTypeDialog implements OnInit
         this.servingType = this.data['servingType'];
     }
     
-    validateTableNumber(tableNumber: number)
+    validateTableNumber(tableNumber: string)
     {
-        this.tableNumber = (tableNumber > 999) ? 999 : tableNumber;
+        if (tableNumber === '' || tableNumber === ' ') {
+            this.tableNumber = null;
+        }
+        else {
+            this.tableNumber = tableNumber;
+        }
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -78,6 +83,7 @@ export class ServiceTypeDialog implements OnInit
             return;
         }
 
+        console.log('this.tableNumber', this.tableNumber);
         if (this.tableNumber) {
             this._diningService.tableNumber = this.tableNumber + "";
             this._diningService.storeTag = this.storeTag;

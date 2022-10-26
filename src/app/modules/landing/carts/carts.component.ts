@@ -1680,6 +1680,12 @@ export class CartListComponent implements OnInit, OnDestroy
 
     goToCheckout() {
 
+        if (this.tableNumber === '' || this.tableNumber === ' ') {
+            this.changeTableNumber();
+
+            return;
+        }
+
         if (this.totalSelectedCartItem < 1) {
             
             const confirmation = this._fuseConfirmationService.open({
