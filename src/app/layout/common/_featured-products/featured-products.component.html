@@ -67,11 +67,11 @@
                 </div>
                 <div *ngIf="product.productInventories[0]" class="flex flex-row items-end justify-between">
                     <ng-container *ngIf="product.productInventories[0].itemDiscount; else noDiscount">
-                        <span class="line-through text-sm font-semibold">{{product.productInventories[0].itemDiscount.normalPrice | currency: platform.currency}}</span>
-                        <span class="text-lg font-semibold">{{product.productInventories[0].itemDiscount.discountedPrice | currency: platform.currency}}</span>
+                        <span class="line-through text-sm font-semibold">{{product.productInventories[0].itemDiscount.dineInNormalPrice | currency: platform.currency}}</span>
+                        <span class="text-lg font-semibold">{{product.productInventories[0].itemDiscount.dineIndDiscountedPrice | currency: platform.currency}}</span>
                     </ng-container>
                     <ng-template #noDiscount>
-                        <span class="text-lg font-semibold">{{product.productInventories[0].price | currency: platform.currency}}</span>
+                        <span class="text-lg font-semibold">{{product.productInventories[0].dineInPrice | currency: platform.currency}}</span>
                     </ng-template>
                 </div>
             </div>

@@ -70,6 +70,10 @@ export interface ProductInventory
         lastUpdateTime: string;
         normalItemOnly: boolean;
         normalPrice: number;
+        dineInCalculationType: string;
+        dineInDiscountAmount: number;
+        dineInNormalPrice: number;
+        dineInDiscountedPrice: number;
     };
     dineInPrice?: number;
 

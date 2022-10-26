@@ -20,7 +20,17 @@ import { AuthService } from 'app/core/auth/auth.service';
     templateUrl    : './cart.component.html',
     encapsulation  : ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    exportAs       : 'cart'
+    exportAs       : 'cart',
+    styles         : [
+        `
+            /* Change mat badge styles */
+            body.light .mat-badge-accent .mat-badge-content {
+                background: var(--fuse-primary);
+                color: white;
+            }
+        `
+    ]
+    
 })
 export class CartComponent implements OnInit, OnDestroy
 {
