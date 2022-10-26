@@ -66,9 +66,15 @@ export class LandingGettingStartedComponent implements OnInit
 
                     // Check param after we know that store tag exists
                     this._activatedRoute.queryParams.subscribe(params => {
-                        this.tableNumber = params['tableno'];
+                        this.tableNumber = params['tableno'] ? params['tableno'] : undefined;
                         
-                        if (this.tableNumber) {
+                        if(this.tableNumber === undefined) {
+                            setTimeout(() => {
+                                this.openDialog('dining');
+                                // Mark for check
+                                this._changeDetectorRef.markForCheck();
+                            }, 200);
+                        } else if (this.tableNumber) {
                             this._diningService.tableNumber = this.tableNumber + "";
                             this._diningService.storeTag = this.storeTag;
             
@@ -78,15 +84,8 @@ export class LandingGettingStartedComponent implements OnInit
                             } else {
                                 this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
                             }
-                            
-                        }
-                        else {
-                            setTimeout(() => {
-                                this.openDialog('dining');
-                                // Mark for check
-                                this._changeDetectorRef.markForCheck();
-                            }, 200);
-                        }
+                        } 
+                        
                     });
                 }
                 // Mark for check
