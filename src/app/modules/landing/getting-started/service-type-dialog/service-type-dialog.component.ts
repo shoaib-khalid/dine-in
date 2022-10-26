@@ -83,7 +83,6 @@ export class ServiceTypeDialog implements OnInit
             return;
         }
 
-        console.log('this.tableNumber', this.tableNumber);
         if (this.tableNumber) {
             this._diningService.tableNumber = this.tableNumber + "";
             this._diningService.storeTag = this.storeTag;
