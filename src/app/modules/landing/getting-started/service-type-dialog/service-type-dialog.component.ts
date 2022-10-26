@@ -40,11 +40,11 @@ export class ServiceTypeDialog implements OnInit
     
     validateTableNumber(tableNumber: string)
     {
-        if (tableNumber === '' || tableNumber === ' ') {
+        if (tableNumber.length === 0 || !tableNumber.trim()) {
             this.tableNumber = null;
         }
         else {
-            this.tableNumber = tableNumber;
+            this.tableNumber = tableNumber.trim();
         }
 
         // Mark for check

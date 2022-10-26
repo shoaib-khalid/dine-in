@@ -1680,7 +1680,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
     goToCheckout() {
 
-        if (this.tableNumber === '' || this.tableNumber === ' ') {
+        if (this.tableNumber.length === 0 || !this.tableNumber.trim()) {
             this.changeTableNumber();
 
             return;
