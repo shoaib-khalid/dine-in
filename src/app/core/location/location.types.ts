@@ -216,14 +216,21 @@ export interface TagPagination
     endIndex    : number;
 }
 
-// export interface ProductOnLocationPagination
-// {
-//     totalElements  : number;
-//     size           : number;
-//     number         : number;
-//     totalPages     : number;
-//     pageable       : {
-//                         offset : number
-//                      }
-//     numberOfElements : number;
-// }
+export interface FamousItem
+{
+    id              : string;
+    name            : string;
+    thumbnailUrl    : string;
+    status          : string;
+    storeDetails    : StoreDetails;
+    productInventories : ProductInventory[];
+}
+export interface FamousItemPagination
+{
+    length      : number;
+    size        : number;
+    page        : number;
+    lastPage    : number;
+    startIndex  : number;
+    endIndex    : number;
+}

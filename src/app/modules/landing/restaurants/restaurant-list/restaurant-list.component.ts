@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { Banner } from 'app/core/ads/ads.types';
 import { LocationService } from 'app/core/location/location.service';
-import { LandingLocation, LocationArea, ProductDetailPagination, ProductDetails, StoresDetailPagination, StoresDetails, Tag } from 'app/core/location/location.types';
+import { FamousItem, FamousItemPagination, ProductDetailPagination, ProductDetails, StoresDetailPagination, StoresDetails, Tag } from 'app/core/location/location.types';
 import { NavigateService } from 'app/core/navigate-url/navigate.service';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
@@ -14,6 +14,7 @@ import { AddOnProduct, Product } from 'app/core/product/product.types';
 import { StorePagination } from 'app/core/store/store.types';
 import { CurrentLocationService } from 'app/core/_current-location/current-location.service';
 import { CurrentLocation } from 'app/core/_current-location/current-location.types';
+import { OrderService } from 'app/core/_order/order.service';
 import { SearchService } from 'app/layout/common/_search/search.service';
 import { Subject, takeUntil, map, merge, combineLatest } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -28,7 +29,7 @@ export class LandingRestaurantsComponent implements OnInit
 {
     @ViewChild("storesPaginator", {read: MatPaginator}) private _paginator: MatPaginator;
     @ViewChild("productsDetailsPaginator", {read: MatPaginator}) private _productsDetailsPaginator: MatPaginator;
-
+    @ViewChild("famousItemPaginator", {read: MatPaginator}) private _famousItemPaginatorPaginator: MatPaginator;
     
     platform: Platform;
     currentLocation: CurrentLocation;
@@ -48,6 +49,13 @@ export class LandingRestaurantsComponent implements OnInit
     productsDetailsPageOfItems: Array<any>;
     productsDetailsPageSize: number = 20;
     oldProductsDetailsPaginationIndex: number = 0;
+
+    famousItemTitle: string = "Best Selling Food & Baverages";
+    famousItem: FamousItem[] = [];
+    famousItemPagination: FamousItemPagination;
+    famousItemPageOfItems: Array<any>;
+    famousItemPageSize: number = 20;
+    oldFamousItemPaginationIndex: number = 0;
     
     categoryId  : string;
     storeTag    : string;
@@ -55,6 +63,7 @@ export class LandingRestaurantsComponent implements OnInit
     currentScreenSize: string[] = [];
     isLoading: boolean = false;
     searchName: string;
+    bestSelling: string;
 
     tags        : Tag[];
     tagTitle    : string;
@@ -66,6 +75,7 @@ export class LandingRestaurantsComponent implements OnInit
 
     displayProduct: boolean = false;
     displayStore: boolean = true;
+    displayFamous: boolean = false;
 
     selectedProduct: Product = null;
     combos: any = [];
@@ -88,7 +98,8 @@ export class LandingRestaurantsComponent implements OnInit
         private _bottomSheet: MatBottomSheet,
         private _navigate: NavigateService,
         private _searchService: SearchService,
-        private _productsService: ProductsService
+        private _productsService: ProductsService,
+        private _orderService: OrderService
     )
     {
     }
@@ -140,6 +151,26 @@ export class LandingRestaurantsComponent implements OnInit
             .subscribe((pagination: ProductDetailPagination) => {
                 // Update the pagination
                 this.productsDetailsPagination = pagination;                   
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get Famous Items
+        this._locationService.famousItem$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((famousItem : FamousItem[]) => {                
+                this.famousItem = famousItem;
+                                
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+            
+        // Get Famous Items pagination
+        this._locationService.famousItemPagination$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((pagination : FamousItemPagination) => {                
+                this.famousItemPagination = pagination;
+                                
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -233,6 +264,7 @@ export class LandingRestaurantsComponent implements OnInit
                         this.categoryId = params.categoryId ? params.categoryId : null;
                         this.storeTag = params.storeTag ? params.storeTag : null;
                         this.searchName = params.keyword ? params.keyword : null;
+                        this.bestSelling = params.bestSelling ? params.bestSelling : null;
                         
                         if (this.storeTag) {
                         
@@ -284,9 +316,21 @@ export class LandingRestaurantsComponent implements OnInit
                         if(this.searchName && this.searchName !== '') {                               
                             this.displayProduct = true;
                             this.displayStore = false;
-                        } else {
+                            this.displayFamous = false;
+                        } 
+                        else if (!this.searchName)
+                        {
                             this.displayProduct = false;
                             this.displayStore = true;
+                            this.displayFamous = false;
+                        }
+
+                        if(this.bestSelling === 'true') {
+
+                            this._locationService.getFamousItems(this.storeTag).subscribe((response) => {});
+
+                            this.displayFamous = true;
+                            this.displayStore = false;
                         }
                     });
                 }
@@ -368,6 +412,33 @@ export class LandingRestaurantsComponent implements OnInit
 
                 // Get products if sort or page changes
                 merge(this._productsDetailsPaginator.page).pipe(
+                    switchMap(() => {
+                        this.isLoading = true;
+                        return this._locationService.getProductsDetails({ 
+                            name            : this.searchName, 
+                            page            : this.productsDetailsPageOfItems['currentPage'] - 1, 
+                            pageSize        : this.productsDetailsPageOfItems['pageSize'],
+                            status          : ['ACTIVE, OUTOFSTOCK'],
+                            regionCountryId : this.platform.country, 
+                            parentCategoryId: this.categoryId, 
+                            // cityId          : this.adjacentLocationIds,
+                            latitude        : currentLat,
+                            longitude       : currentLong,
+                            isDineIn        : true
+                        });
+                    }),
+                    map(() => {
+                        this.isLoading = false;
+                    })
+                ).subscribe();
+            }
+            if (this._famousItemPaginatorPaginator)
+            {
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+
+                // Get products if sort or page changes
+                merge(this._famousItemPaginatorPaginator.page).pipe(
                     switchMap(() => {
                         this.isLoading = true;
                         return this._locationService.getProductsDetails({ 

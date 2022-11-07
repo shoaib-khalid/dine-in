@@ -1,0 +1,81 @@
+<ng-container *ngIf="displayFloating !== 'none'">
+    <!-- Single Store -->
+    <ng-container *ngIf="displayFloating === 'single'">
+        <div
+            cdkDrag
+            cdkDragLockAxis="y" 
+            class="fixed note py-2 pl-2 pr-0.5 flex gap-0.5 items-center drop-shadow-md justify-center w-13 h-12 right-0 z-90 rounded-l-full cursor-pointer bg-gradient-to-r from-primary-300 to-primary-500
+                print:hidden transition-colors"
+            [class.lg:right-0]="config.layout === 'centered' || config.layout === 'material'"
+            [class.lg:right-16]="config.layout !== 'centered' && config.layout !== 'material'"
+            style="top: 80px"
+            (click)="goToStore(stores[0].domain)">
+            <mat-icon
+                class="icon-size-3 text-black"
+                [svgIcon]="'storefront'"></mat-icon>
+            <span class="text-xs text-center leading-3 text-black font-medium tracking-tighter">Menu</span>
+        </div>
+    </ng-container>
+    <!-- Multiple Stores -->
+    <ng-container *ngIf="displayFloating === 'multiple'">
+        <div
+            cdkDrag
+            cdkDragLockAxis="y" 
+            class="fixed note py-2 pl-2 pr-0.5 flex gap-0.5 items-center drop-shadow-md justify-center w-13 h-12 right-0 z-90 rounded-l-full cursor-pointer bg-gradient-to-r from-primary-300 to-primary-500
+                print:hidden transition-colors"
+            [class.lg:right-0]="config.layout === 'centered' || config.layout === 'material'"
+            [class.lg:right-16]="config.layout !== 'centered' && config.layout !== 'material'"
+            style="top: 80px"
+            (click)="goToBestSelling()">
+            <mat-icon
+                class="icon-size-3 text-black"
+                [svgIcon]="'mat_outline:fastfood'"></mat-icon>
+            <span class="text-xs text-center leading-3 text-black font-medium tracking-tighter">Best Selling</span>
+            <!-- <img class="w-26" [src]="'assets/gif/More-Stalls.gif'" alt=""> -->
+        </div>
+        
+        <fuse-drawer
+            class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999"
+            fixed
+            [mode]="'over'"
+            [name]="'settingsDrawer'"
+            [position]="'right'"
+            #settingsDrawer>
+        
+            <div class="flex flex-col w-full">
+                <div class="flex flex-row items-center px-6 h-20 min-h-20 text-white bg-primary">
+                    <mat-icon
+                        class="icon-size-6 text-current"
+                        [svgIcon]="'storefront'"></mat-icon>
+                    <div class="ml-3 text-lg font-semibold tracking-tight">Available Food & Beverage Stalls</div>
+                    <button
+                        class="ml-auto"
+                        mat-icon-button
+                        (click)="settingsDrawer.close()">
+                        <mat-icon
+                            class="text-current"
+                            [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                    </button>
+                </div>
+                <div class="flex flex-col w-full p-1 gap-0.5">
+                    <ng-container *ngFor="let store of stores">
+                        <div
+                            (click)="goToStore(store.domain);settingsDrawer.close()" 
+                            class="flex flex-row relative items-center w-full border border-gray-300 rounded-lg p-2 my-0.5 hover:bg-primary cursor-pointer">
+                            <div
+                                *ngIf="!store.isStoreOpen"
+                                class="absolute inset-0 bg-black bg-opacity-50 z-10 w-full h-full flex flex-col items-center justify-center rounded-lg lg:rounded gap-2">
+                                <div class="flex flex-col rounded-lg bg-red-500 text-white items-center p-3 leading-none uppercase">
+                                    <span class="text-white text-base lg:text-2xl font-medium">SORRY! WE'RE</span>
+                                    <span class="text-white text-3xl lg:text-5xl font-semibold">CLOSED</span>
+                                </div>
+                            </div>
+                            <img class="w-14 h-14 rounded-lg border" [src]="displayStoreLogo(store.storeAssets)" [alt]="store.name + ' logo'">
+                            <span class="ml-2 line-clamp-2">{{store.name}}</span>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </fuse-drawer>
+    </ng-container>
+</ng-container>
