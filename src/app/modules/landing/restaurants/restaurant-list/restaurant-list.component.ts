@@ -50,7 +50,7 @@ export class LandingRestaurantsComponent implements OnInit
     productsDetailsPageSize: number = 20;
     oldProductsDetailsPaginationIndex: number = 0;
 
-    famousItemTitle: string = "Best Selling Food & Baverages";
+    famousItemTitle: string = "Best Selling Food & Beverages";
     famousItem: FamousItem[] = [];
     famousItemPagination: FamousItemPagination;
     famousItemPageOfItems: Array<any>;
