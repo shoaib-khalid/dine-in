@@ -159,8 +159,6 @@ export class SelfPickupInfoDialog implements OnInit {
                         break;
                 }
         });
-
-        this.addressForm.patchValue(this.data.selfPickupInfo);
         
         if (this.data) {
 
@@ -176,7 +174,7 @@ export class SelfPickupInfoDialog implements OnInit {
 
 
         }
-        
+        this.addressForm.patchValue(this.data.selfPickupInfo);
 
     }
 
