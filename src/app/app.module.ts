@@ -17,6 +17,7 @@ import { AppConfig } from 'app/config/service.config';
 // import { environment } from '../environments/environment';
 import { HttpClientModule } from '@angular/common/http';
 import { RedirectGuard } from './core/navigation/redirect.guard';
+import { SplashScreenModule } from './shared/splash-screen/splash-screen.module';
 
 const routerConfig: ExtraOptions = {
     preloadingStrategy       : PreloadAllModules,
@@ -54,6 +55,8 @@ const routerConfig: ExtraOptions = {
         //     // or after 30 seconds (whichever comes first).
         //     registrationStrategy: 'registerWhenStable:30000'
         // })
+
+        SplashScreenModule
     ],
     bootstrap   : [
         AppComponent
