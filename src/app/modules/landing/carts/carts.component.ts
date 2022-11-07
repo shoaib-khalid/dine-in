@@ -293,6 +293,9 @@ export class CartListComponent implements OnInit, OnDestroy
     serviceType: 'tableService' | 'selfPickup';
 
     selectedAvailableCart: any [] = []
+    checkoutItems: CheckoutItems[] = [];
+    dineInPack: 'DINEIN' | 'TAKEAWAY' = "DINEIN";
+    placingOrder: boolean = false;
 
     /**
      * Constructor
@@ -672,6 +675,36 @@ export class CartListComponent implements OnInit, OnDestroy
             });
 
         this.scrollToTop()
+
+        // Checkout Items
+        this._checkoutService.checkoutItems$
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((checkoutItems: CheckoutItems[])=>{
+            if (checkoutItems) {     
+                                                                            
+                this.checkoutItems = checkoutItems;
+                let cartsWithDetailsTotalItemsArr = checkoutItems.map(item => item.selectedItemId.length);
+                let cartsWithDetailsTotalItems = cartsWithDetailsTotalItemsArr.reduce((partialSum, a) => partialSum + a, 0);
+                this.totalSelectedCartItem = cartsWithDetailsTotalItems;
+                
+                if (this.carts && this.carts.length > 0) {
+                    this.totalQuantity = this.carts.map(item => item.cartItems.map(element => element.quantity).reduce((partialSum, a) => partialSum + a, 0)).reduce((a, b) => a + b, 0);
+                }
+                else {
+                    this.totalQuantity = 0;
+                }
+
+                // Check if has self pickup 
+                this.hasSelfPickup = true
+                
+                // Get self pickup info
+                let selfPickupIndex = checkoutItems.findIndex(item => item.selfPickupInfo.phoneNumber);
+                if (selfPickupIndex > -1) this.selfPickupInfo = checkoutItems[selfPickupIndex].selfPickupInfo;
+                
+            }
+            // Mark for check 
+            this._changeDetectorRef.markForCheck();
+        });
         
     }
 
@@ -958,9 +991,14 @@ export class CartListComponent implements OnInit, OnDestroy
         
         this.selectedCart = 
             {
-                carts: this.cartIds.map((item)=>{                    
+                carts: this.cartIds.map((item)=>{     
+                    let index = this.carts.findIndex(element => element.id === item.id);
+                    let storeClose = false;
+                    if (index > -1) {
+                        storeClose = this.isStoreClose(this.carts[index].storeId) === false;              
+                    }
                     return {
-                        id: (this.isStoreClose(this.carts[this.carts.findIndex(element => element.id === item.id)].storeId) === false) ? item.id : null, 
+                        id: storeClose ? item.id : null, 
                         storeId: item.storeId ? item.storeId : null,
                         cartItem: item.cartItems.map((element)=>{
                             return {
@@ -1159,7 +1197,7 @@ export class CartListComponent implements OnInit, OnDestroy
     }
 
     initializeCheckoutList() {
-        
+
         // to list out the array of selectedCart
         let checkoutListBody: CheckoutItems[] = this.selectedCart.carts.map(item => {
                             
@@ -1766,9 +1804,9 @@ export class CartListComponent implements OnInit, OnDestroy
             }
         }
 
-        this.initializeCheckoutList();
-        
-        this._router.navigate(['/checkout']);    
+        // this.initializeCheckoutList();
+        this.placeOrder();
+        // this._router.navigate(['/checkout']);    
     }
 
     redirect(type : string, store : Store, productSeo : string) {
@@ -1857,6 +1895,9 @@ export class CartListComponent implements OnInit, OnDestroy
             if (result) {
                 this.selfPickupInfo = result;
                 this.initializeCheckoutList();
+                setTimeout(() => {
+                    this.placeOrder();
+                }, 300);
             }
         });
     }
@@ -1916,5 +1957,225 @@ export class CartListComponent implements OnInit, OnDestroy
             }
         }
     }
+
+    placeOrder(){
+
+        // Set Loading to true
+        this.placingOrder = true;
+        
+        let orderBodies = [];
+        let platformVoucherCode = null;
+
+        let customerInfo = {
+            address     : '',
+            city        : '',
+            country     : '',
+            state       : '',
+            postCode    : '',
+            email       : this.selfPickupInfo && this.selfPickupInfo.email ? this.selfPickupInfo.email : '',
+            phoneNumber : this.selfPickupInfo ? this.selfPickupInfo.phoneNumber : '',
+            name        : this.selfPickupInfo ? this.selfPickupInfo.name: ''
+        }
+
+        this.checkoutItems.forEach(checkout => {
+            
+            let dineInOptions = "";            
+            if (checkout.dineInOption === 'SENDTOTABLE') { 
+                dineInOptions = 'Table No.: ' + this.tableNumber;
+            } else if (checkout.dineInOption === 'SELFCOLLECT'){
+                dineInOptions = "Self Collect";
+            } else {
+                console.error("Should not happen")
+            }
+
+            // by right shoul send checkout.orderNotes in customerNotes since we remove in order, we remove it as well
+            const orderBody = {
+                cartId: checkout.cartId,
+                cartItems: checkout.selectedItemId.map(element => {
+                    return {
+                        id: element,
+                    }
+                }),
+                customerId         : this.customerId,
+                customerNotes      : dineInOptions,
+                dineInPack         : this.dineInPack,
+                orderShipmentDetails: {
+                    address:  '',
+                    city: '',
+                    zipcode: '',
+                    state: '',
+                    storePickup: true,
+
+                    email: customerInfo.email,
+                    phoneNumber: customerInfo.phoneNumber,
+                }
+            };
+            orderBodies.push(orderBody)
+            platformVoucherCode = checkout.platformVoucherCode;
+        });
+        
+        this._checkoutService.postPlaceGroupOrder(orderBodies, false, platformVoucherCode)
+            .subscribe((response) => {
+
+                const order = response;                
+
+                if (this._cartService.orderIds$ === "" || !this._cartService.orderIds$ || this._cartService.orderIds$ === "[]") {
+                    // if the order array is empty, the set the array from first place order response
+                    this._cartService.orderIds = JSON.stringify([response]);
+                } else {
+                    let existingOrderIds = JSON.parse(this._cartService.orderIds$);
+                    // push next order response in the existing order array
+                    existingOrderIds.push(response);
+                    // then, set the new order array as the new response added
+                    this._cartService.orderIds = JSON.stringify(existingOrderIds)
+                    
+                }
+                
+                let dateTime = new Date();
+                let transactionId = this._datePipe.transform(dateTime, "yyyyMMddhhmmss");
+                let dateTimeNow = this._datePipe.transform(dateTime, "yyyy-MM-dd hh:mm:ss"); //2022-05-18 09:51:36
+
+                const paymentBody = {
+                    // callbackUrl: "https://bon-appetit.symplified.ai/thankyou",
+                    customerId: null,
+                    customerName: customerInfo.name,
+                    productCode: "parcel", // 
+                    // storeName: this.store.name,
+                    systemTransactionId: transactionId,
+                    transactionId: order.id,
+                }
+
+                // return
+
+                this._checkoutService.postMakePayment(paymentBody)
+                    .subscribe((response) => {
+
+                        const payment = response;
+
+                        // if (this.payment.isSuccess === true) {
+                        //     if (this.payment.providerId == "1") {
+                        //         window.location.href = this.payment.paymentLink;
+                        //     } else if (this.payment.providerId == "2") {                                                               
+                        //         this.postForm( "post-to-senangpay", this.payment.paymentLink, 
+                        //         {
+                        //             "detail" : this.payment.sysTransactionId, 
+                        //             "amount": this.paymentDetails.cartGrandTotal.toFixed(2), 
+                        //             "order_id": this.order.id, 
+                        //             "name": this.order.shipmentName, 
+                        //             "email": this.order.shipmentEmail, 
+                        //             "phone": this.order.shipmentPhoneNumber, 
+                        //             "hash": this.payment.hash 
+                        //         },'post', true );
+                        //     } else if (this.payment.providerId == "3") {      
+                        //         let fullUrl = (this._platformLocation as any).location.origin;
+                        //         this.postForm("post-to-fastpay", this.payment.paymentLink, 
+                        //             { 
+                        //                 "CURRENCY_CODE" : "PKR", 
+                        //                 "MERCHANT_ID"   : "13464", 
+                        //                 "MERCHANT_NAME" : "EasyDukan Pvt Ltd", 
+                        //                 "TOKEN"         : this.payment.token, 
+                        //                 "SUCCESS_URL"   : this._apiServer.settings.apiServer.paymentService + 
+                        //                                     "/payments/payment-redirect?name=" + this.order.shipmentName + 
+                        //                                     "&email="           + this.order.shipmentEmail + 
+                        //                                     "&phone="           + this.order.shipmentPhoneNumber + 
+                        //                                     "&amount="          + this.paymentDetails.cartGrandTotal.toFixed(2) +
+                        //                                     "&hash="            + this.payment.hash +
+                        //                                     "&status_id=1"      +
+                        //                                     "&order_id="        + this.order.id+
+                        //                                     "&transaction_id="  + transactionId+
+                        //                                     "&msg=Payment_was_successful&payment_channel=fastpay", 
+                        //                 "FAILURE_URL"   : this._apiServer.settings.apiServer.paymentService + 
+                        //                                     "/payments/payment-redirect?name=" + this.order.shipmentName + 
+                        //                                     "&email="           + this.order.shipmentEmail + 
+                        //                                     "&phone="           + this.order.shipmentPhoneNumber + 
+                        //                                     "&amount="          + this.paymentDetails.cartGrandTotal.toFixed(2)+ 
+                        //                                     "&hash="            + this.payment.hash +
+                        //                                     "&status_id=0"      +
+                        //                                     "&order_id="        + this.order.id +
+                        //                                     "&transaction_id="  + transactionId +
+                        //                                     "&msg=Payment_was_failed&payment_channel=fastpay", 
+                        //                 "CHECKOUT_URL"  : fullUrl + "/checkout", 
+                        //                 "CUSTOMER_EMAIL_ADDRESS"    : this.order.shipmentEmail, 
+                        //                 "CUSTOMER_MOBILE_NO"        : this.order.shipmentPhoneNumber, 
+                        //                 "TXNAMT"        : this.paymentDetails.cartGrandTotal.toFixed(2), 
+                        //                 "BASKET_ID"     : this.payment.sysTransactionId, 
+                        //                 "ORDER_DATE"    : dateTimeNow, 
+                        //                 "SIGNATURE"     : "SOME-RANDOM-STRING", 
+                        //                 "VERSION"       : "MERCHANT-CART-0.1", 
+                        //                 "TXNDESC"       : "Item purchased from EasyDukan", 
+                        //                 "PROCCODE"      : "00", 
+                        //                 "TRAN_TYPE"     : "ECOMM_PURCHASE", 
+                        //                 "STORE_ID"      : "", 
+                        //             } , 'post', false);
+                        //     } else {
+                        //         this.displayError("Provider id not configured");
+                        //         console.error("Provider id not configured");
+                        //     }
+                        // }
+                        
+
+                        this._router.navigate(['/order-history']);
+
+                        this._cartService.cartIds = '';
+                        this._cartService.cartsHeaderWithDetails = [];
+                        this._checkoutService.cartsWithDetails = null;
+                        this._cartService.cartsWithDetails = null;
+
+                        // Set Loading to false
+                        this.isLoading = false;
+                        this.placingOrder = false;
+                    }, (error) => {
+                        
+                        const confirmation = this._fuseConfirmationService.open({
+                            title  : 'Error ' + error.error.status,
+                            message: error.error.message,
+                            icon: {
+                                show: true,
+                                name: "heroicons_outline:exclamation",
+                                color: "warn"
+                            },
+                            actions: {
+                                confirm: {
+                                    label: 'Okay',
+                                    color: "warn",
+                                },
+                                cancel: {
+                                    show: false,
+                                }
+                            },
+                            dismissible: true
+                        });
+
+                        // Set Loading to false
+                        this.placingOrder = false;
+                    });
+            }, (error) => {
+
+                const confirmation = this._fuseConfirmationService.open({
+                    title  : 'Error ' + error.error.status,
+                    message: error.error.message,
+                    icon: {
+                        show: true,
+                        name: "heroicons_outline:exclamation",
+                        color: "warn"
+                    },
+                    actions: {
+                        confirm: {
+                            label: 'Okay',
+                            color: "warn",
+                        },
+                        cancel: {
+                            show: false,
+                        }
+                    },
+                    dismissible: true
+                });
+
+                // Set Loading to false
+                this.placingOrder = false;
+            });
+        
+    }
+
 
 }

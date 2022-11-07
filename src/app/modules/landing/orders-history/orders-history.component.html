@@ -89,26 +89,25 @@
                                     </div>
                                     <!-- Footer -->
                                     <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0">
-                                        <div class="flex flex-col md:border rounded-lg p-2">
+                                        <div class="flex flex-col md:border rounded-lg py-1 px-0.5">
                                             <!-- Order Summary -->
-                                            <div class="flex flex-col w-full mb-2">
+                                            <div class="flex flex-col w-full">
                                                 <!-- Title -->
                                                 <div class="hidden md:flex flex-row items-center border-b mb-1 pb-1">
                                                     <mat-icon class="text-primary" [svgIcon]="'mat_outline:receipt_long'"></mat-icon>
                                                     <span class="ml-2 font-bold">Order Summary</span>
                                                 </div>
                                                 <!-- Sub Total -->
-                                                <div class="flex flex-row w-full justify-between items-center">
+                                                <!-- <div class="flex flex-row w-full justify-between items-center">
                                                     <div>
                                                         <span class="text-left font-semibold text-gray-500 text-sm">Sub Total&nbsp;</span> 
                                                         <span class="text-left text-gray-500 text-xs">({{numberOfItems(orderDetails.orderItemWithDetails)}})</span>
-                                                        <!-- <span class="text-left text-gray-500 text-xs"> ({{orderDetails.orderItemWithDetails.length + " " + (orderDetails.orderItemWithDetails.length > 1 ? "items" : "item")  }})</span> -->
                                                     </div>
                                                     <div class="flex justify-between w-20">
                                                         <span class="font-semibold text-gray-500 text-sm">:</span>
                                                         <span class="text-right font-semibold text-gray-500 text-sm">{{ orderDetails.subTotal | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
                                                     </div>
-                                                </div>
+                                                </div> -->
                                                 <!-- Order Discount -->
                                                 <ng-container *ngIf="orderDetails.appliedDiscount !== 0">
                                                     <div class="flex flex-row w-full justify-between items-center">
@@ -164,7 +163,7 @@
                                                     </div>
                                                 </ng-container>
                                                 <!-- Total Amount -->
-                                                <div class="flex flex-row w-full justify-between items-center border-t mt-1">
+                                                <div class="flex flex-row w-full justify-between items-center border-t mt-1 pt-1">
                                                     <span class="text-left font-semibold text-sm">Total Amount</span> 
                                                     <div class="flex justify-between w-20">
                                                         <span class="items-center font-semibold text-sm">:</span>
@@ -332,26 +331,25 @@
                                             </div>
                                             <!-- Footer -->
                                             <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0">
-                                                <div class="flex flex-col md:border rounded-lg p-2">
+                                                <div class="flex flex-col md:border rounded-lg py-1 px-0.5">
                                                     <!-- Order Summary -->
-                                                    <div class="flex flex-col w-full mb-2">
+                                                    <div class="flex flex-col w-full">
                                                         <!-- Title -->
                                                         <div class="hidden md:flex flex-row items-center border-b mb-1 pb-1">
                                                             <mat-icon class="text-primary" [svgIcon]="'mat_outline:receipt_long'"></mat-icon>
                                                             <span class="ml-2 font-bold">Order Summary</span>
                                                         </div>
                                                         <!-- Sub Total -->
-                                                        <div class="flex flex-row w-full justify-between items-center">
+                                                        <!-- <div class="flex flex-row w-full justify-between items-center">
                                                             <div>
                                                                 <span class="text-left font-semibold text-gray-500 text-sm">Sub Total&nbsp;</span> 
                                                                 <span class="text-left text-gray-500 text-xs">({{numberOfItems(orderDetails.orderItemWithDetails)}})</span>
-                                                                <!-- <span class="text-left text-gray-500 text-xs">({{orderDetails.orderItemWithDetails.length + " " + (orderDetails.orderItemWithDetails.length > 1 ? "items" : "item")  }})</span> -->
                                                             </div>
                                                             <div class="flex justify-between w-20">
                                                                 <span class="font-semibold text-gray-500 text-sm">:</span>
                                                                 <span class="text-right font-semibold text-gray-500 text-sm">{{ orderDetails.subTotal | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
                                                             </div>
-                                                        </div>
+                                                        </div> -->
                                                         <!-- Order Discount -->
                                                         <ng-container *ngIf="orderDetails.appliedDiscount !== 0">
                                                             <div class="flex flex-row w-full justify-between items-center">
@@ -410,7 +408,7 @@
                                                             </div>
                                                         </ng-container>
                                                         <!-- Total Amount -->
-                                                        <div class="flex flex-row w-full justify-between items-center border-t mt-1">
+                                                        <div class="flex flex-row w-full justify-between items-center border-t mt-1 pt-1">
                                                             <span class="text-left font-semibold text-sm">Total Amount</span> 
                                                             <div class="flex justify-between w-20">
                                                                 <span class="items-center font-semibold text-sm">:</span>
@@ -442,7 +440,7 @@
                                     </ng-container>
 
                                     <!-- Footer -->
-                                    <div class="flex flex-col sm:items-end w-full px-2 sm:px-4">
+                                    <div class="flex flex-col sm:items-end w-full px-2 sm:px-4 gap-1">
                                         <!-- Total Order Amount -->
                                         <div class="flex flex-row justify-between">
                                             <p class="text-left font-semibold text-gray-500 text-sm w-56">Total Order Amount</p> 
@@ -457,8 +455,10 @@
                                                 <h3 class="text-right font-semibold text-primary-600 text-sm w-20">-{{ ordersGroup.platformVoucherDiscount | currency: platform.currency }}</h3>
                                             </div>
                                         </ng-container>
+                                        <!-- Separator -->
+                                        <div class="border-b w-full"></div>
                                         <!-- Total Amount -->
-                                        <div class="flex flex-row justify-between border-t">
+                                        <div class="flex flex-row justify-between">
                                             <p class="text-left font-semibold text-sm w-56">Total Amount</p> 
                                             <span class="items-center font-semibold text-sm">:</span>
                                             <h3 class="text-right font-semibold text-sm w-20">{{ ordersGroup.total | currency: platform.currency }}</h3>
