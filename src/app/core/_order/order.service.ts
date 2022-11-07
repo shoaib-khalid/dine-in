@@ -62,6 +62,7 @@ export class OrderService
     get order$(): Observable<Order> { return this._order.asObservable(); }
     /** Getter for orders **/
     get orders$(): Observable<Order[]> { return this._orders.asObservable(); }
+
     /** Getter for orderItems **/
     get orderItems$(): Observable<any>{ return this._orderItems.asObservable(); }
     /** Getter for ordersCountSummary **/
@@ -348,4 +349,5 @@ export class OrderService
             ))
         );
     }
+
 }

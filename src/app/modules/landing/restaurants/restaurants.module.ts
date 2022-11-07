@@ -28,6 +28,8 @@ import { _FeaturedProductsModule } from 'app/layout/common/_featured-products/fe
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { _BottomSheetModule } from './_bottom-sheet-product/bottom-sheet.module';
 import { FloatingStoreListModule } from 'app/layout/common/_floating-store-list/floating-store-list.module';
+import { FloatingBestSellingModule } from 'app/layout/common/_floating-best-selling/floating-best-selling.module';
+import { _FamousProductsModule } from 'app/layout/common/_famous-products/famous-products.module';
 
 @NgModule({
     declarations: [
@@ -59,7 +61,9 @@ import { FloatingStoreListModule } from 'app/layout/common/_floating-store-list/
         _BottomPopUpModule,
         _BottomSheetModule,
         MatBottomSheetModule,
-        FloatingStoreListModule
+        FloatingStoreListModule,
+        FloatingBestSellingModule,
+        _FamousProductsModule
     ],
     providers: [
         // CurrencyPipe,

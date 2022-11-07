@@ -4,7 +4,7 @@ import { BehaviorSubject, catchError, map, Observable, of, switchMap, tap } from
 import { AuthService } from '../auth/auth.service';
 import { AppConfig } from 'app/config/service.config';
 import { LogService } from '../logging/log.service';
-import { CategoryPagination, ChildCategory, LandingLocation, LocationArea, LocationPagination, ParentCategory, ProductDetailPagination, ProductDetails, StoresDetailPagination, StoresDetails, Tag, TagPagination } from './location.types';
+import { CategoryPagination, ChildCategory, FamousItem, FamousItemPagination, LandingLocation, LocationArea, LocationPagination, ParentCategory, ProductDetailPagination, ProductDetails, StoresDetailPagination, StoresDetails, Tag, TagPagination } from './location.types';
 import { ProductPagination, StorePagination } from '../store/store.types';
 import { DiningService } from '../_dining/dining.service';
 
@@ -31,6 +31,10 @@ export class LocationService
     // Products
     private _productsDetails: BehaviorSubject<ProductDetails[] | null> = new BehaviorSubject<ProductDetails[]>(null);
     private _productDetailPagination: BehaviorSubject<ProductDetailPagination | null> = new BehaviorSubject(null);
+
+    // Famous Product
+    private _famousItem: BehaviorSubject<FamousItem[] | null> = new BehaviorSubject<FamousItem[]>(null);
+    private _famousItemPagination: BehaviorSubject<FamousItemPagination | null> = new BehaviorSubject(null);
 
     // Featured Location
     private _featuredLocation: BehaviorSubject<LandingLocation | null> = new BehaviorSubject<LandingLocation>(null);
@@ -123,6 +127,15 @@ export class LocationService
  
     /** Getter for productDetailPagination */
     get productDetailPagination$(): Observable<ProductDetailPagination> { return this._productDetailPagination.asObservable(); }
+
+    // ----------------------
+    // Famous Product Products
+    //----------------------- 
+
+    /** Getter for famous item **/
+    get famousItem$(): Observable<FamousItem[]> { return this._famousItem.asObservable(); }
+    /** Getter for productDetailPagination */
+    get famousItemPagination$(): Observable<FamousItemPagination> { return this._famousItemPagination.asObservable(); }
 
     // ----------------------
     // Featured Product
@@ -877,6 +890,38 @@ export class LocationService
                     return response["data"].content;
                 })
             );
+    }
+
+    getFamousItems(tagKeyword: string)
+    {
+        let locationService = this._apiServer.settings.apiServer.locationService;
+        let accessToken = this._authService.publicToken;
+
+        const header = {
+            headers: new HttpHeaders().set("Authorization", `Bearer ${accessToken}`),
+        };
+
+        return this._httpClient.get<any>(locationService + '/famous/' + tagKeyword , header)
+        .pipe(
+            map((response) => {
+                this._logging.debug("Response from OrdersService (getFamousItems)",response);
+
+                // let _pagination = {
+                //     length: response["data"].totalElements,
+                //     size: response["data"].size,
+                //     page: response["data"].number,
+                //     lastPage: response["data"].totalPages,
+                //     startIndex: response["data"].pageable.offset,
+                //     endIndex: response["data"].pageable.offset + response["data"].numberOfElements - 1
+                // }
+                
+                // this._famousItemPagination.next(_pagination);
+                this._famousItem.next(response["data"]);
+
+                return response["data"];
+
+            })
+        )
     }
 }
 

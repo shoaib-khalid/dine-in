@@ -73,6 +73,41 @@
         </div>
     </ng-container>
 
+    <!-- Famous Product -->
+    <ng-container *ngIf="famousItem && famousItem.length && displayFamous">
+        <famous-products [products]="famousItem" [title]="famousItemTitle"></famous-products>
+        <!-- Products Pagination -->
+        <div class="flex w-full mt-4 items-center justify-center">
+            <ng-container *ngIf="false">
+                <div *ngIf="famousItem.length < famousItemPagination.length" 
+                    class="flex flex-row w-full">
+                    <!-- Left line -->
+                    <div class="w-full grid grid-rows-2">
+                        <div class="w-full"></div>
+                        <div class="w-full border-t"></div>
+                    </div>
+                    <!-- Button -->
+                    <div class="bg-primary text-white font-medium cursor-pointer tracking-tighter rounded p-2 w-50 text-center ring-0 hover:ring-1 ring-primary duration-50 text-sm md:text-base" 
+                        (click)="viewMore('products')">View More</div>
+                    <!-- Right line -->
+                    <div class="w-full grid grid-rows-2">
+                        <div class="w-full"></div>
+                        <div class="w-full border-t"></div>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- <pagination 
+                *ngIf="famousItemPagination.length > famousItemPagination.size"
+                [itemLength]="famousItemPagination.length" 
+                [initialPage]="famousItemPagination.page + 1"
+                [pageSize]="famousItemPagination.size"
+                (changePage)="onChangePage($event, 'famousItem')"
+                (click)="scrollToTop()"
+                #famousItemPaginator></pagination> -->
+        </div>
+
+    </ng-container>
+
     <!-- No Results -->
     <ng-container 
         *ngIf="(storesDetails && storesDetails.length === 0 && productsDetails && productsDetails.length === 0)">
@@ -114,4 +149,5 @@
     </ng-container>
 </div>
 
-<floating-store-list *ngIf="searchName" [displayFloating]="displayFloating"></floating-store-list>
+<floating-store-list *ngIf="searchName || bestSelling" [displayFloating]="displayFloating"></floating-store-list>
+<floating-best-selling *ngIf="!searchName && !bestSelling"></floating-best-selling>
