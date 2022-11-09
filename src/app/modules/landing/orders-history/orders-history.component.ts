@@ -476,7 +476,7 @@ export class OrdersHistoryComponent implements OnInit
         }
     }
 
-    editPhoneNo(parentId: string, childId: string, phoneNumber: string) {
+    editPhoneNo(groupOrderId: string, orderId: string, phoneNumber: string) {
         const dialog = this._dialog.open( 
             EditPhoneNumberDialog, {
                 width: this.currentScreenSize.includes('sm') ? 'auto' : '100%',
@@ -492,12 +492,14 @@ export class OrdersHistoryComponent implements OnInit
             if (result && result.phoneNumber) {
 
                 // Update phone number
-                this.ordersGroups$.pipe(
+                this._orderService.putOrderShipmentDetailsByOrderId(orderId, groupOrderId, {phoneNumber: result.phoneNumber})
+                .subscribe(editOrderResponse => {
+                    this.ordersGroups$.pipe(
                         take(1),
-                        map(orders => 
-                            ({...orders.find(x => x.id === parentId).orderList
-                                .find(x => x.id === childId).orderShipmentDetail.phoneNumber = result.phoneNumber, phoneNumber: result.phoneNumber}))
+                        map(orders => ({...orders.find(x => x.id === groupOrderId).orderList
+                                .find(x => x.id === orderId).orderShipmentDetail.phoneNumber = result.phoneNumber}))
                     ).subscribe()
+                })
             }
         });
         

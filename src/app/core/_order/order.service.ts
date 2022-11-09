@@ -8,7 +8,7 @@ import { AuthService } from '../auth/auth.service';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { JwtService } from '../jwt/jwt.service';
-import { DeliveryRiderDetails, Order, OrderDetails, OrderGroup, OrderItem, OrderPagination, OrdersCountSummary } from './order.types';
+import { DeliveryRiderDetails, Order, OrderDetails, OrderGroup, OrderItem, OrderPagination, OrdersCountSummary, OrderShipmentDetail } from './order.types';
 
 @Injectable({
     providedIn: 'root'
@@ -348,6 +348,27 @@ export class OrderService
                 })
             ))
         );
+    }
+
+    putOrderShipmentDetailsByOrderId(orderId: string, groupOrderId: string, orderShipmentBody: any):  Observable<any>
+    {
+        let orderService = this._apiServer.settings.apiServer.orderService;
+        //let accessToken = this._jwt.getJwtPayload(this.accessToken).act;
+        let accessToken = "accessToken";
+
+        const header = {  
+            headers: new HttpHeaders().set("Authorization", `Bearer ${accessToken}`)
+        };
+        
+
+        return this._httpClient.put<any>(orderService + '/orders/' + orderId + '/shipment-details', orderShipmentBody, header)
+            .pipe(
+                map((response) => {
+                    this._logging.debug("Response from OrdersService (putOrderShipmentDetailsByOrderId)", response);
+                    
+                    return response;
+                })
+            );
     }
 
 }
