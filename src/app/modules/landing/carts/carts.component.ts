@@ -31,6 +31,7 @@ import { DiningService } from 'app/core/_dining/dining.service';
 import { ServiceTypeDialog } from '../getting-started/service-type-dialog/service-type-dialog.component';
 import { LocationService } from 'app/core/location/location.service';
 import { StoresDetails } from 'app/core/location/location.types';
+import { CountdownService } from 'app/layout/common/_countdown/countdown.service';
 
 @Component({
     selector     : 'carts',
@@ -297,6 +298,10 @@ export class CartListComponent implements OnInit, OnDestroy
     dineInPack: 'DINEIN' | 'TAKEAWAY' = "DINEIN";
     placingOrder: boolean = false;
 
+    
+    timer: string;
+    countdown: number;
+
     /**
      * Constructor
      */
@@ -317,7 +322,8 @@ export class CartListComponent implements OnInit, OnDestroy
         private _voucherService: VoucherService,
         private _diningService: DiningService,
         private _titleService: Title,
-        private _location: Location
+        private _location: Location,
+        private _countdownService: CountdownService
     )
     {
     }
@@ -336,6 +342,25 @@ export class CartListComponent implements OnInit, OnDestroy
         this.storeTag = this._diningService.storeTag$        
 
         this.customerId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid ? this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid : null
+
+        // Timer
+        this._countdownService.countdown$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((countdown: number) => {
+
+                this.countdown = countdown;                
+
+                // convert countdown(second) to date
+                this.timer = new Date(this.countdown * 1000).toISOString().substr(14, 5);
+
+                
+                
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+                
+            });
+
+        this._countdownService.startTimer(900);
 
         this._platformService.platform$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -542,6 +567,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
+
             });
         
         // Get the cart pagination
@@ -706,6 +732,7 @@ export class CartListComponent implements OnInit, OnDestroy
             this._changeDetectorRef.markForCheck();
         });
         
+        
     }
 
     /**
@@ -739,6 +766,8 @@ export class CartListComponent implements OnInit, OnDestroy
      */
     ngOnDestroy(): void
     {
+
+        this._countdownService.pauseTimer();
 
         // Resolve back all carts
         this._cartService.cartResolver().subscribe();
