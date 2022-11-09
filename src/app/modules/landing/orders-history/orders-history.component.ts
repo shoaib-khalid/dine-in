@@ -14,7 +14,8 @@ import { Platform } from 'app/core/platform/platform.types';
 import { StoresService } from 'app/core/store/store.service';
 import { OrderService } from 'app/core/_order/order.service';
 import { Order, OrderDetails, OrderGroup, OrderItemWithDetails, OrderPagination } from 'app/core/_order/order.types';
-import { debounceTime, map, merge, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import { debounceTime, filter, iif, map, merge, Observable, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { EditPhoneNumberDialog } from './modal-edit-phonenumber/modal-edit-phonenumber.component';
 
 @Component({
     selector     : 'orders-history',
@@ -473,6 +474,33 @@ export class OrdersHistoryComponent implements OnInit
         } else {
             this._document.location.href = url;
         }
+    }
+
+    editPhoneNo(parentId: string, childId: string, phoneNumber: string) {
+        const dialog = this._dialog.open( 
+            EditPhoneNumberDialog, {
+                width: this.currentScreenSize.includes('sm') ? 'auto' : '100%',
+                height: this.currentScreenSize.includes('sm') ? 'auto' : 'auto',
+                maxWidth: this.currentScreenSize.includes('sm') ? 'auto' : '100vw',  
+                maxHeight: this.currentScreenSize.includes('sm') ? 'auto' : '100vh',
+                disableClose: true,
+                data: phoneNumber,
+            }
+        );  
+
+        dialog.afterClosed().subscribe(result=>{                
+            if (result && result.phoneNumber) {
+
+                // Update phone number
+                this.ordersGroups$.pipe(
+                        take(1),
+                        map(orders => 
+                            ({...orders.find(x => x.id === parentId).orderList
+                                .find(x => x.id === childId).orderShipmentDetail.phoneNumber = result.phoneNumber, phoneNumber: result.phoneNumber}))
+                    ).subscribe()
+            }
+        });
+        
     }
 
 }

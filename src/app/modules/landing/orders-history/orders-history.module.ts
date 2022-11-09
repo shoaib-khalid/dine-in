@@ -16,12 +16,14 @@ import { ErrorBackgroundModule } from 'app/shared/error-background/error-backgro
 import { OrdersHistoryComponent } from './orders-history.component';
 import { ordersHistoryRoutes } from './orders-history.routing';
 import { OrderHistoryDetailsComponent } from './orders-history-details/orders-history-details.component';
+import { EditPhoneNumberDialog } from './modal-edit-phonenumber/modal-edit-phonenumber.component';
 
 
 @NgModule({
     declarations: [
         OrdersHistoryComponent,
-        OrderHistoryDetailsComponent
+        OrderHistoryDetailsComponent,
+        EditPhoneNumberDialog
     ],
     imports     : [
         RouterModule.forChild(ordersHistoryRoutes),

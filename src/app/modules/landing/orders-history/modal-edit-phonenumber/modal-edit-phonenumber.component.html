@@ -1,0 +1,53 @@
+<div class="flex flex-col max-h-[90vh] max-w-140 overflow-y-auto">
+    <div class="flex flex-col flex-auto overflow-y-auto w-full">
+        <!-- Header new adrdress -->
+        <div class="flex items-center justify-center flex-auto pb-2 w-full">
+            <span class="text-center text-2xl font-bold text-primary">Edit Your Phone Number</span> <br>
+        </div>
+        <form 
+            class="w-full"
+            [formGroup]="addressForm">
+            <div class="flex flex-col w-full">
+                <!-- Phone Number -->
+                <div class="w-full flex flex-col sm:flex-row sm:mb-0">
+                    <mat-form-field class="fuse-mat-emphasized-affix w-full" floatLabel="always">
+                        <mat-label>Mobile Phone Number</mat-label>
+                        <input
+                            [formControlName]="'phoneNumber'"
+                            [placeholder]="dialingCode + '123456789 (for order update)'"
+                            [required]="true"
+                            (change)="addressForm.get('phoneNumber').patchValue(sanitizePhoneNumber(addressForm.get('phoneNumber').value))"
+                            matInput>
+                        <mat-error *ngIf="addressForm.get('phoneNumber').hasError('required')">
+                            Mobile phone number is required
+                        </mat-error>
+                        <mat-error *ngIf="addressForm.get('phoneNumber').hasError('invalidPhonenumber')">
+                            Invalid Mobile phone number
+                        </mat-error>
+                    </mat-form-field>                    
+                </div>
+    
+                <!-- Actions -->
+                <div class="flex sm:flex-row sm:items-center justify-end mt-2 sm:mt-4">
+                    <button
+                        class="hover:bg-gray-500 border border-gray-500"
+                        mat-flat-button
+                        type="button"
+                        [color]="'gray'"
+                        (click)="closeDialog()"
+                        >
+                        Cancel
+                    </button>
+                    <span>&nbsp;&nbsp;</span>
+                    <button
+                        mat-flat-button
+                        [disabled]="addressForm.invalid"
+                        type="button"
+                        (click)="updatePhoneNumber()"
+                        [color]="'primary'">Save
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

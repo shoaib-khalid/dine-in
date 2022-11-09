@@ -89,7 +89,7 @@
                                     </div>
                                     <!-- Footer -->
                                     <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0">
-                                        <div class="flex flex-col md:border rounded-lg py-1 px-0.5">
+                                        <div class="flex flex-col md:border rounded-lg py-1 px-0.5 md:px-2 md:py-1">
                                             <!-- Order Summary -->
                                             <div class="flex flex-col w-full">
                                                 <!-- Title -->
@@ -244,15 +244,27 @@
                                         <div class="flex flex-col md:flex-row w-full justify-between bg-card border border-gray-300 rounded-lg p-2 mb-1 sm:mb-2">
                                             <div class="flex flex-col w-full">
                                                 <!-- Header -->
-                                                <div class="flex flex-row my-1 items-start justify-between w-full sm:px-2">
+                                                <div class="flex flex-row my-1 items-start justify-between w-full sm:w-1/2 sm:px-2">
                                                     <!-- Store Details -->
-                                                    <div class="flex flex-row">
+                                                    <div class="flex flex-row w-full">
                                                         <mat-icon class="text-primary" svgIcon="mat_solid:storefront"></mat-icon>
-                                                        <div class="flex flex-col px-2">
-                                                            <h3 class="font-bold cursor-pointer" (click)="redirectToStore(orderDetails.store.domain)">{{orderDetails.store.name}}</h3>
-                                                            <h3 class="text-gray-400 text-xs">Order ID : {{orderDetails.invoiceId}}</h3>
-                                                            <h3 class="text-gray-400 text-xs">Order Placed : {{ convertDate(orderDetails.orderTimeConverted) | date:'MMM dd, h:mm a' }}</h3>
-                                                            <h3 class="text-blue-700 text-xs font-semibold">Notes : {{ orderDetails.customerNotes }}</h3>
+                                                        <div class="flex flex-col px-2 w-full leading-tight gap-0.5">
+                                                            <span class="font-bold cursor-pointer" (click)="redirectToStore(orderDetails.store.domain)">{{orderDetails.store.name}}</span>
+                                                            <span class="text-gray-400 text-xs">Order ID : {{orderDetails.invoiceId}}</span>
+                                                            <span class="text-gray-400 text-xs">Order Placed : {{ convertDate(orderDetails.orderTimeConverted) | date:'MMM dd, h:mm a' }}</span>
+                                                            <div class="flex flex-row justify-between">
+                                                                <span class="text-blue-700 text-xs font-medium">Notes : {{ orderDetails.customerNotes }}</span>
+                                                                <div *ngIf="orderDetails.dineInOption === 'SELFCOLLECT'" class="flex flex-row gap-1 items-center">
+                                                                    <span class="text-blue-700 text-xs font-medium">My Phone No. :</span>
+                                                                    <span 
+                                                                        (click)="editPhoneNo(ordersGroup.id, orderDetails.id, orderDetails.orderShipmentDetail.phoneNumber)"
+                                                                        class="underline text-xs text-blue-700 font-medium tracking-tight cursor-pointer">{{ orderDetails.orderShipmentDetail.phoneNumber }}</span>
+                                                                    <mat-icon 
+                                                                        (click)="editPhoneNo(ordersGroup.id, orderDetails.id, orderDetails.orderShipmentDetail.phoneNumber)"
+                                                                        class="icon-size-3 cursor-pointer" 
+                                                                        [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -331,7 +343,7 @@
                                             </div>
                                             <!-- Footer -->
                                             <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0">
-                                                <div class="flex flex-col md:border rounded-lg py-1 px-0.5">
+                                                <div class="flex flex-col md:border rounded-lg py-1 px-0.5 md:px-2 md:py-1">
                                                     <!-- Order Summary -->
                                                     <div class="flex flex-col w-full">
                                                         <!-- Title -->
