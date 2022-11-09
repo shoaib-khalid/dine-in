@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { map, Subject, switchMap, takeUntil } from 'rxjs';
+import { debounceTime, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations/public-api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SearchService } from './search.service';
@@ -31,6 +31,7 @@ export class _SearchComponent implements OnInit, OnDestroy
 {
     @Output() search: EventEmitter<any> = new EventEmitter<any>();
     @ViewChild('searchInput') public searchElement: ElementRef;
+    debounce: number = 300;
     @Input() storeId: string;
     @Input() store: StoreDetails;
 
@@ -162,9 +163,18 @@ export class _SearchComponent implements OnInit, OnDestroy
             });
 
         // Subscribe to search control reactive form
-        this.searchControl.valueChanges.subscribe(userInput => {
-            this.autoCompleteSetList(userInput);
-        })
+        this.searchControl.valueChanges
+            .pipe(
+                debounceTime(this.debounce),
+                takeUntil(this._unsubscribeAll),
+                map((value) => {
+                    // Continue
+                    return value;
+                })
+            )
+            .subscribe(userInput => {
+                this.autoCompleteSetList(userInput);
+            })
     }
 
     /**
@@ -173,9 +183,8 @@ export class _SearchComponent implements OnInit, OnDestroy
      * @param input 
      */
     autoCompleteSetList(input: string) {
-        let resultList = this.filterSetList(input)
+        let resultList = this.filterSetList(input);
         this.autoCompleteList = resultList;
-        
     }
 
     /**
@@ -190,12 +199,24 @@ export class _SearchComponent implements OnInit, OnDestroy
             return this.resultSets;
         }
         // if user input is empty, return the initial resultSets
-        if (val === '' || val === null) {
+        if (val === null) {
             return this.resultSets;
         }
+        
         // if val is null, return the initial resultSets, else, do the filtering
-        return val ? this.resultSets.filter(s => s.searchText.toLowerCase().indexOf(val.toLowerCase()) != -1)
+        let resultSet = val ? this.resultSets.filter(s => s.searchText && s.searchText.toLowerCase().indexOf(val.toLowerCase()) != -1)
             : this.resultSets;
+
+        this.search.emit(resultSet);
+        let queryParams = {
+            keyword : val,
+            storeTag: this.storeTag,
+            lat     : this.currentLat,
+            lng     : this.currentLong
+        }
+
+        this._router.navigate(['/store/' + this.store.domain], {queryParams: queryParams });
+        return resultSet;
     }
 
     /**
@@ -410,7 +431,16 @@ export class _SearchComponent implements OnInit, OnDestroy
             this.resultSets = localDataSearch;
 
             // Subscribe to search control reactive form
-            this.searchControl.valueChanges.subscribe(userInput => {
+            this.searchControl.valueChanges
+            .pipe(
+                debounceTime(this.debounce),
+                takeUntil(this._unsubscribeAll),
+                map((value) => {
+                    // Continue
+                    return value;
+                })
+            )
+            .subscribe(userInput => {
                 this.autoCompleteSetList(userInput);
             })
 
