@@ -137,4 +137,8 @@ export class FloatingStoreListComponent implements OnInit, OnDestroy
 
         this.reload();
     }
+
+    goToBestSelling(){
+        this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag, "bestSelling": true }});
+    }
 }
