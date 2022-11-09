@@ -16,7 +16,7 @@ import { Store, StoreAssets, StoreCategory } from 'app/core/store/store.types';
 import { BottomPopUpService } from 'app/layout/common/_bottom-popup/bottom-popup.service';
 import { SearchService } from 'app/layout/common/_search/search.service';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from 'ngx-gallery-9';
-import { debounceTime, map, Observable, Subject, switchMap, takeUntil, take } from 'rxjs';
+import { debounceTime, map, Observable, Subject, switchMap, takeUntil, take, distinctUntilChanged, startWith } from 'rxjs';
 import { ShopService } from './shop.service';
 import { AppConfig } from 'app/config/service.config';
 import { CupertinoPane } from 'cupertino-pane';
@@ -28,6 +28,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { _BottomSheetComponent } from '../_bottom-sheet-product/bottom-sheet.component';
 import { LocationService } from 'app/core/location/location.service';
 import { StoresDetails } from 'app/core/location/location.types';
+import { DiningService } from 'app/core/_dining/dining.service';
 
 @Component({
     selector     : 'landing-shop',
@@ -188,6 +189,7 @@ export class LandingShopComponent implements OnInit
     store: Store
     storeCategories: StoreCategory[];
     selectedCategory: StoreCategory = null;
+    selectedCustomCategory: string = "top10";
     catalogueSlug: string = "all-products";
     storeDomain: string;
     storeDetails: {
@@ -198,6 +200,7 @@ export class LandingShopComponent implements OnInit
     // product
     products$: Observable<Product[]>;
     products: Product[] = [];
+    famousProducts: Product[] = [];
     pagination: ProductPagination;
 
     sortInputControl: FormControl = new FormControl('recent');
@@ -243,6 +246,7 @@ export class LandingShopComponent implements OnInit
         private _datePipe: DatePipe,
         private _shopService: ShopService,
         private _locationService: LocationService,
+        private _diningService: DiningService,
         private _fuseConfirmationService: FuseConfirmationService,
         private _apiServer: AppConfig,
         private _cartService: CartService,
@@ -444,49 +448,78 @@ export class LandingShopComponent implements OnInit
                 this.searchName = params['keyword'] ? params['keyword'] : null;
 
                 this._storesService.getStoreCategories(this.store.id)
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe((storeCategories: StoreCategory[]) => {
-                    if (storeCategories) {
-                        this.storeCategories = storeCategories;
+                    .pipe(takeUntil(this._unsubscribeAll))
+                    .subscribe((storeCategories: StoreCategory[]) => {
+                        if (storeCategories) {
+                            
+                            this.storeCategories = storeCategories;
 
-                        this._storesService.storeCategory$
-                            .pipe(takeUntil(this._unsubscribeAll))
-                            .subscribe((storeCategory: StoreCategory) => {
-                                
-                                // Select the category if its already selected before
-                                if (storeCategory && this.storeCategories.map(x => x.id).includes(storeCategory.id)){
-                                    this.selectedCategory = storeCategory;
-                                }
-                                else {
-                                    this.selectedCategory = null;
-                                }
+                            this._storesService.storeCategory$
+                                .pipe(
+                                    distinctUntilChanged((prev, curr) => curr && prev === curr),
+                                    takeUntil(this._unsubscribeAll)
+                                )
+                                .subscribe((storeCategory: StoreCategory) => {
 
-                                this._productsService.getProducts(this.store.id, {
-                                    name        : this.searchName,
-                                    page        : this.searchName ? 0 : this.oldPaginationIndex, 
-                                    size        : 12,
-                                    sortByCol   : this.searchName ? 'created' : this.sortName, 
-                                    sortingOrder: this.searchName ? 'DESC' : this.sortOrder, 
-                                    status      : 'ACTIVE,OUTOFSTOCK',
-                                    categoryId  : this.selectedCategory ? this.selectedCategory.id : null
-                                }, false)
-                                .pipe(takeUntil(this._unsubscribeAll))
-                                .subscribe(()=>{
-                                    // set loading to false
-                                    this.isLoading = false;
-            
+                                    
+                                    if (this.selectedCategory && storeCategory && (storeCategory.id === this.selectedCategory.id)) {
+                                        return;
+                                    }
+
+                                    // if (this.selectedCustomCategory === "all" && storeCategory === null && this.selectedCategory === null) {
+                                    //     return;
+                                    // } 
+                                    
+                                    // Select the category if its already selected before
+                                    if (storeCategory && this.storeCategories.map(x => x.id).includes(storeCategory.id)){
+                                        this.selectedCategory = storeCategory;
+                                    }
+                                    else {
+                                        this.selectedCategory = null;
+                                    }
+
+                                    this._productsService.getProducts(this.store.id, {
+                                        name        : this.searchName,
+                                        page        : this.searchName ? 0 : this.oldPaginationIndex, 
+                                        size        : 12,
+                                        sortByCol   : this.searchName ? 'created' : this.sortName, 
+                                        sortingOrder: this.searchName ? 'DESC' : this.sortOrder, 
+                                        status      : 'ACTIVE,OUTOFSTOCK',
+                                        categoryId  : this.selectedCategory ? this.selectedCategory.id : null
+                                    }, false)
+                                    .pipe(takeUntil(this._unsubscribeAll))
+                                    .subscribe(()=>{
+                                        // set loading to false
+                                        this.isLoading = false;
+                
+                                        // Mark for check
+                                        this._changeDetectorRef.markForCheck();
+                                    });
+
                                     // Mark for check
                                     this._changeDetectorRef.markForCheck();
                                 });
+                            
+                        }
+                        // Mark for check
+                        this._changeDetectorRef.markForCheck();
+                    });
+                
+                // Famous Product
+                let tagKeyword = this._diningService.storeTag$
+                this._locationService.getFamousProduct(tagKeyword)
+                    .pipe(takeUntil(this._unsubscribeAll))
+                    .subscribe((famousProducts)=>{
 
-                                // Mark for check
-                                this._changeDetectorRef.markForCheck();
-                            });
+                        this.famousProducts = famousProducts;
                         
-                    }
-                    // Mark for check
-                    this._changeDetectorRef.markForCheck();
-                });
+                        // set loading to false
+                        this.isLoading = false;
+
+                        // Mark for check
+                        this._changeDetectorRef.markForCheck();
+                    });
+
         });
 
         // Get the products
@@ -578,19 +611,27 @@ export class LandingShopComponent implements OnInit
         this._changeDetectorRef.markForCheck();
     }
 
-    chooseCategory(category : StoreCategory) {
+    chooseCategory(category : StoreCategory, customCategory: string = null) {
+
+        if (customCategory) {
+            this.selectedCustomCategory = customCategory;
+        } 
         
         if (category) {
+            // do nothing if selected category is same with category
+            if (this.selectedCategory && category.id === this.selectedCategory.id) {                
+                return;
+            }
             // Resolve selected category
             this._storesService.getStoreCategoriesById(category.id).subscribe();
         } else {
-            this._storesService.storeCategory = null;
             this.selectedCategory = null;
+            this._storesService.storeCategory = null;            
         }
         
         this.catalogueSlug = category ? category.name.toLowerCase().replace(/ /g, '-').replace(/[-]+/g, '-').replace(/[^\w-]+/g, '') : "all-products";
 
-        this.pageOfItems['currentPage'] = 1;
+        if (this.pageOfItems) this.pageOfItems['currentPage'] = 1;
 
         this.oldPaginationIndex = 0;
         
@@ -916,4 +957,9 @@ export class LandingShopComponent implements OnInit
         }, 0);
         
     }
+
+    searchClicked(){
+        this.selectedCustomCategory = "all";
+    }
+    
 }
