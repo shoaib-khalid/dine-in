@@ -298,7 +298,6 @@ export class CartListComponent implements OnInit, OnDestroy
     dineInPack: 'DINEIN' | 'TAKEAWAY' = "DINEIN";
     placingOrder: boolean = false;
 
-    
     timer: string;
     countdown: number;
 
@@ -323,7 +322,8 @@ export class CartListComponent implements OnInit, OnDestroy
         private _diningService: DiningService,
         private _titleService: Title,
         private _location: Location,
-        private _countdownService: CountdownService
+        private _countdownService: CountdownService,
+
     )
     {
     }
@@ -353,7 +353,12 @@ export class CartListComponent implements OnInit, OnDestroy
                 // convert countdown(second) to date
                 this.timer = new Date(this.countdown * 1000).toISOString().substr(14, 5);
 
-                
+                if (countdown === 0) {
+                    this._cartService.cartIds = '';
+                    this._diningService.storeTag = '';
+
+                    window.location.reload()              
+                }
                 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
