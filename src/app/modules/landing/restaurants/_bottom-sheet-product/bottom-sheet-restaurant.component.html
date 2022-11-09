@@ -28,18 +28,28 @@
                     </div>
                     <!-- Price -->
                     <div class="flex mt-2">
-                        <ng-container *ngIf="false; else noItemDiscount" >
+                        <ng-container *ngIf="displayedProduct.discountAmount > 0; else noItemDiscount" >
                             <div class="font-semibold flex flex-col shrink">
                                 <div class="text-xs items-center text-primary-100 flex justify-start items-center">
                                     <span class="py-0.5 px-1 w-auto flex bg-red-600 rounded">{{displayedProduct.discountAmount}}% Off</span>
                                 </div> 
-                                <span class="mt-[0.15rem] text-xs line-through">{{displayedProduct.price | currency: selectedProduct.storeDetails.regionCountry.currencySymbol}}</span> 
-                                <span class="-mt-[0.15rem] text-base font-semibold text-primary ">{{displayedProduct.discountedPrice | currency: selectedProduct.storeDetails.regionCountry.currencySymbol}}</span> 
+                                <span class="mt-[0.15rem] text-xs line-through">{{displayedProduct.normalPrice | currency: store.regionCountry.currencySymbol}}</span> 
+                                <div class="flex flex-row gap-1">
+                                    <span class="-mt-[0.15rem] text-base font-semibold text-primary ">{{displayedProduct.basePrice | currency: store.regionCountry.currencySymbol}}</span> 
+                                    <span *ngIf="selectedProduct.hasAddOn && sumAddonPrice !== 0"
+                                        class="-mt-[0.15rem] text-sm font-medium text-secondary">
+                                        ({{sumAddonPrice > 0 ? '+' + (sumAddonPrice | number : '1.2-2') : (sumAddonPrice | number : '1.2-2')}})
+                                    </span>
+                                </div>
                             </div>
                         </ng-container>
                         <ng-template #noItemDiscount>
-                            <div>
-                                <span class="text-base font-semibold text-primary">{{displayedProduct.price | currency: selectedProduct.storeDetails.regionCountry.currencySymbol}}</span>
+                            <div class="flex flex-row gap-1">
+                                <span class="text-base font-semibold text-primary">{{displayedProduct.basePrice | currency: store.regionCountry.currencySymbol}}</span>
+                                <span *ngIf="selectedProduct.hasAddOn && sumAddonPrice !== 0"
+                                    class="text-sm font-medium text-secondary">
+                                    ({{sumAddonPrice > 0 ? '+' + (sumAddonPrice | number : '1.2-2') : (sumAddonPrice | number : '1.2-2')}})
+                                </span>
                             </div>
                         </ng-template>
                     </div>
@@ -95,7 +105,7 @@
                                             {{option.name}}
                                         </label>
                                         <label class="mr-6 leading-tight text-sm text-secondary" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
-                                            {{ option.dineInPrice < 0 ? '' + (option.dineInPrice  | currency: selectedProduct.storeDetails.regionCountry.currencySymbol) : '+' + (option.dineInPrice  | currency: selectedProduct.storeDetails.regionCountry.currencySymbol)}}
+                                            {{ option.dineInPrice < 0 ? '' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol) : '+' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol)}}
                                         </label>
                                     </div>
                                 </li>
@@ -188,7 +198,7 @@
                                 [svgIcon]="'heroicons_solid:shopping-cart'"></mat-icon>
                             <span class="text-sm font-medium">Add to Cart</span>
                             <span class="text-sm">&#8226;</span>
-                            <span class="text-sm">{{displayedProduct.price | currency: selectedProduct.storeDetails.regionCountry.currencySymbol}}</span>
+                            <span class="text-sm">{{displayedProduct.price | currency: store.regionCountry.currencySymbol}}</span>
                         </label>
                     </div>
                 </div>
