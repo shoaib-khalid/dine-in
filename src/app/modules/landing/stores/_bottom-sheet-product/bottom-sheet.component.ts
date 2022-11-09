@@ -25,7 +25,7 @@ import { AppConfig } from 'app/config/service.config';
     styles       : [
         `
         .mat-bottom-sheet-container {
-            padding: 16px 16px 0px 16px;
+            padding: 10px 16px 0px 16px;
             min-width: 100vw;
             box-sizing: border-box;
             display: block;
@@ -64,7 +64,9 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         sku: null,
         discountAmount:0,
         discountedPrice:0,
-        SubTotal:0
+        SubTotal:0,
+        normalPrice: 0,
+        basePrice: 0
     }
     openPreview: boolean = false;
     quantity: number = 1;
@@ -76,7 +78,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
     });
     store: Store
     addOns: AddOnProduct[] = [];
-    productBasePrice = 0;
+    sumAddonPrice: number = 0;
 
     /**
      * Constructor
@@ -194,32 +196,36 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                                 
             if (checkItemDiscount.length > 0){
                 //get most discount amount 
-                this.selectedProductInventory = this.selectedProduct.productInventories.reduce((r, e) => (<any>r).itemDiscount.discountAmount > (<any>e).itemDiscount.discountAmount ? r : e);
+                this.selectedProductInventory = this.selectedProduct.productInventories.reduce((r, e) => (<any>r).itemDiscount.dineInDiscountAmount > (<any>e).itemDiscount.dineInDiscountAmount ? r : e);
             }
             else {
                 //get the cheapest price
                 this.selectedProductInventory = this.selectedProduct.productInventories.reduce((r, e) => r.dineInPrice < e.dineInPrice ? r : e);
             }
-
-            // set the base price
-            this.productBasePrice = this.selectedProductInventory.dineInPrice;
     
             // set initial selectedProductInventoryItems to the cheapest item
             this.selectedProductInventoryItems = this.selectedProductInventory.productInventoryItems;
             
-            if (this.selectedProductInventoryItems) {
-                this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
+            if (this.selectedProductInventory.itemDiscount) {
+                this.displayedProduct.price = this.selectedProductInventory.itemDiscount.dineInDiscountedPrice;
                 this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                 this.displayedProduct.sku = this.selectedProductInventory.sku;
-                this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
-                this.displayedProduct.discountedPrice = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountedPrice : null;
-            } 
+                this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount.dineInDiscountAmount;
+                this.displayedProduct.discountedPrice = this.selectedProductInventory.itemDiscount.dineInDiscountedPrice;
+                this.displayedProduct.normalPrice = this.selectedProductInventory.itemDiscount.dineInNormalPrice;
+                // set the base price
+                this.displayedProduct.basePrice = this.selectedProductInventory.itemDiscount.dineInDiscountedPrice;
+
+            }
             else {
                 this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
                 this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                 this.displayedProduct.sku = this.selectedProductInventory.sku;
-                this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
-                this.displayedProduct.discountedPrice = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountedPrice : null;
+                this.displayedProduct.discountAmount = null;
+                this.displayedProduct.discountedPrice = null;
+                this.displayedProduct.normalPrice = this.selectedProductInventory.dineInPrice;
+                // set the base price
+                this.displayedProduct.basePrice = this.selectedProductInventory.dineInPrice;
             }
                 
             // set currentVariant
@@ -442,14 +448,14 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                 this.addOns.forEach(item => {
                     let message: string;
                     if (item.minAllowed > 0 && item.minAllowed >  this.selectedAddOn[item.id].length) {
-                        message = "You need to select " + item.minAllowed + " item of <b>" + item.title + "</b>";
+                        message = "You need to select " + item.minAllowed + " item(s) of <b>" + item.title + "</b>";
                     } else if (this.selectedAddOn[item.id].length > item.maxAllowed) {
-                        message = "You need to select " + item.maxAllowed + " item of <b>" + item.title + " only</b>";
+                        message = "You need to select " + item.maxAllowed + " item(s) of <b>" + item.title + " only</b>";
                     } 
 
                     if (message) {
                         const confirmation = this._fuseConfirmationService.open({
-                            "title": "Incomplete Product Combo selection",
+                            "title": "Incomplete Product Add-On selection",
                             "message": message,
                             "icon": {
                                 "show": true,
@@ -812,7 +818,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
             this.selectedAddOn[addOn.id].push({id: option.id, price: option.dineInPrice});
         }
 
-        // get and array of prices
+        // get an array of prices
         let priceArr = this.addOns.reduce((previousValue, currentValue) => {
 
             if (this.selectedAddOn[currentValue.id]) {
@@ -822,10 +828,10 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         }, []).flat();
 
         // sum up the prices
-        let sum = priceArr.reduce((partialSum, a) => partialSum + a, 0)
+        this.sumAddonPrice = priceArr.reduce((partialSum, a) => partialSum + a, 0)
 
         // add the sum to product's base price
-        this.displayedProduct.price = this.productBasePrice + sum;
+        this.displayedProduct.price = this.displayedProduct.basePrice + this.sumAddonPrice;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -892,7 +898,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                 this.displayedProduct.price = selectedProductInventory.dineInPrice
                 this.displayedProduct.itemCode = selectedProductInventory.itemCode
                 this.displayedProduct.sku = selectedProductInventory.sku
-                this.displayedProduct.discountAmount = selectedProductInventory.itemDiscount ? selectedProductInventory.itemDiscount.discountAmount : null;
+                this.displayedProduct.discountAmount = selectedProductInventory.itemDiscount ? selectedProductInventory.itemDiscount.dineInDiscountAmount : null;
                 this.displayedProduct.discountedPrice = selectedProductInventory.itemDiscount ? selectedProductInventory.itemDiscount.discountedPrice : null;
 
                 // reorder image collection 

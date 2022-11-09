@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
@@ -15,7 +16,8 @@ import { _BottomSheetComponent } from './bottom-sheet.component';
         SharedModule,
         NgxGalleryModule,
         MatIconModule,
-        MatInputModule
+        MatInputModule,
+        MatCheckboxModule
     ],
     exports     : [
         _BottomSheetComponent

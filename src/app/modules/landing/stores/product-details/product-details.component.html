@@ -112,11 +112,11 @@
                     </div> -->
                     <!-- Price -->
                     <div class="mt-2">
-                        <ng-container *ngIf="false ;else noItemDiscount" >
-                            <p class="font-semibold items-center">Price: &nbsp; 
-                                <span style="text-decoration: line-through;" class="px-2">{{displayedProduct.price | currency: store.regionCountry.currencySymbol}}</span> 
-                                <span class="text-xl font-semibold text-primary px-2 ">{{displayedProduct.discountedPrice | currency: store.regionCountry.currencySymbol}}</span> 
-                                <span class="mb-2 py-1 px-3 rounded text-sm font-semibold mx-2 items-center" [ngClass]="'text-primary-100 bg-red-600'">{{displayedProduct.discountAmount}}% Off</span> 
+                        <ng-container *ngIf="displayedProduct.discountAmount > 0 ;else noItemDiscount" >
+                            <p class="font-semibold flex items-center gap-2">Price: &nbsp; 
+                                <span style="text-decoration: line-through;" class="">{{displayedProduct.normalPrice | currency: store.regionCountry.currencySymbol}}</span> 
+                                <span class="text-xl font-semibold text-primary">{{displayedProduct.price | currency: store.regionCountry.currencySymbol}}</span> 
+                                <span class="py-1 px-3 rounded text-sm font-semibold items-center" [ngClass]="'text-primary-100 bg-red-600'">{{displayedProduct.discountAmount}}% Off</span> 
                             </p>
                         </ng-container>
                         <ng-template #noItemDiscount>

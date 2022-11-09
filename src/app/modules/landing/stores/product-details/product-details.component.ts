@@ -124,7 +124,9 @@ export class LandingProductDetailsComponent implements OnInit
         sku: null,
         discountAmount:0,
         discountedPrice:0,
-        SubTotal:0
+        SubTotal:0,
+        normalPrice: 0,
+        basePrice: 0
     }
 
     categorySlug: string;
@@ -150,7 +152,6 @@ export class LandingProductDetailsComponent implements OnInit
     }[] = [];
 
     openPreview: boolean = false;
-    productBasePrice = 0;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     
@@ -231,35 +232,37 @@ export class LandingProductDetailsComponent implements OnInit
                                     
                                     if(checkItemDiscount.length > 0){
                                         //get most discount amount 
-                                        this.selectedProductInventory = this.product.productInventories.reduce((r, e) => (<any>r).itemDiscount.discountAmount > (<any>e).itemDiscount.discountAmount ? r : e);
+                                        this.selectedProductInventory = this.product.productInventories.reduce((r, e) => (<any>r).itemDiscount.dineInDiscountAmount > (<any>e).itemDiscount.dineInDiscountAmount ? r : e);
                                     }
                                     else {
                                         //get the cheapest price
                                         this.selectedProductInventory = this.product.productInventories.reduce((r, e) => r.price < e.price ? r : e);
                                     }
 
-                                    // set the base price
-                                    this.productBasePrice = this.selectedProductInventory.dineInPrice;
-
-                                    
                                     // set initial selectedProductInventoryItems to the cheapest item
                                     this.selectedProductInventoryItems = this.selectedProductInventory.productInventoryItems;
             
-                                    if (this.selectedProductInventoryItems) {
-                                        this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
+                                    if (this.selectedProductInventory.itemDiscount) {
+                                        this.displayedProduct.price = this.selectedProductInventory.itemDiscount.dineInDiscountedPrice;
                                         this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                                         this.displayedProduct.sku = this.selectedProductInventory.sku;
-                                        this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
-                                        this.displayedProduct.discountedPrice = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountedPrice : null;
-                                    } 
+                                        this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount.dineInDiscountAmount;
+                                        this.displayedProduct.discountedPrice = this.selectedProductInventory.itemDiscount.dineInDiscountedPrice;
+                                        this.displayedProduct.normalPrice = this.selectedProductInventory.itemDiscount.dineInNormalPrice;
+                                        // set the base price
+                                        this.displayedProduct.basePrice = this.selectedProductInventory.itemDiscount.dineInDiscountedPrice;
+                        
+                                    }
                                     else {
                                         this.displayedProduct.price = this.selectedProductInventory.dineInPrice;
                                         this.displayedProduct.itemCode = this.selectedProductInventory.itemCode;
                                         this.displayedProduct.sku = this.selectedProductInventory.sku;
-                                        this.displayedProduct.discountAmount = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountAmount : null;
-                                        this.displayedProduct.discountedPrice = this.selectedProductInventory.itemDiscount ? this.selectedProductInventory.itemDiscount.discountedPrice : null;
+                                        this.displayedProduct.discountAmount = null;
+                                        this.displayedProduct.discountedPrice = null;
+                                        this.displayedProduct.normalPrice = this.selectedProductInventory.dineInPrice;
+                                        // set the base price
+                                        this.displayedProduct.basePrice = this.selectedProductInventory.dineInPrice;
                                     }
-            
                                     // ------------------
                                     // Product Assets
                                     // ------------------
@@ -1022,7 +1025,7 @@ export class LandingProductDetailsComponent implements OnInit
                 this.displayedProduct.price = selectedProductInventory.dineInPrice
                 this.displayedProduct.itemCode = selectedProductInventory.itemCode
                 this.displayedProduct.sku = selectedProductInventory.sku
-                this.displayedProduct.discountAmount = selectedProductInventory.itemDiscount ? selectedProductInventory.itemDiscount.discountAmount : null;
+                this.displayedProduct.discountAmount = selectedProductInventory.itemDiscount ? selectedProductInventory.itemDiscount.dineInDiscountAmount : null;
                 this.displayedProduct.discountedPrice = selectedProductInventory.itemDiscount ? selectedProductInventory.itemDiscount.discountedPrice : null;
 
                 // reorder image collection 
@@ -1132,7 +1135,7 @@ export class LandingProductDetailsComponent implements OnInit
         let sum = priceArr.reduce((partialSum, a) => partialSum + a, 0)
 
         // add the sum to product's base price
-        this.displayedProduct.price = this.productBasePrice + sum;
+        this.displayedProduct.price = this.displayedProduct.basePrice + sum;
 
         // Mark for check
         this._changeDetectorRef.markForCheck();

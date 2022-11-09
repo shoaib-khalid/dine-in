@@ -122,13 +122,14 @@ export class _FeaturedProductsComponent implements OnInit, OnDestroy
                 this.selectedProduct = product;
                 // set the valueofstore details
                 this.selectedProduct.storeDetails = <any>store;
-
+                console.log('this.selectedProduct', this.selectedProduct);
+                
                 // if has stock
-                if (this.isProductHasStock(product)) {
+                if (this.isProductHasStock(this.selectedProduct)) {
                     if (this.currentScreenSize.includes('md'))
-                        this._router.navigate(['store/' + storeSlug + '/all-products/' + product.seoNameMarketplace]);
+                        this._router.navigate(['store/' + storeSlug + '/all-products/' + this.selectedProduct.seoNameMarketplace]);
                     else {
-                        this._productsService.selectProduct(product);
+                        this._productsService.selectProduct(this.selectedProduct);
                     }
                 }
                 else return
