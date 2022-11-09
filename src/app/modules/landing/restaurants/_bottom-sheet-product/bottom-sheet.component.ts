@@ -19,13 +19,13 @@ import { StoresService } from 'app/core/store/store.service';
 import { AppConfig } from 'app/config/service.config';
 
 @Component({
-    selector     : 'bottom-sheet',
-    templateUrl  : './bottom-sheet.component.html',
+    selector     : 'bottom-sheet-restaurant',
+    templateUrl  : './bottom-sheet-restaurant.component.html',
     encapsulation: ViewEncapsulation.None,
     styles       : [
         `
         .mat-bottom-sheet-container {
-            padding: 16px 16px 0px 16px;
+            padding: 10px 16px 0px 16px;
             min-width: 100vw;
             box-sizing: border-box;
             display: block;
