@@ -506,8 +506,8 @@ export class LandingShopComponent implements OnInit
                     });
                 
                 // Famous Product
-                let tagKeyword = this._diningService.storeTag$
-                this._locationService.getFamousProduct(tagKeyword)
+                let storeId = this.store.id
+                this._locationService.getFamousProduct(storeId)
                     .pipe(takeUntil(this._unsubscribeAll))
                     .subscribe((famousProducts)=>{
 
