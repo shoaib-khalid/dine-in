@@ -109,15 +109,38 @@ export class _StoreProductsComponent implements OnInit, OnDestroy
     }
 
     redirectToProduct(product: Product) {
-        // if has stock
-        if (this.isProductHasStock(product)) {
-            if (this.currentScreenSize.includes('md'))
-                this._router.navigate(['store/' + this.storeSlug + '/' + this.catalogueSlug + '/' + product.seoNameMarketplace]);
-            else {
-                this._productsService.selectProduct(product);
+
+        if(!product.productAssets ){
+            this._productsService.getProductsById(product.storeDetails.id, product.id)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((productResponse : Product) =>{
+                if (productResponse ) {
+    
+                    // if has stock
+                    if (this.isProductHasStock(productResponse)) {
+                        if (this.currentScreenSize.includes('md'))
+                            this._router.navigate(['store/' + this.storeSlug + '/' + this.catalogueSlug + '/' + productResponse.seoNameMarketplace]);
+                        else {
+                            this._productsService.selectProduct(productResponse);
+                        }
+                    }
+                    else return
+                }
+            });
+
+        } else {
+
+            // if has stock
+            if (this.isProductHasStock(product)) {
+                if (this.currentScreenSize.includes('md'))
+                    this._router.navigate(['store/' + this.storeSlug + '/' + this.catalogueSlug + '/' + product.seoNameMarketplace]);
+                else {
+                    this._productsService.selectProduct(product);
+                }
             }
+            else return
         }
-        else return
+        
     }
 
     selectProduct(product: Product){

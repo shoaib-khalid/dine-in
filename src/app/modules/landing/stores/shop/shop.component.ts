@@ -511,7 +511,9 @@ export class LandingShopComponent implements OnInit
                     .pipe(takeUntil(this._unsubscribeAll))
                     .subscribe((famousProducts)=>{
 
-                        this.famousProducts = famousProducts;
+                        const top10products = famousProducts.slice(0,10);
+
+                        this.famousProducts = top10products;
                         
                         // set loading to false
                         this.isLoading = false;
