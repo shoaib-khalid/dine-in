@@ -356,6 +356,7 @@ export class CartListComponent implements OnInit, OnDestroy
                 if (countdown === 0) {
                     this._cartService.cartIds = '';
                     this._diningService.storeTag = '';
+                    this._diningService.tableNumber = '';
 
                     window.location.reload()              
                 }

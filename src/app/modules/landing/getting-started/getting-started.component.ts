@@ -66,9 +66,19 @@ export class LandingGettingStartedComponent implements OnInit
 
                     // Check param after we know that store tag exists
                     this._activatedRoute.queryParams.subscribe(params => {
-                        this.tableNumber = params['tableno'] ? params['tableno'] : undefined;
+                        let sessionTableNo = this._diningService.tableNumber$;
+
+                        if (params['tableno']) {
+                            this.tableNumber = params['tableno']
+                        }
+                        else if (sessionTableNo) {
+                            this.tableNumber = sessionTableNo;
+                        }
+                        else {
+                            this.tableNumber = undefined;
+                        }
                         
-                        if(this.tableNumber === undefined) {
+                        if (this.tableNumber === undefined) {
                             setTimeout(() => {
                                 this.openDialog('dining');
                                 // Mark for check

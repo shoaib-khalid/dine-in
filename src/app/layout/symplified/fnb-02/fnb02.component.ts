@@ -15,6 +15,7 @@ import { User } from 'app/core/user/user.types';
 import { AppConfig } from 'app/config/service.config';
 import { DisplayErrorService } from 'app/core/display-error/display-error.service';
 import { SearchService } from 'app/layout/common/_search/search.service';
+import { DiningService } from 'app/core/_dining/dining.service';
 
 @Component({
     selector     : 'fnb02-layout',
@@ -60,7 +61,9 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
         private _platformsService: PlatformService,
         private _displayErrorService: DisplayErrorService,
         private _userService: UserService,
-        private _searchService: SearchService
+        private _searchService: SearchService,
+        private _diningService: DiningService
+
     )
     {
     }
@@ -251,7 +254,10 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
     }
 
     goToHome() {
-        this._router.navigate(['/']);
+
+        let storeTag = this._diningService.storeTag$
+        
+        this._router.navigate(['/getting-started/' + storeTag]);
 
         // Navigate to the internal redirect url (temporary)
         // const redirectURL = this.platform.name === "DeliverIn" ? "https://www.deliverin.my" : "https://www.easydukan.co";
