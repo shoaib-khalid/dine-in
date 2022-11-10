@@ -27,15 +27,15 @@
                             </ng-container>
                             <ng-container *ngIf="product.productInventories.length > 0">
                                 <!-- Product discount -->
-                                <!-- <div *ngIf="product.productInventories[0].itemDiscount" class="flex items-center justify-start">
+                                <div *ngIf="product.productInventories[0].itemDiscount" class="absolute flex items-center justify-start">
                                     <div div class="flex items-center">
                                         <div
-                                            class="py-1 px-2 rounded text-xs font-semibold"
+                                            class="py-1 px-2 rounded text-sm sm:text-base font-semibold"
                                             [ngClass]="'text-primary-100 bg-red-600'">
-                                            {{product.productInventories[0].itemDiscount.discountAmount}}% Off
+                                            {{product.productInventories[0].itemDiscount.dineInDiscountAmount}}% Off
                                         </div>
                                     </div>
-                                </div> -->
+                                </div>
                             </ng-container>
                             <ng-container *ngIf="isProductHasStock(product) === false">
                                 <div class="absolute w-full h-full bg-black opacity-70 top-0 bottom-0 left-0 right-0 flex items-center justify-center">
@@ -87,28 +87,27 @@
                             (click)="redirectToProduct(product)"
                         >
                             <!-- Image Thumbnail -->
-                            <div class="relative h-full w-32 sm:w-72 rounded-l-lg p-2 bg-white bg-no-repeat shadow bg-cover bg-center" 
+                            <div class="relative h-full w-36 sm:w-72 rounded-l-lg p-2 bg-white bg-no-repeat shadow bg-cover bg-center" 
                                 [style]="(product.thumbnailUrl ? 'background-image: url(\'' + product.thumbnailUrl + '\');' : 'background-image: url(\'' + product.storeCategory.parentCategory.parentThumbnailUrl + '\');') + 'background-size: cover;'"
                             >
                                 <ng-container *ngIf="!product.thumbnailUrl" >
-                                    <div class="leading-tight tracking-tight absolute flex flex-col gap-1 w-full justify-center items-center left-0 right-0 top-0 bottom-0 bg-black bg-opacity-40 rounded-t-lg">
+                                    <div class="leading-tight tracking-tight absolute flex flex-col gap-1 w-full justify-center items-center left-0 right-0 top-0 bottom-0 bg-black bg-opacity-40 rounded-l-lg">
                                         <span class="text-white font-semibold text-sm md:text-lg text-center opacity-100">{{product.storeCategory ? product.storeCategory.parentCategory.parentName : "Product category not available"}}</span>
                                         <span class="text-white text-center text-sm md:text-base opacity-100">Product image not available</span>
                                     </div>
                                 </ng-container>
                                 <ng-container *ngIf="product.productInventories.length > 0">
                                     <!-- Product Discount -->
-                                    <!-- <div *ngIf="product.productInventories[0].itemDiscount" class="flex items-center justify-between">
+                                    <div *ngIf="product.productInventories[0].itemDiscount" class="absolute flex items-center justify-between">
                                         <ng-container>
                                             <div
-                                                class="py-1 px-2 rounded text-sm font-semibold"
+                                                class="py-1 px-2 rounded text-xs sm:text-base font-semibold"
                                                 [ngClass]="'text-primary-100 bg-red-600'">
-                                                {{product.productInventories[0].itemDiscount.discountAmount}}% Off
+                                                {{product.productInventories[0].itemDiscount.dineInDiscountAmount}}% Off
                                             </div>
                                         </ng-container>
-                                    </div> -->
+                                    </div>
                                 </ng-container>
-
                                 <ng-container *ngIf="isProductHasStock(product) === false">
                                     <div class="absolute rounded-l-lg w-full h-full bg-black opacity-70 top-0 bottom-0 left-0 right-0 flex items-center justify-center">
                                         <p class="font-semibold text-white text-base md:text-2xl">Out of Stock</p>

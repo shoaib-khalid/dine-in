@@ -248,20 +248,20 @@
                                                     <!-- Store Details -->
                                                     <div class="flex flex-row w-full">
                                                         <mat-icon class="text-primary" svgIcon="mat_solid:storefront"></mat-icon>
-                                                        <div class="flex flex-col px-2 w-full leading-tight gap-0.5">
+                                                        <div class="flex flex-col pl-2 w-full leading-tight gap-0.5">
                                                             <span class="font-bold cursor-pointer" (click)="redirectToStore(orderDetails.store.domain)">{{orderDetails.store.name}}</span>
                                                             <span class="text-gray-400 text-xs">Order ID : {{orderDetails.invoiceId}}</span>
                                                             <span class="text-gray-400 text-xs">Order Placed : {{ convertDate(orderDetails.orderTimeConverted) | date:'MMM dd, h:mm a' }}</span>
                                                             <div class="flex flex-row justify-between">
                                                                 <span class="text-blue-700 text-xs font-medium">Notes : {{ orderDetails.customerNotes }}</span>
                                                                 <div *ngIf="orderDetails.dineInOption === 'SELFCOLLECT'" class="flex flex-row gap-1 items-center">
-                                                                    <span class="text-blue-700 text-xs font-medium">My Phone No. :</span>
+                                                                    <span class="text-blue-700 text-xs font-medium">Phone No :</span>
                                                                     <span 
                                                                         (click)="editPhoneNo(ordersGroup.id, orderDetails.id, orderDetails.orderShipmentDetail.phoneNumber)"
                                                                         class="underline text-xs text-blue-700 font-medium tracking-tight cursor-pointer">{{ orderDetails.orderShipmentDetail.phoneNumber }}</span>
                                                                     <mat-icon 
                                                                         (click)="editPhoneNo(ordersGroup.id, orderDetails.id, orderDetails.orderShipmentDetail.phoneNumber)"
-                                                                        class="icon-size-3 cursor-pointer" 
+                                                                        class="icon-size-3 cursor-pointer text-primary" 
                                                                         [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
                                                                 </div>
                                                             </div>
