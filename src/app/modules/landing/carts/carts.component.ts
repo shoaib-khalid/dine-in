@@ -353,12 +353,27 @@ export class CartListComponent implements OnInit, OnDestroy
                 // convert countdown(second) to date
                 this.timer = new Date(this.countdown * 1000).toISOString().substr(14, 5);
 
-                if (countdown === 0) {
-                    this._cartService.cartIds = '';
-                    this._diningService.storeTag = '';
-                    this._diningService.tableNumber = '';
+                if (countdown === 0 && (this.carts && this.carts.length > 0)) {
+                    
+                    const dialogRef = this._dialog.open( 
+                        VoucherModalComponent,{
+                            data:{ 
+                                icon: 'timer_off',
+                                title: 'The session ended',
+                                description: 'Please re-scan the QR Code',
+                            },
+                            hasBackdrop: true
+                        });
+                    dialogRef.afterClosed().subscribe((result) => {
+    
+                        this._cartService.cartIds = '';
+                        this._cartService.cartsHeaderWithDetails = [];
+                        this._checkoutService.cartsWithDetails = [];
+                        this._cartService.cartsWithDetails = [];
 
-                    window.location.reload()              
+                        // Mark for check
+                        this._changeDetectorRef.markForCheck();
+                    });
                 }
                 
                 // Mark for check
@@ -1022,7 +1037,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
     selectAllItemsInCart()
     {
-        this.cartIds = JSON.parse(this._cartService.cartIds$);
+        this.cartIds = this._cartService.cartIds$ ? JSON.parse(this._cartService.cartIds$) : [];
         
         this.selectedCart = 
             {

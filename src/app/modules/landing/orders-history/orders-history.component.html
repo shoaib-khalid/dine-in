@@ -328,7 +328,8 @@
                                                                 <div class="w-1/2 md:w-2/3 flex flex-row justify-between">
                                                                     <span class="text-gray-400 items-center text-sm group-hover:text-primary">x{{orderItemDetail.quantity}}</span>
                                                                     <div class="flex flex-col md:flex-row justify-between w-3/5 items-end">
-                                                                        <span *ngIf="orderItemDetail.normalPrice !== orderItemDetail.price" class="text-gray-400 items-start text-left text-sm line-through">{{orderItemDetail.normalPrice | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
+                                                                        <span *ngIf="orderItemDetail.normalPrice && orderItemDetail.normalPrice !== orderItemDetail.productPrice && orderItemDetail.orderItemAddOn.length === 0" 
+                                                                            class="text-gray-400 items-start text-left text-sm line-through">{{orderItemDetail.normalPrice * orderItemDetail.quantity | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
                                                                         <span class="font-bold text-primary text-sm">{{orderItemDetail.price | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
                                                                     </div>
                                                                 </div>

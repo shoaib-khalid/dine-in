@@ -18,12 +18,12 @@
                 [ngClass]="isStorePage === false ? 'sticky top-0' : ''">
                 <!-- Top Header bar -->
                 <div class="flex flex-auto w-full justify-center items-center px-3 sm:px-4 lg:px-0 lg:max-w-300 bg-white z-40 dark:bg-gray-700">
-                    <div class="relative flex items-center justify-between w-full h-12 md:h-16">
+                    <div class="relative flex items-center justify-between w-full h-10 md:h-16">
                         <!-- Logo -->
                         <ng-container *ngIf="platform">
                             <img
                                 (click)="goToHome()"
-                                class="h-12 w-auto md:h-14 py-2 object-contain cursor-pointer"
+                                class="h-10 w-auto md:h-14 py-2 object-contain cursor-pointer"
                                 [src]="platform.logo + '?original=true'"
                                 alt="Logo image">
                         </ng-container>
@@ -36,9 +36,12 @@
                             </button> -->
                             <!-- <notifications></notifications> -->
                             <!-- <span class="text-gray-300 hidden sm:block"> &nbsp; | &nbsp; </span> -->
+                            <button class="" mat-icon-button (click)="goToHome()">
+                                <mat-icon class="icon-size-5 text-primary" [svgIcon]="'heroicons_solid:home'"></mat-icon>
+                            </button>
                             <!-- Order History -->
                             <button class="" mat-icon-button [routerLink]="['./order-history']">
-                                <mat-icon class="icon-size-5 text-primary" [svgIcon]="'heroicons_solid:clipboard-list'" matBadgeHidden="true"  matBadgeSize="small" [matBadge]="15"></mat-icon>
+                                <mat-icon class="icon-size-5 text-primary" [svgIcon]="'heroicons_solid:clipboard-check'" matBadgeHidden="true"  matBadgeSize="small" [matBadge]="15"></mat-icon>
                             </button>
                             <!-- cart -->
                             <cart></cart>
@@ -78,7 +81,7 @@
                 </div>  -->
                 <!-- Breadcrumbs -->
                 <div class="flex items-center w-full">
-                    <breadcrumb class="w-full"></breadcrumb>
+                    <!-- <breadcrumb class="w-full"></breadcrumb> -->
                 </div>
             </div>
             <!-- Content -->
