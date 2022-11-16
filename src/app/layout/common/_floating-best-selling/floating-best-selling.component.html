@@ -18,20 +18,21 @@
     </ng-container>
     <!-- Multiple Stores -->
     <ng-container *ngIf="displayFloating === 'multiple'">
+        <!-- class="fixed note py-2 pl-2 pr-0.5 flex gap-0.5 items-center drop-shadow-md justify-center w-13 h-12 right-0 z-90 rounded-l-full cursor-pointer bg-gradient-to-r from-primary-300 to-primary-500
+                print:hidden transition-colors" -->
         <div
             cdkDrag
             cdkDragLockAxis="y" 
-            class="fixed note py-2 pl-2 pr-0.5 flex gap-0.5 items-center drop-shadow-md justify-center w-13 h-12 right-0 z-90 rounded-l-full cursor-pointer bg-gradient-to-r from-primary-300 to-primary-500
-                print:hidden transition-colors"
+            class="fixed w-16 h-auto right-0 z-90 drop-shadow-md cursor-pointer"
             [class.lg:right-0]="config.layout === 'centered' || config.layout === 'material'"
             [class.lg:right-16]="config.layout !== 'centered' && config.layout !== 'material'"
-            style="top: 40px"
+            style="top: 34px"
             (click)="goToBestSelling()">
-            <mat-icon
+            <!-- <mat-icon
                 class="icon-size-3 text-black"
                 [svgIcon]="'mat_outline:fastfood'"></mat-icon>
-            <span class="text-xs text-center leading-3 text-black font-medium tracking-tighter">Best Seller</span>
-            <!-- <img class="w-26" [src]="'assets/gif/More-Stalls.gif'" alt=""> -->
+            <span class="text-xs text-center leading-3 text-black font-medium tracking-tighter">Best Seller</span> -->
+            <img class="w-26" [src]="'assets/gif/Best-Seller_GIF.gif'" alt="">
         </div>
         
         <fuse-drawer
