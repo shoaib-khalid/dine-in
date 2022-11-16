@@ -33,7 +33,7 @@ export class LoadingScreenService
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * Show the loading bar
+     * Show the loading screen
      */
     show(): void
     {
@@ -41,7 +41,7 @@ export class LoadingScreenService
     }
 
     /**
-     * Hide the loading bar
+     * Hide the loading screen
      */
     hide(): void
     {

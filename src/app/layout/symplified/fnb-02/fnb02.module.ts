@@ -27,6 +27,7 @@ import { _VerticalModeModule } from 'app/layout/common/_vertical-mode/vertical-m
 import { _BottomPopUpModule } from 'app/layout/common/_bottom-popup/bottom-popup.module';
 import { _FloatingCartsModule } from 'app/layout/common/_floating-carts/floating-carts.module';
 import { MatBadgeModule } from '@angular/material/badge';
+import { LoadingScreenModule } from 'app/shared/loading-screen/loading-screen.module';
 
 @NgModule({
     declarations: [
@@ -59,7 +60,8 @@ import { MatBadgeModule } from '@angular/material/badge';
         BreadcrumbModule,
         _BottomPopUpModule,
         _FloatingCartsModule,
-        MatBadgeModule
+        MatBadgeModule,
+        LoadingScreenModule
     ],
     exports     : [
         Fnb2LayoutComponent

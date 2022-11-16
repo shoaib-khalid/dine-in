@@ -15,6 +15,7 @@ import { Platform } from 'app/core/platform/platform.types';
 import { StoresService } from 'app/core/store/store.service';
 import { OrderService } from 'app/core/_order/order.service';
 import { Order, OrderDetails, OrderGroup, OrderItemWithDetails, OrderPagination } from 'app/core/_order/order.types';
+import { LoadingScreenService } from 'app/shared/loading-screen/loading-screen.service';
 import { debounceTime, filter, iif, map, merge, Observable, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { EditPhoneNumberDialog } from './modal-edit-phonenumber/modal-edit-phonenumber.component';
 
@@ -107,10 +108,13 @@ export class OrdersHistoryComponent implements OnInit
         private _platformService: PlatformService,
         private _storesService: StoresService,
         private _cartService: CartService,
-        private _titleService: Title
+        private _titleService: Title,
+        private _loadingScreenService: LoadingScreenService
     )
     {
+        // Set loading to true
         this.isLoadingOnInit = true;
+        this._loadingScreenService.show()
     }
 
     ngOnInit() :void {
@@ -153,17 +157,19 @@ export class OrdersHistoryComponent implements OnInit
                 // resolver get group order with details
                 this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
                 .subscribe((orders: OrderGroup[]) => {
+                    // Set loading to false
                     this.isLoadingOnInit = false;
+                    this._loadingScreenService.hide()
                 });
-                // setTimeout(() => {
-                    
-                // }, 2000);
+                
             // set order details to be display and will be use in html
             this.ordersDetails$ = this._orderService.ordersDetails$;
             this.ordersGroups$ = this._orderService.orderGroups$;
         }
         else {
+            // Set loading to false
             this.isLoadingOnInit = false;
+            this._loadingScreenService.hide()
         }
           
         this._orderService.ordersDetails$
