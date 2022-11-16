@@ -2,7 +2,7 @@
 <div class="relative flex flex-col items-center bg-card w-full h-full">
     <!-- Main menu -->
     <div class="flex flex-col items-center w-full h-auto">
-        <ng-container *ngIf="isLoading === true">
+        <ng-container *ngIf="isLoadingOnInit === true">
             <splash-screen [animationType]="'fade-out'" [duration]="0.5" [animationDuration]="0.5"></splash-screen>
         </ng-container>
         <!-- Container -->

@@ -83,6 +83,7 @@ export class OrdersHistoryComponent implements OnInit
 
     currentScreenSize: string[] = [];
     isLoading: boolean = false;
+    isLoadingOnInit: boolean = false;
 
     displayAllGroup: { orderGroupId: string, orderList: { orderId: string; orderItemsId: {orderItemId: string; isDisplay: boolean}[], isDisplayAll: boolean}[]}[];
     displayAll: { orderId: string; orderItemsId: {orderItemId: string; isDisplay: boolean}[], isDisplayAll: boolean}[];
@@ -111,7 +112,7 @@ export class OrdersHistoryComponent implements OnInit
 
     ngOnInit() :void {
 
-        this.isLoading = true;
+        this.isLoadingOnInit = true;
 
         // this._httpstatService.get(503).subscribe((response) =>{});
         this._platformService.platform$
@@ -150,7 +151,7 @@ export class OrdersHistoryComponent implements OnInit
             // resolver get group order with details
             this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
             .subscribe((orders: OrderGroup[]) => {
-                this.isLoading = false;
+                this.isLoadingOnInit = false;
             });
             // set order details to be display and will be use in html
             this.ordersDetails$ = this._orderService.ordersDetails$;
