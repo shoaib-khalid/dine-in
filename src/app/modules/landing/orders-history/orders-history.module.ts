@@ -17,6 +17,7 @@ import { OrdersHistoryComponent } from './orders-history.component';
 import { ordersHistoryRoutes } from './orders-history.routing';
 import { OrderHistoryDetailsComponent } from './orders-history-details/orders-history-details.component';
 import { EditPhoneNumberDialog } from './modal-edit-phonenumber/modal-edit-phonenumber.component';
+import { SplashScreenModule } from 'app/shared/splash-screen/splash-screen.module';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import { EditPhoneNumberDialog } from './modal-edit-phonenumber/modal-edit-phone
         MatMenuModule,
         PaginationModule,
         SharedModule,
-        ErrorBackgroundModule
+        ErrorBackgroundModule,
+        SplashScreenModule
     ],
     bootstrap   : [
     ],

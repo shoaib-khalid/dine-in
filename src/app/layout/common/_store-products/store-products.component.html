@@ -125,7 +125,7 @@
                                         <span class="text-gray-500 text-xs sm:text-sm md:text-md line-clamp-2 md:line-clamp-4" [innerHtml]="product.description"></span>
                                     </div>
                                     <div class="flex flex-row justify-between items-center">
-                                        <div class="flex flex-row items-center gap-1" *ngIf="product.productInventories.length > 0 && product.productInventories[0].itemDiscount; else noItemDiscountList">
+                                        <div class="flex flex-row items-end gap-1" *ngIf="product.productInventories.length > 0 && product.productInventories[0].itemDiscount; else noItemDiscountList">
                                             <p class="text-xs sm:text-base" style="text-decoration: line-through;">{{product.productInventories[0].dineInPrice | currency: platform.currency}}</p>
                                             <p class="font-semibold text-md sm:text-2xl duration-100" [ngClass]="isProductHasStock(product) === false ? 'group-hover:text-black' : 'group-hover:text-primary'">{{product.productInventories[0].itemDiscount.dineInDiscountedPrice | currency: platform.currency}}</p>
                                         </div>
