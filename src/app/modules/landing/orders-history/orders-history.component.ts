@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { fuseAnimations } from '@fuse/animations';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { AuthService } from 'app/core/auth/auth.service';
 import { CustomerAuthenticate } from 'app/core/auth/auth.types';
@@ -46,7 +47,8 @@ import { EditPhoneNumberDialog } from './modal-edit-phonenumber/modal-edit-phone
                 z-index: 10;
             }
         `
-    ]
+    ],
+    animations   : fuseAnimations
 })
 export class OrdersHistoryComponent implements OnInit
 {  
@@ -108,11 +110,11 @@ export class OrdersHistoryComponent implements OnInit
         private _titleService: Title
     )
     {
+        this.isLoadingOnInit = true;
     }
 
     ngOnInit() :void {
 
-        this.isLoadingOnInit = true;
 
         // this._httpstatService.get(503).subscribe((response) =>{});
         this._platformService.platform$
@@ -137,7 +139,7 @@ export class OrdersHistoryComponent implements OnInit
             this.customerOrderIds = orderId.map( item => { return item.id }) ? orderId : this.customerOrderIds
             // Get customer group order ID
             this.groupcustomerOrderIds = orderId.map( item => { 
-                if(item.id.charAt(0) === 'G'){
+                if (item.id.charAt(0) === 'G'){
                     return item.id.substring(1);
                 }
             });
@@ -148,14 +150,20 @@ export class OrdersHistoryComponent implements OnInit
         
                 });
 
-            // resolver get group order with details
-            this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
-            .subscribe((orders: OrderGroup[]) => {
-                this.isLoadingOnInit = false;
-            });
+                // resolver get group order with details
+                this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
+                .subscribe((orders: OrderGroup[]) => {
+                    this.isLoadingOnInit = false;
+                });
+                // setTimeout(() => {
+                    
+                // }, 2000);
             // set order details to be display and will be use in html
             this.ordersDetails$ = this._orderService.ordersDetails$;
             this.ordersGroups$ = this._orderService.orderGroups$;
+        }
+        else {
+            this.isLoadingOnInit = false;
         }
           
         this._orderService.ordersDetails$
