@@ -23,16 +23,16 @@
         <div
             cdkDrag
             cdkDragLockAxis="y" 
-            class="fixed w-22 h-auto right-0 z-90 drop-shadow-md cursor-pointer"
+            class="fixed w-auto h-auto right-0 z-90 drop-shadow-md cursor-pointer"
             [class.lg:right-0]="config.layout === 'centered' || config.layout === 'material'"
             [class.lg:right-16]="config.layout !== 'centered' && config.layout !== 'material'"
-            style="top: 200px"
+            style="top: 192px"
             (click)="goToBestSelling()">
             <!-- <mat-icon
                 class="icon-size-3 text-black"
                 [svgIcon]="'mat_outline:fastfood'"></mat-icon>
             <span class="text-xs text-center leading-3 text-black font-medium tracking-tighter">Best Seller</span> -->
-            <img class="w-[80px]" [src]="'assets/gif/Best-Seller_GIF.gif'" alt="">
+            <img class="w-[100px]" [src]="'assets/gif/Best-Seller_GIF.gif'" alt="">
         </div>
         
         <fuse-drawer
