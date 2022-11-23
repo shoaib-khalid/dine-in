@@ -511,12 +511,19 @@ export class LandingShopComponent implements OnInit
                     .pipe(takeUntil(this._unsubscribeAll))
                     .subscribe((famousProducts)=>{
 
-                        const top10products = famousProducts.slice(0,10);
+                        if (famousProducts && famousProducts.length > 0) {
+                            const top10products = famousProducts.slice(0,10);
+    
+                            this.famousProducts = top10products;
+                            
+                            // set loading to false
+                            this.isLoading = false;
 
-                        this.famousProducts = top10products;
-                        
-                        // set loading to false
-                        this.isLoading = false;
+                        }
+                        // If no famous products, set selectedCustomCategory 'all' to load all products
+                        else {
+                            this.selectedCustomCategory = 'all';
+                        }
 
                         // Mark for check
                         this._changeDetectorRef.markForCheck();
