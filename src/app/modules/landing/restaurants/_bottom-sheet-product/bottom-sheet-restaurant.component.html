@@ -198,7 +198,7 @@
                                 [svgIcon]="'heroicons_solid:shopping-cart'"></mat-icon>
                             <span class="text-sm font-medium">Add to Cart</span>
                             <span class="text-sm">&#8226;</span>
-                            <span class="text-sm">{{displayedProduct.price | currency: store.regionCountry.currencySymbol}}</span>
+                            <span class="text-sm">{{displayedProduct.price * quantity | currency: store.regionCountry.currencySymbol}}</span>
                         </label>
                     </div>
                 </div>
