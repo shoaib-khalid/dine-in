@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { filter, Subject, takeUntil, distinctUntilChanged } from 'rxjs';
+import { filter, Subject, takeUntil, distinctUntilChanged, finalize } from 'rxjs';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FuseNavigationService, FuseVerticalNavigationComponent } from '@fuse/components/navigation';
 import { Navigation } from 'app/core/navigation/navigation.types';
@@ -52,6 +52,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
     isStorePage: boolean = false;
     isSearchOpened: boolean = false;
     floatingCartHidden: boolean = false;
+    dialogRef: any;
 
     /**
      * Constructor
@@ -210,13 +211,17 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
             });
 
-            // Timer
-            this._countdownService.countdownTimer$
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe((time: TimeComponents) => {
+        // Timer
+        this._countdownService.countdownTimer$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((time: TimeComponents) => {
+                
+                if (time.timeDifference <= 0) {
+                    
+                    // Check if dialog is already open
+                    if (!this.dialogRef) {
 
-                    if (time.timeDifference <= 0) {
-                        const dialogRef = this._dialog.open( 
+                        this.dialogRef = this._dialog.open( 
                             VoucherModalComponent,{
                                 data:{ 
                                     icon: 'timer_off',
@@ -225,23 +230,27 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                                 },
                                 hasBackdrop: true
                             });
-                        dialogRef.afterClosed().subscribe((result) => {
-        
-                            this._cartService.cartIds = '';
-                            this._cartService.cartsHeaderWithDetails = [];
-                            this._checkoutService.cartsWithDetails = [];
-                            this._cartService.cartsWithDetails = [];
-                            this._userService.userSessionId = '';
-                            this._diningService.storeTag = '';
 
-                            // Reload the app
-                            location.reload();
-    
-                            // Mark for check
-                            this._changeDetectorRef.markForCheck();
-                        });
+                        this.dialogRef.afterClosed()
+                            .pipe(finalize(() => this.dialogRef = undefined))
+                            .subscribe(() => {
+        
+                                this._cartService.cartIds = '';
+                                this._cartService.cartsHeaderWithDetails = [];
+                                this._checkoutService.cartsWithDetails = [];
+                                this._cartService.cartsWithDetails = [];
+                                this._userService.userSessionId = '';
+                                this._diningService.storeTag = '';
+
+                                // Reload the app
+                                location.reload();
+        
+                                // Mark for check
+                                this._changeDetectorRef.markForCheck();
+                            });
                     }
-                });
+                }
+            });
     
     }
 

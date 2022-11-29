@@ -346,52 +346,46 @@ export class CartListComponent implements OnInit, OnDestroy
 
         this.customerId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid ? this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid : null
 
+        // Session timer
         this.countdownTimer$ =  this._countdownService.countdownTimer$;
 
         // Timer
-        this.countdownTimer$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((time: TimeComponents) => {
-                
-            });
+        // this._countdownService.countdown$
+        //     .pipe(takeUntil(this._unsubscribeAll))
+        //     .subscribe((countdown: number) => {
 
-        // Timer
-        this._countdownService.countdown$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((countdown: number) => {
+        //         this.countdown = countdown;  
 
-                this.countdown = countdown;  
+        //         // convert countdown(second) to date
+        //         this.timer = new Date(this.countdown * 1000).toISOString().substr(14, 5);
 
-                // convert countdown(second) to date
-                this.timer = new Date(this.countdown * 1000).toISOString().substr(14, 5);
-
-                if (countdown === 0 && (this.carts && this.carts.length > 0)) {
+        //         if (countdown === 0 && (this.carts && this.carts.length > 0)) {
                     
-                    const dialogRef = this._dialog.open( 
-                        VoucherModalComponent,{
-                            data:{ 
-                                icon: 'timer_off',
-                                title: 'The session ended',
-                                description: 'Please re-scan the QR Code',
-                            },
-                            hasBackdrop: true
-                        });
-                    dialogRef.afterClosed().subscribe((result) => {
+        //             const dialogRef = this._dialog.open( 
+        //                 VoucherModalComponent,{
+        //                     data:{ 
+        //                         icon: 'timer_off',
+        //                         title: 'The session ended',
+        //                         description: 'Please re-scan the QR Code',
+        //                     },
+        //                     hasBackdrop: true
+        //                 });
+        //             dialogRef.afterClosed().subscribe((result) => {
     
-                        this._cartService.cartIds = '';
-                        this._cartService.cartsHeaderWithDetails = [];
-                        this._checkoutService.cartsWithDetails = [];
-                        this._cartService.cartsWithDetails = [];
+        //                 this._cartService.cartIds = '';
+        //                 this._cartService.cartsHeaderWithDetails = [];
+        //                 this._checkoutService.cartsWithDetails = [];
+        //                 this._cartService.cartsWithDetails = [];
 
-                        // Mark for check
-                        this._changeDetectorRef.markForCheck();
-                    });
-                }
+        //                 // Mark for check
+        //                 this._changeDetectorRef.markForCheck();
+        //             });
+        //         }
                 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+        //         // Mark for check
+        //         this._changeDetectorRef.markForCheck();
                 
-            });
+        //     });
 
         // this._countdownService.startTimer(900);
 
