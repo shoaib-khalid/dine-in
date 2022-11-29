@@ -86,11 +86,11 @@
                             class="flex flex-row gap-1 text-sm items-center"
                             [ngClass]="timer.minutesToDday < 3 ? 'text-red-500 animate-pulse' : 'text-black animate-none'">
                             <div class="flex items-end leading-none gap-0.5">
-                                <span class="font-semibold">{{timer.minutesToDday}}</span>
+                                <span class="font-semibold">{{timer.minutesToDday > 0 ? timer.minutesToDday : 0}}</span>
                                 <span class="text-xs">min</span>
                             </div>
                             <div class="flex items-end leading-none gap-0.5">
-                                <span class="font-semibold">{{timer.secondsToDday}}</span>
+                                <span class="font-semibold">{{timer.secondsToDday > 0 ? timer.secondsToDday : 0}}</span>
                                 <span class="text-xs">sec</span>
                             </div>
                         </div>

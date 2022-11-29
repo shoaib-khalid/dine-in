@@ -232,7 +232,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                             });
 
                         this.dialogRef.afterClosed()
-                            .pipe(finalize(() => this.dialogRef = undefined))
+                            // .pipe(finalize(() => this.dialogRef = undefined))
                             .subscribe(() => {
         
                                 this._cartService.cartIds = '';
@@ -241,10 +241,12 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                                 this._cartService.cartsWithDetails = [];
                                 this._userService.userSessionId = '';
                                 this._diningService.storeTag = '';
-
+                                
                                 // Reload the app
                                 location.reload();
-        
+                                
+                                // this.dialogRef = undefined; // maybe it's unnecessary
+
                                 // Mark for check
                                 this._changeDetectorRef.markForCheck();
                             });
