@@ -21,6 +21,7 @@ export class UserService
     private _customerAddresses: BehaviorSubject<CustomerAddress[] | null> = new BehaviorSubject(null);
 
     private _userSession: BehaviorSubject<UserSession | null> = new BehaviorSubject(null);
+    private _userSessionResponse: BehaviorSubject<UserSession | null> = new BehaviorSubject(null);
     
     /**
      * Constructor
@@ -148,6 +149,11 @@ export class UserService
     set userSessionId(value: string)
     {
         sessionStorage.setItem('userSessionId', value);
+    }
+
+    get userSessionResponse$(): Observable<UserSession>
+    {
+        return this._userSessionResponse.asObservable();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -601,6 +607,7 @@ export class UserService
 
                 // Resolved
                 this._userSession.next(body);
+                this._userSessionResponse.next(response["data"]);
 
                 // Return the deleted status
                 return response["data"];

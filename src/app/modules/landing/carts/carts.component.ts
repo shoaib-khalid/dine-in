@@ -11,7 +11,7 @@ import { JwtService } from 'app/core/jwt/jwt.service';
 import { Platform } from 'app/core/platform/platform.types';
 import { Store, StoreSnooze, StoreTiming } from 'app/core/store/store.types';
 import { fuseAnimations } from '@fuse/animations';
-import { distinctUntilChanged, filter, Subject, takeUntil, combineLatest, merge } from 'rxjs';
+import { distinctUntilChanged, filter, Subject, takeUntil, combineLatest, merge, Observable } from 'rxjs';
 import { elementAt, map, switchMap } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { CartDiscount, CheckoutItems, DeliveryCharges, DeliveryProvider, DeliveryProviders } from 'app/core/checkout/checkout.types';
@@ -32,6 +32,7 @@ import { ServiceTypeDialog } from '../getting-started/service-type-dialog/servic
 import { LocationService } from 'app/core/location/location.service';
 import { StoresDetails } from 'app/core/location/location.types';
 import { CountdownService } from 'app/layout/common/_countdown/countdown.service';
+import { TimeComponents } from 'app/layout/common/_countdown/countdown.types';
 
 @Component({
     selector     : 'carts',
@@ -301,6 +302,8 @@ export class CartListComponent implements OnInit, OnDestroy
     timer: string;
     countdown: number;
 
+    countdownTimer$: Observable<TimeComponents>;
+
     /**
      * Constructor
      */
@@ -343,12 +346,21 @@ export class CartListComponent implements OnInit, OnDestroy
 
         this.customerId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid ? this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid : null
 
+        this.countdownTimer$ =  this._countdownService.countdownTimer$;
+
+        // Timer
+        this.countdownTimer$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((time: TimeComponents) => {
+                
+            });
+
         // Timer
         this._countdownService.countdown$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((countdown: number) => {
 
-                this.countdown = countdown;                
+                this.countdown = countdown;  
 
                 // convert countdown(second) to date
                 this.timer = new Date(this.countdown * 1000).toISOString().substr(14, 5);
@@ -381,7 +393,7 @@ export class CartListComponent implements OnInit, OnDestroy
                 
             });
 
-        this._countdownService.startTimer(900);
+        // this._countdownService.startTimer(900);
 
         this._platformService.platform$
             .pipe(takeUntil(this._unsubscribeAll))

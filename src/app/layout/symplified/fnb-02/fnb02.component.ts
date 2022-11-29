@@ -16,6 +16,13 @@ import { AppConfig } from 'app/config/service.config';
 import { DisplayErrorService } from 'app/core/display-error/display-error.service';
 import { SearchService } from 'app/layout/common/_search/search.service';
 import { DiningService } from 'app/core/_dining/dining.service';
+import { TimeComponents } from 'app/layout/common/_countdown/countdown.types';
+import { CountdownService } from 'app/layout/common/_countdown/countdown.service';
+import { MatDialog } from '@angular/material/dialog';
+import { VoucherModalComponent } from 'app/modules/customer/vouchers/voucher-modal/voucher-modal.component';
+import { takeWhile } from 'lodash';
+import { CartService } from 'app/core/cart/cart.service';
+import { CheckoutService } from 'app/core/checkout/checkout.service';
 
 @Component({
     selector     : 'fnb02-layout',
@@ -62,7 +69,11 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
         private _displayErrorService: DisplayErrorService,
         private _userService: UserService,
         private _searchService: SearchService,
-        private _diningService: DiningService
+        private _diningService: DiningService,
+        private _countdownService: CountdownService,
+        public _dialog: MatDialog,
+        private _cartService: CartService,
+        private _checkoutService: CheckoutService,
 
     )
     {
@@ -198,6 +209,39 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+
+            // Timer
+            this._countdownService.countdownTimer$
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((time: TimeComponents) => {
+
+                    if (time.timeDifference < 0) {
+                        const dialogRef = this._dialog.open( 
+                            VoucherModalComponent,{
+                                data:{ 
+                                    icon: 'timer_off',
+                                    title: 'The session ended',
+                                    description: 'Please re-scan the QR Code',
+                                },
+                                hasBackdrop: true
+                            });
+                        dialogRef.afterClosed().subscribe((result) => {
+        
+                            this._cartService.cartIds = '';
+                            this._cartService.cartsHeaderWithDetails = [];
+                            this._checkoutService.cartsWithDetails = [];
+                            this._cartService.cartsWithDetails = [];
+                            this._userService.userSessionId = '';
+                            this._diningService.storeTag = '';
+
+                            // Reload the app
+                            location.reload();
+    
+                            // Mark for check
+                            this._changeDetectorRef.markForCheck();
+                        });
+                    }
+                });
     
     }
 
@@ -209,6 +253,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
+
     }
 
     // -----------------------------------------------------------------------------------------------------

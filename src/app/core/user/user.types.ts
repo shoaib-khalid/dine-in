@@ -91,4 +91,5 @@ export interface UserSession
     ip      : string;
     os      : string;
     updated : string;
+    expiryTime? : string;
 }
