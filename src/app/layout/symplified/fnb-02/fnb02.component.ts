@@ -215,7 +215,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((time: TimeComponents) => {
 
-                    if (time.timeDifference < 0) {
+                    if (time.timeDifference <= 0) {
                         const dialogRef = this._dialog.open( 
                             VoucherModalComponent,{
                                 data:{ 
