@@ -87,8 +87,10 @@
                     <!-- Search -->
                     <search (search)="searchClicked()" class="w-full mb-2 sm:mt-2 sm:mb-4 z-10" [storeId]="store.id" [store]="storeDetails"></search>
                     <!-- Sort -->
-                    <div class="flex flex-row items-center justify-between md:justify-end mt-1 md:mt-0 md:mb-2 w-full pb-2 sm:pb-0">
+                    <div class="flex flex-row items-center md:justify-end mt-1 md:mt-0 md:mb-2 w-full pb-2 sm:pb-0"
+                        [ngClass]="(!selectedCategory && selectedCustomCategory === 'top10') ? 'justify-end' : 'justify-between'">
                         <mat-select
+                            *ngIf="!(!selectedCategory && selectedCustomCategory === 'top10')"
                             class="order-1 md:order-2 border border-gray-300 w-44 p-2 rounded text-sm"
                             placeholder="Sort by name"
                             [formControl]="sortInputControl"
