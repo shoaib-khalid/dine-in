@@ -23,6 +23,8 @@ import { VoucherModalComponent } from 'app/modules/customer/vouchers/voucher-mod
 import { takeWhile } from 'lodash';
 import { CartService } from 'app/core/cart/cart.service';
 import { CheckoutService } from 'app/core/checkout/checkout.service';
+import { LocationService } from 'app/core/location/location.service';
+import { Tag } from 'app/core/location/location.types';
 
 @Component({
     selector     : 'fnb02-layout',
@@ -53,6 +55,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
     isSearchOpened: boolean = false;
     floatingCartHidden: boolean = false;
     dialogRef: any;
+    tagType: string;
 
     /**
      * Constructor
@@ -75,6 +78,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
         public _dialog: MatDialog,
         private _cartService: CartService,
         private _checkoutService: CheckoutService,
+        private _locationService: LocationService,
 
     )
     {
@@ -228,7 +232,8 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                                     title: 'The session ended',
                                     description: 'Please re-scan the QR Code',
                                 },
-                                hasBackdrop: true
+                                hasBackdrop: true,
+                                disableClose: true
                             });
 
                         this.dialogRef.afterClosed()
@@ -243,7 +248,8 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                                 this._diningService.storeTag = '';
                                 
                                 // Reload the app
-                                location.reload();
+                                // this._document.location.reload();
+                                this._document.location.href = 'https://' + AppConfig.settings.marketplaceDomain;
                                 
                                 // this.dialogRef = undefined; // maybe it's unnecessary
 
@@ -253,7 +259,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                     }
                 }
             });
-    
+
     }
 
     /**
@@ -312,9 +318,16 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
     goToHome() {
 
         let storeTag = this._diningService.storeTag$
-        
-        this._router.navigate(['/getting-started/' + storeTag]);
 
+        if (this.tagType && this.tagType === "restaurant") {                    
+            this._router.navigate(['/store/' + storeTag +'/all-products']);
+        } else {
+
+            // this._router.navigate(['/getting-started/' + storeTag]);
+            this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: storeTag }});
+
+        }
+        
         // Navigate to the internal redirect url (temporary)
         // const redirectURL = this.platform.name === "DeliverIn" ? "https://www.deliverin.my" : "https://www.easydukan.co";
         // this._document.location.href = redirectURL;

@@ -410,7 +410,9 @@ export class OrdersHistoryComponent implements OnInit
 
     }
 
-    redirectToStore(storeDomain: string) {        
+    redirectToStore(storeDomain: string) {     
+        return;
+           
         let domainName = storeDomain.split(".")[0]
         // this._document.location.href = url;
         this._router.navigate(['store/' + domainName + '/' + 'all-products' ]);

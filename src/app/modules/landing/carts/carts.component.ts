@@ -30,7 +30,7 @@ import { Title } from '@angular/platform-browser';
 import { DiningService } from 'app/core/_dining/dining.service';
 import { ServiceTypeDialog } from '../getting-started/service-type-dialog/service-type-dialog.component';
 import { LocationService } from 'app/core/location/location.service';
-import { StoresDetails } from 'app/core/location/location.types';
+import { StoresDetails, Tag } from 'app/core/location/location.types';
 import { CountdownService } from 'app/layout/common/_countdown/countdown.service';
 import { TimeComponents } from 'app/layout/common/_countdown/countdown.types';
 
@@ -303,6 +303,7 @@ export class CartListComponent implements OnInit, OnDestroy
     countdown: number;
 
     countdownTimer$: Observable<TimeComponents>;
+    tagType: string;
 
     /**
      * Constructor
@@ -758,8 +759,20 @@ export class CartListComponent implements OnInit, OnDestroy
             // Mark for check 
             this._changeDetectorRef.markForCheck();
         });
-        
-        
+
+        this._locationService.tags$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response: Tag[]) => {
+                if (response && response.length) {
+                    let index = response[0].tagConfig.findIndex(item => item.property === "type");
+                    if (index > -1) {
+                        this.tagType = response[0].tagConfig[index].content;
+                    }
+                }
+                // Mark for check 
+                this._changeDetectorRef.markForCheck();
+
+            })
     }
 
     /**

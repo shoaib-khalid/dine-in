@@ -456,8 +456,14 @@
                         </div>
                         <div class="flex flex-col text-center">
                             <span class="font-semibold">Table No.:&nbsp;{{tableNumber}}</span>
-                            <span class="text-gray-500 text-xs">Wrong table no.?</span>
-                            <span (click)="changeTableNumber()" class="text-primary text-xs underline cursor-pointer">change here</span>
+                            <span class="text-gray-500 text-xs">
+                                {{(tagType && tagType === 'restaurant' && (tableNumber.length === 0 || !tableNumber.trim())) ? 'Gotten your seat?' : 'Wrong table no.?'}}</span>
+                            <div class="leading-none">
+                                <span class="text-gray-500 text-xs tracking-tight">
+                                    {{(tagType && tagType === 'restaurant' && (tableNumber.length === 0 || !tableNumber.trim())) ? 'Enter table no. ' : 'Change '}}</span>
+                                <span (click)="changeTableNumber()" class="text-primary text-xs underline cursor-pointer tracking-tight">
+                                    here</span>
+                            </div>
                         </div>
                     </div>
                     <!-- Summary -->

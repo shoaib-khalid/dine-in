@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, ReplaySubject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { CustomerActivity } from './analytic.types';
 import { AppConfig } from 'app/config/service.config';
 import { JwtService } from 'app/core/jwt/jwt.service';
@@ -61,6 +61,32 @@ export class AnalyticService
 
     resolveAnalytic(): Observable<any>
     {
+        let device = this._deviceService.getDeviceInfo();
+        let deviceBrowser = device.browser + ' ' + device.browser_version
+        let deviceOs = device.os_version
+        let deviceModel = device.deviceType + ' ' + device.device
+
+        return this._ipAddressService.getIPAddress()
+        .pipe(
+            switchMap(ipAddressResponse => {
+                const body = {
+                    id      : this._userService.userSessionId$ !== '' ? this._userService.userSessionId$ : null,
+                    ip      : ipAddressResponse.ip_addr,
+                    os      : deviceOs,
+                    device  : deviceModel,
+                    browser : deviceBrowser,
+                    created : new Date().toISOString() + "",
+                    updated : new Date().toISOString() + ""
+                }
+                return this._userService.generateSession(body)
+                // .subscribe((generateSessionResponse)=>{
+                //     this._userService.userSessionId = generateSessionResponse.id;
+                // });
+            }),
+            tap(generateSessionResponse => {
+                this._userService.userSessionId = generateSessionResponse.id;
+            })
+        )
         return of(true).pipe(
             map((response)=>{
 

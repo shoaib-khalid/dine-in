@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
-import { Subject, takeUntil, combineLatest } from 'rxjs';
+import { Subject, takeUntil, combineLatest, mergeMap, take, map } from 'rxjs';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { CurrentLocationService } from 'app/core/_current-location/current-location.service';
 import { CurrentLocation } from 'app/core/_current-location/current-location.types';
@@ -12,6 +12,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DiningService } from 'app/core/_dining/dining.service';
 import { LocationService } from 'app/core/location/location.service';
 import { Tag } from 'app/core/location/location.types';
+import { UserService } from 'app/core/user/user.service';
+import { TimeComponents } from 'app/layout/common/_countdown/countdown.types';
+import { CountdownService } from 'app/layout/common/_countdown/countdown.service';
+import { LoadingScreenService } from 'app/shared/loading-screen/loading-screen.service';
 
 @Component({
     selector     : 'landing-getting-started',
@@ -24,13 +28,13 @@ export class LandingGettingStartedComponent implements OnInit
     platform: Platform;
     currentLocation: CurrentLocation;
     storeTag    : string;
-    tagType     : string;
+    tagType     : string = null;
 
     serviceType: 'tableService' | 'selfPickup';
     isLoading: boolean = false;
     currentScreenSize: string[] = [];
     tableNumber: any;
-
+    dialogRef: any;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -46,9 +50,14 @@ export class LandingGettingStartedComponent implements OnInit
         private _router: Router,
         private _locationService: LocationService,
         private _titleService: Title,
-        private _diningService: DiningService
+        private _diningService: DiningService,
+        private _userService: UserService,
+        private _countdownService: CountdownService,
+        private _loadingScreenService: LoadingScreenService
+
     )
     {
+        this._loadingScreenService.show()
     }
 
     ngOnInit(): void {
@@ -56,18 +65,40 @@ export class LandingGettingStartedComponent implements OnInit
         this.storeTag = this._activatedRoute.snapshot.paramMap.get('store-tag');
 
         this._locationService.tags$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((response: Tag[]) => {
-                if (response && response.length) {
-                    let index = response[0].tagConfig.findIndex(item => item.property === "type");
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                mergeMap((tagsResponse: Tag[]) => {
+                    return this._countdownService.countdownTimer$.pipe(
+                            take(1),
+                            map((timeResponse: TimeComponents) => {
+                                return { tags: tagsResponse, time: timeResponse }
+                            })
+                        )
+                })
+            )
+            .subscribe((combinedResponse: { tags: Tag[], time: TimeComponents }) => {
+
+                // Hide loading screen
+                this._loadingScreenService.hide();
+
+                if (combinedResponse.tags && combinedResponse.tags.length) {
+
+                    let index = combinedResponse.tags[0].tagConfig.findIndex(item => item.property === "type");
                     if (index > -1) {
-                        this.tagType = response[0].tagConfig[index].content;
+                        this.tagType = combinedResponse.tags[0].tagConfig[index].content;
+
+                        // Update expiry time
+                        if (this.tagType === "restaurant" && combinedResponse.time.timeDifference > 0) {
+                            if (this._userService.userSessionId$){
+                                this._userService.updateSession({sessionId: this._userService.userSessionId$, tagKeyword: this.storeTag}).subscribe()
+                            }
+                        }
                     }
 
                     // Check param after we know that store tag exists
                     this._activatedRoute.queryParams.subscribe(params => {
                         let sessionTableNo = this._diningService.tableNumber$;
-
+                        
                         if (params['tableno']) {
                             this.tableNumber = params['tableno']
                         }
@@ -78,14 +109,16 @@ export class LandingGettingStartedComponent implements OnInit
                             this.tableNumber = undefined;
                         }
                         
-                        if (this.tableNumber === undefined) {
+                        if (this.tableNumber === undefined && this.tagType !== "restaurant" && combinedResponse.time.timeDifference > 0) {
                             setTimeout(() => {
                                 this.openDialog('dining');
                                 // Mark for check
                                 this._changeDetectorRef.markForCheck();
                             }, 200);
-                        } else if (this.tableNumber) {
-                            this._diningService.tableNumber = this.tableNumber + "";
+                        } else if (this.tableNumber !== undefined || this.tagType === "restaurant") {
+                            if (this.tableNumber !== undefined) {
+                                this._diningService.tableNumber = this.tableNumber + "";
+                            }
                             this._diningService.storeTag = this.storeTag;
             
             
@@ -141,30 +174,34 @@ export class LandingGettingStartedComponent implements OnInit
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
+
+        this._loadingScreenService.hide();
     }
 
 
     openDialog(type: string)
     {
-        const dialogRef = this._dialog.open( 
-            ServiceTypeDialog, {
-                data: {
-                    servingType : type,
-                    serviceType : this.serviceType,
-                    storeTag    : this.storeTag
+        if (!this.dialogRef) {
+            this.dialogRef = this._dialog.open( 
+                ServiceTypeDialog, {
+                    data: {
+                        servingType : type,
+                        serviceType : this.serviceType,
+                        storeTag    : this.storeTag
+                    },
+                    disableClose: true
                 },
-                disableClose: true
-            },
-        );    
-        dialogRef.afterClosed().subscribe(result=>{                
-            if (result) {
-                if (this.tagType && this.tagType === "restaurant") {                    
-                    this._router.navigate(['/store/' + this.storeTag +'/all-products']);
-                } else {
-                    this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
+            );    
+            this.dialogRef.afterClosed().subscribe(result=>{                
+                if (result) {
+                    if (this.tagType && this.tagType === "restaurant") {                    
+                        this._router.navigate(['/store/' + this.storeTag +'/all-products']);
+                    } else {
+                        this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
+                    }
                 }
-            }
-        });
+            });
+        }
     }
     
 }

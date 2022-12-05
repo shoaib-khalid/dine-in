@@ -7,6 +7,7 @@ import { LogService } from '../logging/log.service';
 import { CategoryPagination, ChildCategory, FamousItem, FamousItemPagination, LandingLocation, LocationArea, LocationPagination, ParentCategory, ProductDetailPagination, ProductDetails, StoresDetailPagination, StoresDetails, Tag, TagPagination } from './location.types';
 import { ProductPagination, StorePagination } from '../store/store.types';
 import { DiningService } from '../_dining/dining.service';
+import { UserService } from '../user/user.service';
 
 @Injectable({
     providedIn: 'root'
@@ -61,7 +62,8 @@ export class LocationService
         private _authService: AuthService,
         private _diningService: DiningService,
         private _apiServer: AppConfig,
-        private _logging: LogService
+        private _logging: LogService,
+        private _userService: UserService
     )
     {
     }
@@ -856,11 +858,24 @@ export class LocationService
             return of(false);
         }
 
-        return of(true).pipe(
-            tap(()=>{
-                this.getTags({ page:0, pageSize: 1, sortByCol: "keyword", sortingOrder: "ASC", tagKeyword: tagKeyword}).subscribe();
-            })
-        );
+        return this.getTags({ page:0, pageSize: 1, sortByCol: "keyword", sortingOrder: "ASC", tagKeyword: tagKeyword})
+
+        // return of(true).pipe(
+        //     tap(()=>{
+        //         this.getTags({ page:0, pageSize: 1, sortByCol: "keyword", sortingOrder: "ASC", tagKeyword: tagKeyword})
+        //         // .pipe(
+        //         //     tap((tags: Tag[]) => {
+        //         //         if (this._userService.userSessionId$){
+        //         //             this._userService.updateSession({sessionId: this._userService.userSessionId$, tagKeyword: tags[0].keyword}).subscribe()
+        //         //         }
+        //         //     })
+        //         // )
+        //         .subscribe({
+        //             next: (tags: Tag[]) => {
+        //             }
+        //         });
+        //     })
+        // );
     }
 
     getTags(params: {

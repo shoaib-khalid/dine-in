@@ -603,12 +603,32 @@ export class UserService
         return this._httpClient.post<any>(userService + "/guest/generateSession", body, header).pipe(
             map((response) => {
 
-                this._logging.debug("Response from addressService (generateSession)", response);
+                this._logging.debug("Response from UserService (generateSession)", response);
 
                 // Resolved
                 this._userSession.next(body);
                 this._userSessionResponse.next(response["data"]);
 
+                // Return the deleted status
+                return response["data"];
+            })
+        );
+    }
+
+    updateSession(body: {sessionId: string, tagKeyword: string}): Observable<any>
+    {        
+        let userService = this._apiServer.settings.apiServer.userService;
+
+        const header = {
+            headers: new HttpHeaders().set("Authorization", this._authService.publicToken)
+        };
+
+        return this._httpClient.put<any>(userService + "/guest/updateSession", body, header).pipe(
+            map((response) => {
+
+                this._logging.debug("Response from UserService (updateSession)", response);
+
+                this._userSessionResponse.next(response["data"]);
                 // Return the deleted status
                 return response["data"];
             })

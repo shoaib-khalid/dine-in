@@ -69,12 +69,12 @@ export class DiningService
                             this._router.navigate(['/']);
                         }
                     } 
-                    if (isGettingStartedPage === false && haveStoreTag === true && haveStoreTable === false) {
-                        this._router.navigate(['/getting-started/' + this.storeTag$]);
-                    }
+                    // if (isGettingStartedPage === false && haveStoreTag === true && haveStoreTable === false) {
+                    //     this._router.navigate(['/getting-started/' + this.storeTag$]);
+                    // }
                 } else {
                     if (haveStoreTag === true && haveStoreTable === true) {
-                        console.warn("Need to disabled click cart");
+                        console.warn("Need to disable click cart");
                     }
                 }
             })
