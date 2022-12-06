@@ -1,5 +1,5 @@
-import { DatePipe, ViewportScroller } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, TemplateRef, ViewChild, ViewChildren, ViewEncapsulation } from '@angular/core';
+import { DatePipe, DOCUMENT, ViewportScroller } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, QueryList, TemplateRef, ViewChild, ViewChildren, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -252,7 +252,8 @@ export class LandingShopComponent implements OnInit
         private _cartService: CartService,
         private _authService: AuthService,
         private _jwtService: JwtService,
-        private _bottomSheet: MatBottomSheet
+        private _bottomSheet: MatBottomSheet,
+        @Inject(DOCUMENT) private _document: Document
 
     )
     {
@@ -563,7 +564,7 @@ export class LandingShopComponent implements OnInit
 
                 let index = this.storeCategories.findIndex(category => category.id === this.selectedCategory.id);
                 if (index > -1) {
-                    const locateButton = document.getElementById(`cat-${index}`) as HTMLInputElement;
+                    const locateButton = this._document.getElementById(`cat-${index}`) as HTMLInputElement;
                     locateButton.scrollIntoView({
                         behavior: 'smooth',
                         block: 'nearest', 

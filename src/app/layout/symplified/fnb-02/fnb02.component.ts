@@ -244,8 +244,11 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                                 this._cartService.cartsHeaderWithDetails = [];
                                 this._checkoutService.cartsWithDetails = [];
                                 this._cartService.cartsWithDetails = [];
+                                
+                                // Clear sessionStorage
                                 this._userService.userSessionId = '';
                                 this._diningService.storeTag = '';
+                                this._diningService.tableNumber = '';
                                 
                                 // Reload the app
                                 // this._document.location.reload();
