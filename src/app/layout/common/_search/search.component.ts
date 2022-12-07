@@ -215,7 +215,9 @@ export class _SearchComponent implements OnInit, OnDestroy
             lng     : this.currentLong
         }
 
-        this._router.navigate(['/store/' + this.store.domain], {queryParams: queryParams });
+        if (this.store) {
+            this._router.navigate(['/store/' + this.store.domain], {queryParams: queryParams });
+        }
         return resultSet;
     }
 

@@ -165,6 +165,19 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
             
         });
 
+        this._locationService.tags$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((tags: Tag[]) => {
+
+                if (tags && tags.length) {
+                    let index = tags[0].tagConfig.findIndex(item => item.property === "type");
+
+                    if (index > -1) {
+                        this.tagType = tags[0].tagConfig[index].content;
+                    }
+                }
+            });
+
         // Subscribe to navigation data
         this._navigationService.navigation$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -230,7 +243,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                                 data:{ 
                                     icon: 'timer_off',
                                     title: 'The session ended',
-                                    description: 'Please re-scan the QR Code',
+                                    description: 'Please rescan the QR Code',
                                 },
                                 hasBackdrop: true,
                                 disableClose: true

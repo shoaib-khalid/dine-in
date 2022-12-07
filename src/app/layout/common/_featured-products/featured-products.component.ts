@@ -122,7 +122,6 @@ export class _FeaturedProductsComponent implements OnInit, OnDestroy
                 this.selectedProduct = product;
                 // set the valueofstore details
                 this.selectedProduct.storeDetails = <any>store;
-                console.log('this.selectedProduct', this.selectedProduct);
                 
                 // if has stock
                 if (this.isProductHasStock(this.selectedProduct)) {
