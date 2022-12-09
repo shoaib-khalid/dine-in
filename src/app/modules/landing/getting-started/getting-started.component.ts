@@ -143,7 +143,7 @@ export class LandingGettingStartedComponent implements OnInit
                             },
                             error: () => {
                                 // Check if dialog is already open
-                                if (this._dialog.openDialogs.length === 0) {
+                                if (this._dialog.openDialogs.length === 0 && !this.dialogRef) {
 
                                     this.dialogRef = this._dialog.open( 
                                         VoucherModalComponent, {

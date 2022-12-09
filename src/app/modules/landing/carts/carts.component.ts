@@ -1789,8 +1789,24 @@ export class CartListComponent implements OnInit, OnDestroy
     goToCheckout() {
 
         if (this.tableNumber.length === 0 || !this.tableNumber.trim()) {
-            this.changeTableNumber();
+            const dialogRef = this._dialog.open( 
+                ServiceTypeDialog, {
+                    data: {
+                        servingType : 'dining',
+                        serviceType : this.serviceType,
+                        storeTag    : this.storeTag
+                    },
+                    disableClose: true
+                },
+            );    
+            dialogRef.afterClosed().subscribe(() => { 
+                this.tableNumber = this._diningService.tableNumber$;
 
+                this.goToCheckout();
+                     
+               // Mark for check
+               this._changeDetectorRef.markForCheck();
+            });
             return;
         }
 
@@ -2004,7 +2020,8 @@ export class CartListComponent implements OnInit, OnDestroy
             },
         );    
         dialogRef.afterClosed().subscribe(result=>{ 
-            this.tableNumber = this._diningService.tableNumber$             
+            this.tableNumber = this._diningService.tableNumber$;
+                 
            // Mark for check
            this._changeDetectorRef.markForCheck();
         });

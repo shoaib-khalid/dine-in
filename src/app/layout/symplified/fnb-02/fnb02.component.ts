@@ -236,7 +236,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                 if (time.timeDifference <= 0) {
                     
                     // Check if dialog is already open
-                    if (this._dialog.openDialogs.length === 0) {
+                    if (this._dialog.openDialogs.length === 0 && !this.dialogRef) {
 
                         this.dialogRef = this._dialog.open( 
                             VoucherModalComponent,{
