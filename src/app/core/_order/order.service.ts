@@ -376,36 +376,6 @@ export class OrderService
             );
     }
 
-    resolveToken(token: string): Observable<boolean> {
-        return of(true).pipe(
-            
-            switchMap(() => this.validateQRCode(token),
-            // .pipe(
-            //     catchError(() => {
-            //         return of(false)
-            //     })
-            // )
-            ),
-            catchError(err => {
-                console.error(err);
-                
-                return of(false)
-            })
-            // map(() => {
-                
-            //     this.validateQRCode(token)
-            //     .subscribe({
-            //         next: () => {
-
-            //         },
-            //         error: () => {
-            //             return false
-            //         }
-            //     })
-            // })
-        )
-    }
-
     validateQRCode(token: string):  Observable<any>
     {
         let orderService = this._apiServer.settings.apiServer.orderService;
@@ -421,6 +391,9 @@ export class OrderService
         if (!token) {
             this._logging.debug("Response from OrdersService (validateQRCode)- No Token!");
             console.info('No Token!')
+
+            // If no token, remove the key
+            sessionStorage.removeItem('token');
 
             return of('noToken');
         }
