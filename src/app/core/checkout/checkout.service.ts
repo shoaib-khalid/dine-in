@@ -350,7 +350,18 @@ export class CheckoutService
             );
     }
 
-    postPlaceGroupOrder( orderBodies, saveInfo: boolean, platformVoucherCode: string = null) : Observable<any>
+    postPlaceGroupOrder( orderBodies, params : {
+        saveCustomerInformation: boolean, 
+        platformVoucherCode: string,
+        tableNo: string,
+        qrToken: string
+    } = 
+    {
+        saveCustomerInformation: false, 
+        platformVoucherCode: null,
+        tableNo: null,
+        qrToken: null
+    }) : Observable<any>
     {
         let orderService = this._apiServer.settings.apiServer.orderService;
         //let accessToken = this._jwt.getJwtPayload(this.accessToken).act;
@@ -358,13 +369,19 @@ export class CheckoutService
 
         const header = {  
             headers: new HttpHeaders().set("Authorization", `Bearer ${accessToken}`),
-            params: {
-                saveCustomerInformation: saveInfo,
-                platformVoucherCode: platformVoucherCode
-            }
+            params: params
         };
 
-        if (platformVoucherCode === null) { delete header.params.platformVoucherCode; }
+        // Delete empty value
+        Object.keys(header.params).forEach(key => {
+            if (Array.isArray(header.params[key])) {
+                header.params[key] = header.params[key].filter(element => element !== null)
+            }
+            
+            if (!header.params[key] || (Array.isArray(header.params[key]) && header.params[key].length === 0)) {
+                delete header.params[key];
+            }
+        });
 
         return this._httpClient.post<any>(orderService + '/orders/placeGroupOrder', orderBodies, header)
             .pipe(

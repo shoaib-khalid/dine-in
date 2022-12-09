@@ -236,7 +236,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                 if (time.timeDifference <= 0) {
                     
                     // Check if dialog is already open
-                    if (!this.dialogRef) {
+                    if (this._dialog.openDialogs.length === 0) {
 
                         this.dialogRef = this._dialog.open( 
                             VoucherModalComponent,{
@@ -259,9 +259,11 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                                 this._cartService.cartsWithDetails = [];
                                 
                                 // Clear sessionStorage
-                                this._userService.userSessionId = '';
-                                this._diningService.storeTag = '';
-                                this._diningService.tableNumber = '';
+                                sessionStorage.clear();
+
+                                // this._userService.userSessionId = '';
+                                // this._diningService.storeTag = '';
+                                // this._diningService.tableNumber = '';
                                 
                                 // Reload the app
                                 // this._document.location.reload();

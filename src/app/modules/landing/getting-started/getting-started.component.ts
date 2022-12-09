@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
-import { Subject, takeUntil, combineLatest, mergeMap, take, map } from 'rxjs';
+import { Subject, takeUntil, combineLatest, mergeMap, take, map, switchMap, lastValueFrom } from 'rxjs';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { CurrentLocationService } from 'app/core/_current-location/current-location.service';
 import { CurrentLocation } from 'app/core/_current-location/current-location.types';
@@ -16,6 +16,10 @@ import { UserService } from 'app/core/user/user.service';
 import { TimeComponents } from 'app/layout/common/_countdown/countdown.types';
 import { CountdownService } from 'app/layout/common/_countdown/countdown.service';
 import { LoadingScreenService } from 'app/shared/loading-screen/loading-screen.service';
+import { OrderService } from 'app/core/_order/order.service';
+import { VoucherModalComponent } from 'app/modules/customer/vouchers/voucher-modal/voucher-modal.component';
+import { DOCUMENT } from '@angular/common';
+import { AppConfig } from 'app/config/service.config';
 
 @Component({
     selector     : 'landing-getting-started',
@@ -35,12 +39,14 @@ export class LandingGettingStartedComponent implements OnInit
     currentScreenSize: string[] = [];
     tableNumber: any;
     dialogRef: any;
+    token: string = '';
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
      * Constructor
      */
     constructor(
+        @Inject(DOCUMENT) private _document: Document,
         private _changeDetectorRef: ChangeDetectorRef,
         private _platformsService: PlatformService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
@@ -53,7 +59,8 @@ export class LandingGettingStartedComponent implements OnInit
         private _diningService: DiningService,
         private _userService: UserService,
         private _countdownService: CountdownService,
-        private _loadingScreenService: LoadingScreenService
+        private _loadingScreenService: LoadingScreenService,
+        private _orderService: OrderService
 
     )
     {
@@ -63,7 +70,7 @@ export class LandingGettingStartedComponent implements OnInit
     ngOnInit(): void {
 
         this.storeTag = this._activatedRoute.snapshot.paramMap.get('store-tag');
-
+        
         this._locationService.tags$
             .pipe(
                 takeUntil(this._unsubscribeAll),
@@ -77,7 +84,7 @@ export class LandingGettingStartedComponent implements OnInit
                 })
             )
             .subscribe((combinedResponse: { tags: Tag[], time: TimeComponents }) => {
-
+                
                 // Hide loading screen
                 this._loadingScreenService.hide();
 
@@ -96,46 +103,76 @@ export class LandingGettingStartedComponent implements OnInit
                     }
 
                     // Check param after we know that store tag exists
-                    this._activatedRoute.queryParams.subscribe(params => {
+                    this._activatedRoute.queryParams
+                    .subscribe( params => {
                         let sessionTableNo = this._diningService.tableNumber$;
                         
-                        if (params['tableno']) {
-                            this.tableNumber = params['tableno']
-                        }
-                        else if (sessionTableNo) {
-                            this.tableNumber = sessionTableNo;
-                        }
-                        else {
-                            this.tableNumber = undefined;
-                        }
+                        if (params['tableno']) this.tableNumber = params['tableno'];
+
+                        else if (sessionTableNo) this.tableNumber = sessionTableNo;
+
+                        else this.tableNumber = undefined;
+
+                        this.token = params['token'] ? params['token'] : null;
+
+                        this._orderService.validateQRCode(this.token)
+                        .subscribe({
+                            next: resp => {
+
+                                if (resp.tokenValid === true) this._orderService.token = this.token;
+                                
+                                if (resp === 'noToken' || resp.tokenValid === true) {
+                                    if (this.tableNumber === undefined && this.tagType !== "restaurant" && combinedResponse.time.timeDifference > 0) {
+                                        setTimeout(() => {
+                                            this.openDialog('dining');
+                                            // Mark for check
+                                            this._changeDetectorRef.markForCheck();
+                                        }, 200);
+                                    } else if (this.tableNumber !== undefined || this.tagType === "restaurant") {
+                                        if (this.tableNumber !== undefined) this._diningService.tableNumber = this.tableNumber + "";
+                                        
+                                        this._diningService.storeTag = this.storeTag;
                         
-                        if (this.tableNumber === undefined && this.tagType !== "restaurant" && combinedResponse.time.timeDifference > 0) {
-                            setTimeout(() => {
-                                this.openDialog('dining');
-                                // Mark for check
-                                this._changeDetectorRef.markForCheck();
-                            }, 200);
-                        } else if (this.tableNumber !== undefined || this.tagType === "restaurant") {
-                            if (this.tableNumber !== undefined) {
-                                this._diningService.tableNumber = this.tableNumber + "";
+                                        if (this.tagType && this.tagType === "restaurant") {                                
+                                            this._router.navigate(['/store/' + this.storeTag +'/all-products']);
+                                        } else {
+                                            this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
+                                        }
+                                    } 
+                                }
+                            },
+                            error: () => {
+                                // Check if dialog is already open
+                                if (this._dialog.openDialogs.length === 0) {
+
+                                    this.dialogRef = this._dialog.open( 
+                                        VoucherModalComponent, {
+                                            data:{ 
+                                                icon: 'feather:alert-octagon',
+                                                title: 'Invalid Token',
+                                                description: 'Please rescan the QR Code',
+                                            },
+                                            hasBackdrop: true,
+                                            disableClose: true
+                                        });
+
+                                    this.dialogRef.afterClosed()
+                                        .subscribe(() => {
+
+                                            sessionStorage.clear();
+                                            this._document.location.href = 'https://' + AppConfig.settings.marketplaceDomain;
+
+                                            // Mark for check
+                                            this._changeDetectorRef.markForCheck();
+                                        });
+                                }
                             }
-                            this._diningService.storeTag = this.storeTag;
-            
-            
-                            if (this.tagType && this.tagType === "restaurant") {                                
-                                this._router.navigate(['/store/' + this.storeTag +'/all-products']);
-                            } else {
-                                this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: this.storeTag }});
-                            }
-                        } 
-                        
+                        })
                     });
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
-
-        
 
         combineLatest([
             this._currentLocationService.currentLocation$,

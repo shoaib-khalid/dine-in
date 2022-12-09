@@ -33,6 +33,7 @@ import { LocationService } from 'app/core/location/location.service';
 import { StoresDetails, Tag } from 'app/core/location/location.types';
 import { CountdownService } from 'app/layout/common/_countdown/countdown.service';
 import { TimeComponents } from 'app/layout/common/_countdown/countdown.types';
+import { OrderService } from 'app/core/_order/order.service';
 
 @Component({
     selector     : 'carts',
@@ -327,7 +328,7 @@ export class CartListComponent implements OnInit, OnDestroy
         private _titleService: Title,
         private _location: Location,
         private _countdownService: CountdownService,
-
+        private _orderService: OrderService
     )
     {
     }
@@ -2083,7 +2084,13 @@ export class CartListComponent implements OnInit, OnDestroy
             platformVoucherCode = checkout.platformVoucherCode;
         });
         
-        this._checkoutService.postPlaceGroupOrder(orderBodies, false, platformVoucherCode)
+        this._checkoutService.postPlaceGroupOrder(orderBodies, 
+            {
+                platformVoucherCode: platformVoucherCode, 
+                saveCustomerInformation: false, 
+                qrToken: this._orderService.token$ ? this._orderService.token$ : null,
+                tableNo: this.tableNumber
+            })
             .subscribe((response) => {
 
                 const order = response;                

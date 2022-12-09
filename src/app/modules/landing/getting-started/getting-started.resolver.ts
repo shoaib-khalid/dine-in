@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from "@angular/router";
 import { LocationService } from "app/core/location/location.service";
 import { DiningService } from "app/core/_dining/dining.service";
+import { OrderService } from "app/core/_order/order.service";
 import { forkJoin, Observable } from "rxjs";
 
 @Injectable({
@@ -14,7 +15,8 @@ export class StoreTagResolver implements Resolve<any>
      */
     constructor(
         private _diningService: DiningService,
-        private _locationService: LocationService
+        private _locationService: LocationService,
+        private _orderService: OrderService
     )
     {
     }

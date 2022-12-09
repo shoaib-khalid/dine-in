@@ -29,6 +29,7 @@ import { Title } from '@angular/platform-browser';
 import { DiningService } from 'app/core/_dining/dining.service';
 import { LocationService } from 'app/core/location/location.service';
 import { StoresDetails } from 'app/core/location/location.types';
+import { OrderService } from 'app/core/_order/order.service';
 
 @Component({
     selector     : 'buyer-checkout',
@@ -245,7 +246,7 @@ export class BuyerCheckoutComponent implements OnInit
         private _analyticService: AnalyticService,
         private _locationService: LocationService,
         private _apiServer: AppConfig,
-        private _platformLocation: PlatformLocation,
+        private _orderService: OrderService,
         private _storesService: StoresService,
         private _titleService: Title,
         private _diningService: DiningService,
@@ -553,7 +554,13 @@ export class BuyerCheckoutComponent implements OnInit
             platformVoucherCode = checkout.platformVoucherCode;
         });
         
-        this._checkoutService.postPlaceGroupOrder(orderBodies, false, platformVoucherCode)
+        this._checkoutService.postPlaceGroupOrder(orderBodies,
+            {
+                platformVoucherCode: platformVoucherCode, 
+                saveCustomerInformation: false, 
+                qrToken: this._orderService.token$ ? this._orderService.token$ : null,
+                tableNo: this.tableNumber
+            })
             .subscribe((response) => {
 
                 this.order = response;                

@@ -67,6 +67,11 @@ export class OrderService
     get orderItems$(): Observable<any>{ return this._orderItems.asObservable(); }
     /** Getter for ordersCountSummary **/
     get ordersCountSummary$(): Observable<any> { return this._ordersCountSummary.asObservable(); }
+
+    /** Setter for token */
+    set token(token: string) { sessionStorage.setItem('token', token); }
+    /** Getter for token */
+    get token$(): string { return sessionStorage.getItem('token') ?? ''; }
     
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -367,6 +372,66 @@ export class OrderService
                     this._logging.debug("Response from OrdersService (putOrderShipmentDetailsByOrderId)", response);
                     
                     return response;
+                })
+            );
+    }
+
+    resolveToken(token: string): Observable<boolean> {
+        return of(true).pipe(
+            
+            switchMap(() => this.validateQRCode(token),
+            // .pipe(
+            //     catchError(() => {
+            //         return of(false)
+            //     })
+            // )
+            ),
+            catchError(err => {
+                console.error(err);
+                
+                return of(false)
+            })
+            // map(() => {
+                
+            //     this.validateQRCode(token)
+            //     .subscribe({
+            //         next: () => {
+
+            //         },
+            //         error: () => {
+            //             return false
+            //         }
+            //     })
+            // })
+        )
+    }
+
+    validateQRCode(token: string):  Observable<any>
+    {
+        let orderService = this._apiServer.settings.apiServer.orderService;
+        let accessToken = "accessToken";
+
+        const header = {  
+            headers: new HttpHeaders().set("Authorization", `Bearer ${accessToken}`),
+            params: {
+                token: token
+            }
+        };
+
+        if (!token) {
+            this._logging.debug("Response from OrdersService (validateQRCode)- No Token!");
+            console.info('No Token!')
+
+            return of('noToken');
+        }
+
+        return this._httpClient.get<any>(orderService + '/qrcode/validate', header)
+            .pipe(
+                map((response) => {
+                    this._logging.debug("Response from OrdersService (validateQRCode)", response);
+                    console.info('Token is Valid!')
+                    
+                    return response.data;
                 })
             );
     }

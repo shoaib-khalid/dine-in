@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { GettingStartedGuardService } from './getting-started/getting-started.guard';
 import { LandingDataResolver } from './landing.resolvers';
 
 export const landingRoutes: Route[] = [
