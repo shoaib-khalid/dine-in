@@ -315,3 +315,25 @@ export interface OrdersCountSummary
     completionStatus: string;
     count: number;
 }
+
+export interface QrOrder
+{
+    id	            :	number;
+    qrToken	        :	string;
+    invoiceNo	    :	string;
+    storeId	        :	string;
+    paymentStatus	:	string;
+    tableNo     	:	string;
+    created	        :	string;
+    updated	        :	string;
+    subTotal	    :	number;
+    appliedDiscount	:	number;
+    deliveryCharges	:	number;
+    deliveryDiscount:	number;
+    serviceCharges	:	number;
+    totalAmount 	:	number;
+    orderTimeConverted	:	string;
+    orderItemWithDetails:   OrderItemWithDetails[];
+    totalOrderAmount	:	number;
+    orderGroupList      :   OrderGroup[];
+}

@@ -10,11 +10,15 @@ import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { AuthService } from 'app/core/auth/auth.service';
 import { CustomerAuthenticate } from 'app/core/auth/auth.types';
 import { CartService } from 'app/core/cart/cart.service';
+import { CheckoutService } from 'app/core/checkout/checkout.service';
+import { LocationService } from 'app/core/location/location.service';
+import { Tag } from 'app/core/location/location.types';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
 import { StoresService } from 'app/core/store/store.service';
+import { DiningService } from 'app/core/_dining/dining.service';
 import { OrderService } from 'app/core/_order/order.service';
-import { Order, OrderDetails, OrderGroup, OrderItemWithDetails, OrderPagination } from 'app/core/_order/order.types';
+import { Order, OrderDetails, OrderGroup, OrderItemWithDetails, OrderPagination, QrOrder } from 'app/core/_order/order.types';
 import { LoadingScreenService } from 'app/shared/loading-screen/loading-screen.service';
 import { debounceTime, filter, iif, map, merge, Observable, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { EditPhoneNumberDialog } from './modal-edit-phonenumber/modal-edit-phonenumber.component';
@@ -56,7 +60,8 @@ export class OrdersHistoryComponent implements OnInit
 
     @ViewChild("ordersDetailsPaginator", {read: MatPaginator}) private _ordersDetailsPaginator: MatPaginator;
     @ViewChild("ordersGroupsPaginator", {read: MatPaginator}) private _ordersGroupsPaginator: MatPaginator;
-    
+    @ViewChild("qrOrdersPaginator", {read: MatPaginator}) private _qrOrdersPaginator: MatPaginator;
+
     platform: Platform;
 
     // Orders 
@@ -67,6 +72,11 @@ export class OrdersHistoryComponent implements OnInit
     ordersGroups$: Observable<OrderGroup[]>;    
     ordersGroupsPagination: OrderPagination;
     ordersGroupsPageOfItems: Array<any>;
+
+    qrOrders$: Observable<QrOrder[]>;    
+    qrOrdersPagination: OrderPagination;
+    qrOrdersPageOfItems: Array<any>;
+    qrOrdersList: QrOrder[] = [];
 
     // Dine-In 
     userOrdersId: string;
@@ -93,6 +103,9 @@ export class OrdersHistoryComponent implements OnInit
     
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     flattenedPaymentDetails: any[];
+    tagType: string = '';
+    currentOrderIds: string[] = [];
+    groupOrderList: OrderGroup[] = [];
 
     /**
     * Constructor
@@ -109,6 +122,9 @@ export class OrdersHistoryComponent implements OnInit
         private _storesService: StoresService,
         private _cartService: CartService,
         private _titleService: Title,
+        private _locationService: LocationService,
+        private _checkoutService: CheckoutService,
+        private _diningService: DiningService,
         private _loadingScreenService: LoadingScreenService
     )
     {
@@ -154,13 +170,21 @@ export class OrdersHistoryComponent implements OnInit
         
                 });
 
-                // resolver get group order with details
-                this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
+            // resolver get group order with details
+            this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
                 .subscribe((orders: OrderGroup[]) => {
                     // Set loading to false
                     this.isLoadingOnInit = false;
                     this._loadingScreenService.hide()
                 });
+
+            // resolver get group order with details
+            // this._orderService.searchQROrder({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
+            //     .subscribe((orders: OrderGroup[]) => {
+            //         // Set loading to false
+            //         this.isLoadingOnInit = false;
+            //         this._loadingScreenService.hide()
+            //     });
                 
             // set order details to be display and will be use in html
             this.ordersDetails$ = this._orderService.ordersDetails$;
@@ -258,6 +282,50 @@ export class OrdersHistoryComponent implements OnInit
                 this._changeDetectorRef.markForCheck();
             });
 
+
+            /*
+        this._orderService.qrOrders$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((qrOrders: QrOrder[])=>{
+                if (qrOrders) {                    
+                    this.qrOrdersList = qrOrders;
+                    this.groupOrderList = qrOrders.map(x => x.orderGroupList)[0];
+
+                    // this.displayAllGroup = this.groupOrderList.map(item => {
+                    //     return {
+                    //         orderGroupId: item.id,
+                    //         orderList: item.orderList.map((element => {
+                    //             return {
+                    //                 orderId: element.id,
+                    //                 orderItemsId: element.orderItemWithDetails.map((object, index) => {
+                    //                     return {
+                    //                         orderItemId: object.id,
+                    //                         isDisplay: index > 2 ? false : true
+                    //                     };
+                    //                 }),
+                    //                 isDisplayAll: element.orderItemWithDetails.length > 3 ? true : false
+                    //             }
+                    //         }))
+                    //     };
+                    // });
+                    
+                }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get the orders details pagination
+        this._orderService.qrOrdersPagination$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response)=>{
+                if(response) {                    
+                    this.qrOrdersPagination = response;
+                }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+            */
+
         this.tabControl.setValue(this.orderCountSummary.find(item => item.id === "ALL").completionStatus);        
 
         this.filterCustNameControl.valueChanges
@@ -301,7 +369,25 @@ export class OrdersHistoryComponent implements OnInit
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
-        
+
+            this._locationService.tags$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((tags: Tag[]) => {
+
+                if (tags && tags.length) {
+                    let index = tags[0].tagConfig.findIndex(item => item.property === "type");
+
+                    if (index > -1) {
+                        this.tagType = tags[0].tagConfig[index].content;
+                    }
+                }
+            });
+
+            this.currentOrderIds =  this._checkoutService.sessionOrderIds$ ? JSON.parse(this._checkoutService.sessionOrderIds$).map( item => { 
+                if (item.charAt(0) === 'G'){
+                    return item.substring(1);
+                }
+            }) : [];            
 
         // Mark for check
         this._changeDetectorRef.markForCheck(); 
@@ -349,6 +435,22 @@ export class OrdersHistoryComponent implements OnInit
                     switchMap(() => {
                         this.isLoading = true;
                         return this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds});
+                    }),
+                    map(() => {
+                        this.isLoading = false;
+                    })
+                ).subscribe();
+            }
+            if (this._qrOrdersPaginator )
+            {
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+
+                // Get products if sort or page changes
+                merge(this._qrOrdersPaginator.page).pipe(
+                    switchMap(() => {
+                        this.isLoading = true;
+                        return this._orderService.searchQROrder({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds});
                     }),
                     map(() => {
                         this.isLoading = false;
@@ -522,6 +624,17 @@ export class OrdersHistoryComponent implements OnInit
             }
         });
         
+    }
+
+    goToHome() {
+
+        let storeTag = this._diningService.storeTag$
+
+        if (this.tagType && this.tagType === "restaurant") {                    
+            this._router.navigate(['/store/' + storeTag +'/all-products']);
+        } else {
+            this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: storeTag }});
+        }
     }
 
 }

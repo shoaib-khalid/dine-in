@@ -25,6 +25,7 @@ import { CartService } from 'app/core/cart/cart.service';
 import { CheckoutService } from 'app/core/checkout/checkout.service';
 import { LocationService } from 'app/core/location/location.service';
 import { Tag } from 'app/core/location/location.types';
+import { TimeoutModalComponent } from 'app/layout/common/_countdown/timeout-modal/timeout-modal.component';
 
 @Component({
     selector     : 'fnb02-layout',
@@ -56,6 +57,7 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
     floatingCartHidden: boolean = false;
     dialogRef: any;
     tagType: string;
+    currentOrderIds: string[] = [];
 
     /**
      * Constructor
@@ -233,24 +235,20 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((time: TimeComponents) => {
                 
-                if (time.timeDifference <= 0) {
-                    
-                    // Check if dialog is already open
+                this.currentOrderIds =  this._checkoutService.sessionOrderIds$ ? JSON.parse(this._checkoutService.sessionOrderIds$) : [];
+                
+                if (time.timeDifference <= 0 && this.currentOrderIds.length < 1) {
+
+                    // Check if dialog is already open 
                     if (this._dialog.openDialogs.length === 0 && !this.dialogRef) {
 
                         this.dialogRef = this._dialog.open( 
-                            VoucherModalComponent,{
-                                data:{ 
-                                    icon: 'timer_off',
-                                    title: 'The session ended',
-                                    description: 'Please rescan the QR Code',
-                                },
+                            TimeoutModalComponent,{
                                 hasBackdrop: true,
                                 disableClose: true
                             });
 
                         this.dialogRef.afterClosed()
-                            // .pipe(finalize(() => this.dialogRef = undefined))
                             .subscribe(() => {
         
                                 this._cartService.cartIds = '';
@@ -260,10 +258,6 @@ export class Fnb2LayoutComponent implements OnInit, OnDestroy
                                 
                                 // Clear sessionStorage
                                 sessionStorage.clear();
-
-                                // this._userService.userSessionId = '';
-                                // this._diningService.storeTag = '';
-                                // this._diningService.tableNumber = '';
                                 
                                 // Reload the app
                                 // this._document.location.reload();

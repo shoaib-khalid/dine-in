@@ -8,7 +8,7 @@ import { AuthService } from '../auth/auth.service';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { JwtService } from '../jwt/jwt.service';
-import { DeliveryRiderDetails, Order, OrderDetails, OrderGroup, OrderItem, OrderPagination, OrdersCountSummary, OrderShipmentDetail } from './order.types';
+import { DeliveryRiderDetails, Order, OrderDetails, OrderGroup, OrderItem, OrderPagination, OrdersCountSummary, OrderShipmentDetail, QrOrder } from './order.types';
 
 @Injectable({
     providedIn: 'root'
@@ -26,6 +26,10 @@ export class OrderService
     private _orderItems: BehaviorSubject<OrderItem[] | null> = new BehaviorSubject(null);
     private _ordersDetails: BehaviorSubject<OrderDetails[] | null> = new BehaviorSubject(null);
     private _ordersDetailsPagination: BehaviorSubject<OrderPagination | null> = new BehaviorSubject(null);
+
+    private _qrOrder: ReplaySubject<QrOrder> = new ReplaySubject<QrOrder>(1);
+    private _qrOrders: ReplaySubject<QrOrder[]> = new ReplaySubject<QrOrder[]>(1);
+    private _qrOrderPagination: BehaviorSubject<OrderPagination | null> = new BehaviorSubject(null);
 
     /**
      * Constructor
@@ -72,6 +76,12 @@ export class OrderService
     set token(token: string) { sessionStorage.setItem('token', token); }
     /** Getter for token */
     get token$(): string { return sessionStorage.getItem('token') ?? ''; }
+
+    /** Getter for qr orders **/
+    get qrOrders$(): Observable<QrOrder[]> { return this._qrOrders.asObservable(); }
+    /** Getter for qr orders pagination **/
+    get qrOrdersPagination$(): Observable<OrderPagination>{ return this._qrOrderPagination.asObservable(); }
+
     
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -389,7 +399,6 @@ export class OrderService
         };
 
         if (!token) {
-            this._logging.debug("Response from OrdersService (validateQRCode)- No Token!");
             console.info('No Token!')
 
             // If no token, remove the key
@@ -401,12 +410,63 @@ export class OrderService
         return this._httpClient.get<any>(orderService + '/qrcode/validate', header)
             .pipe(
                 map((response) => {
-                    this._logging.debug("Response from OrdersService (validateQRCode)", response);
                     console.info('Token is Valid!')
                     
                     return response.data;
                 })
             );
+    }
+
+    searchQROrder(params: {
+        page                    : number,
+        pageSize                : number,
+        orderGroupIds?          : string[],
+    } = {
+        page                    : 0, 
+        pageSize                : 10, 
+        orderGroupIds           : null,
+    }):
+    Observable<any>
+    {        
+        let orderService = this._apiServer.settings.apiServer.orderService;
+        let accessToken = this._authService.publicToken;
+        let clientId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid;
+
+        const header = {
+            headers: new HttpHeaders().set("Authorization", `${accessToken}`),
+            params: params
+        };
+
+        // Delete empty value
+        Object.keys(header.params).forEach(key => {
+            if (Array.isArray(header.params[key])) {
+                header.params[key] = header.params[key].filter(element => element !== null)
+            }
+            if (header.params[key] === null || (header.params[key].constructor === Array && header.params[key].length === 0)) {
+                delete header.params[key];
+            }
+        });        
+
+        return this._httpClient.get<any>(orderService +'/qrorder/search', header).pipe(
+            map((response) => {
+
+                this._logging.debug("Response from CartService (searchQROrder)", response);
+
+                let _pagination = {
+                    length: response.data.totalElements,
+                    size: response.data.size,
+                    page: response.data.number,
+                    lastPage: response.data.totalPages,
+                    startIndex: response.data.pageable.offset,
+                    endIndex: response.data.pageable.offset + response.data.numberOfElements - 1
+                }                
+
+                this._qrOrders.next(response.data.content);
+                this._qrOrderPagination.next(_pagination);
+
+                return response["data"].content;
+            })
+        );
     }
 
 }

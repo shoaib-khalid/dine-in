@@ -148,7 +148,7 @@ export class LandingGettingStartedComponent implements OnInit
                                     this.dialogRef = this._dialog.open( 
                                         VoucherModalComponent, {
                                             data:{ 
-                                                icon: 'feather:alert-octagon',
+                                                icon: 'feather:alert-circle',
                                                 title: 'Invalid Token',
                                                 description: 'Please rescan the QR Code',
                                             },

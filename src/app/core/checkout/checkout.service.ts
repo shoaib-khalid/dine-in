@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable, of, ReplaySubject } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { AppConfig } from 'app/config/service.config';
 import { JwtService } from 'app/core/jwt/jwt.service';
@@ -26,7 +26,7 @@ export class CheckoutService
     private _cartsWithDetailsPagination: ReplaySubject<CartPagination> = new ReplaySubject<CartPagination>(1);
 
     private _cartSummary: ReplaySubject<DiscountOfCartGroup | null> = new ReplaySubject<DiscountOfCartGroup | null>(1);
-
+    
     /**
      * Constructor
      */
@@ -74,6 +74,11 @@ export class CheckoutService
     get cartSummary$(): Observable<DiscountOfCartGroup> { return this._cartSummary.asObservable(); }
     /** Setter for cartSummary */
     set cartSummary(value: DiscountOfCartGroup) { this._cartSummary.next(value); }
+
+    /** Getter for sessionOrderIds on session storage */
+    get sessionOrderIds$(): string { return sessionStorage.getItem('sessionOrderIds') ?? ''; }
+    /** Setter for sessionOrderIds on session storage */
+    set sessionOrderIds(value: string) { sessionStorage.setItem('sessionOrderIds', value) }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -406,7 +411,7 @@ export class CheckoutService
         return this._httpClient.post<any>(paymentService + '/payments/makePayment', paymentBody, header)
             .pipe(
                 map((response) => {
-                    this._logging.debug("Response from StoresService (postMakePayment)",response);
+                    this._logging.debug("Response from StoresService (postMakePayment)", response);
 
                     return response["data"];
                 })

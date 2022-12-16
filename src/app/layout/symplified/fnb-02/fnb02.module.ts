@@ -28,6 +28,7 @@ import { _BottomPopUpModule } from 'app/layout/common/_bottom-popup/bottom-popup
 import { _FloatingCartsModule } from 'app/layout/common/_floating-carts/floating-carts.module';
 import { MatBadgeModule } from '@angular/material/badge';
 import { LoadingScreenModule } from 'app/shared/loading-screen/loading-screen.module';
+import { TimeoutModalModule } from 'app/layout/common/_countdown/timeout-modal/timeout-modal.module';
 
 @NgModule({
     declarations: [
@@ -61,7 +62,8 @@ import { LoadingScreenModule } from 'app/shared/loading-screen/loading-screen.mo
         _BottomPopUpModule,
         _FloatingCartsModule,
         MatBadgeModule,
-        LoadingScreenModule
+        LoadingScreenModule,
+        TimeoutModalModule
     ],
     exports     : [
         Fnb2LayoutComponent

@@ -305,6 +305,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
     countdownTimer$: Observable<TimeComponents>;
     tagType: string;
+    currentOrderIds: string[] = [];
 
     /**
      * Constructor
@@ -328,7 +329,9 @@ export class CartListComponent implements OnInit, OnDestroy
         private _titleService: Title,
         private _location: Location,
         private _countdownService: CountdownService,
-        private _orderService: OrderService
+        private _orderService: OrderService,
+        private _userService: UserService
+
     )
     {
     }
@@ -348,48 +351,10 @@ export class CartListComponent implements OnInit, OnDestroy
 
         this.customerId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid ? this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid : null
 
+        this.currentOrderIds =  this._checkoutService.sessionOrderIds$ ? JSON.parse(this._checkoutService.sessionOrderIds$) : [];
+        
         // Session timer
         this.countdownTimer$ =  this._countdownService.countdownTimer$;
-
-        // Timer
-        // this._countdownService.countdown$
-        //     .pipe(takeUntil(this._unsubscribeAll))
-        //     .subscribe((countdown: number) => {
-
-        //         this.countdown = countdown;  
-
-        //         // convert countdown(second) to date
-        //         this.timer = new Date(this.countdown * 1000).toISOString().substr(14, 5);
-
-        //         if (countdown === 0 && (this.carts && this.carts.length > 0)) {
-                    
-        //             const dialogRef = this._dialog.open( 
-        //                 VoucherModalComponent,{
-        //                     data:{ 
-        //                         icon: 'timer_off',
-        //                         title: 'The session ended',
-        //                         description: 'Please re-scan the QR Code',
-        //                     },
-        //                     hasBackdrop: true
-        //                 });
-        //             dialogRef.afterClosed().subscribe((result) => {
-    
-        //                 this._cartService.cartIds = '';
-        //                 this._cartService.cartsHeaderWithDetails = [];
-        //                 this._checkoutService.cartsWithDetails = [];
-        //                 this._cartService.cartsWithDetails = [];
-
-        //                 // Mark for check
-        //                 this._changeDetectorRef.markForCheck();
-        //             });
-        //         }
-                
-        //         // Mark for check
-        //         this._changeDetectorRef.markForCheck();
-                
-        //     });
-
-        // this._countdownService.startTimer(900);
 
         this._platformService.platform$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -2110,15 +2075,16 @@ export class CartListComponent implements OnInit, OnDestroy
             })
             .subscribe((response) => {
 
-                const order = response;                
+                let order = response;     
 
                 if (this._cartService.orderIds$ === "" || !this._cartService.orderIds$ || this._cartService.orderIds$ === "[]") {
                     // if the order array is empty, the set the array from first place order response
-                    this._cartService.orderIds = JSON.stringify([response]);
+                    this._cartService.orderIds = JSON.stringify([order]);
+                    
                 } else {
                     let existingOrderIds = JSON.parse(this._cartService.orderIds$);
                     // push next order response in the existing order array
-                    existingOrderIds.push(response);
+                    existingOrderIds.push(order);
                     // then, set the new order array as the new response added
                     this._cartService.orderIds = JSON.stringify(existingOrderIds)
                     
@@ -2126,7 +2092,7 @@ export class CartListComponent implements OnInit, OnDestroy
                 
                 let dateTime = new Date();
                 let transactionId = this._datePipe.transform(dateTime, "yyyyMMddhhmmss");
-                let dateTimeNow = this._datePipe.transform(dateTime, "yyyy-MM-dd hh:mm:ss"); //2022-05-18 09:51:36
+                // let dateTimeNow = this._datePipe.transform(dateTime, "yyyy-MM-dd hh:mm:ss"); //2022-05-18 09:51:36
 
                 const paymentBody = {
                     // callbackUrl: "https://bon-appetit.symplified.ai/thankyou",
@@ -2143,7 +2109,7 @@ export class CartListComponent implements OnInit, OnDestroy
                 this._checkoutService.postMakePayment(paymentBody)
                     .subscribe((response) => {
 
-                        const payment = response;
+                        // const payment = response;
 
                         // if (this.payment.isSuccess === true) {
                         //     if (this.payment.providerId == "1") {
@@ -2205,7 +2171,19 @@ export class CartListComponent implements OnInit, OnDestroy
                         //         console.error("Provider id not configured");
                         //     }
                         // }
-                        
+
+                        // Save orders to current session
+                        if (this._checkoutService.sessionOrderIds$ === "" || !this._checkoutService.sessionOrderIds$ || this._checkoutService.sessionOrderIds$ === "[]") {
+                            // if the order array is empty, the set the array from first place order response
+                            this._checkoutService.sessionOrderIds = JSON.stringify([order.id]);
+                            
+                        } else {
+                            let existingSessionOrderIds = JSON.parse(this._checkoutService.sessionOrderIds$);
+                            // push next order response in the existing order array
+                            existingSessionOrderIds.push(order.id);
+                            // then, set the new order array as the new response added
+                            this._checkoutService.sessionOrderIds = JSON.stringify(existingSessionOrderIds)
+                        }
 
                         this._router.navigate(['/order-history']);
 
