@@ -25,6 +25,7 @@ export interface OrderGroup
     shipmentEmail           : string;
     shipmentName            : string;
     regionCountryId         : string;
+    orderQrPaymentStatus    : string;
 }
 
 export interface OrderPagination

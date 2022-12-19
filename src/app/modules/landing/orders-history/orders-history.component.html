@@ -227,18 +227,21 @@
                                 <!-- Order Groups -->
                                 <div class="flex flex-col w-full bg-primary-100 border border-gray-300 rounded-lg py-1 sm:py-2 px-1 sm:px-2 mb-4">
                                     <!-- Header -->
-                                    <div class="flex flex-row mb-2 mt-1 items-start justify-start w-full sm:px-1">
+                                    <div class="flex flex-row mb-1 mt-1 items-start justify-start w-full sm:px-1">
                                         <!-- Store Details -->
                                         <div class="flex flex-row justify-between items-center w-full mx-1">
                                             <div class="flex flex-row items-center">
                                                 <!-- <mat-icon class="text-primary" [svgIcon]="'mat_outline:receipt_long'"></mat-icon> -->
-                                                <div class="flex flex-col px-2">
+                                                <div class="flex flex-col ml-0.5 leading-none gap-1">
                                                     <!-- <span class="text-gray-400 text-xs">Order ID : {{ ordersGroup.id }}</span> -->
                                                     <span class="text-gray-400 text-xs">Total Order Summary : Ordered from {{ ordersGroup.orderList.length }} {{ ordersGroup.orderList.length > 1 ? 'shops' : 'shop' }}</span>
                                                     <span class="text-gray-400 text-xs">Order Placed : {{ convertDate(ordersGroup.orderTimeConverted) | date:'MMM dd, h:mm a' }} </span>
                                                 </div>
                                             </div>
-                                            <div *ngIf="currentOrderIds.includes(ordersGroup.id) && tagType === 'restaurant'" class="flex flex-row">
+                                            <div
+                                                class="flex flex-row"
+                                                [ngClass]="ordersGroup.orderQrPaymentStatus === 'PENDING' && tagType === 'restaurant' ? 'visible' : 'invisible'"
+                                            >
                                                 <input
                                                     id="order-more-button"
                                                     type="button"
@@ -470,7 +473,7 @@
                                     </ng-container>
 
                                     <!-- Footer -->
-                                    <div class="flex flex-col sm:items-end w-full px-2 sm:px-4 gap-0.5">
+                                    <div class="flex flex-col sm:items-end w-full px-2 sm:px-4 leading-tight gap-1">
                                         <!-- Total Order Amount -->
                                         <div class="flex flex-row justify-between">
                                             <p class="text-left font-medium text-gray-500 text-sm w-56">Total Order Amount</p> 

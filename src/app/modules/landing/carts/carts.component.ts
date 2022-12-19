@@ -2065,13 +2065,15 @@ export class CartListComponent implements OnInit, OnDestroy
             orderBodies.push(orderBody)
             platformVoucherCode = checkout.platformVoucherCode;
         });
+
+        let isSelfCollect = this.selectedCart.carts.every(cart => cart.dineInOption === 'SELFCOLLECT');
         
         this._checkoutService.postPlaceGroupOrder(orderBodies, 
             {
                 platformVoucherCode: platformVoucherCode, 
                 saveCustomerInformation: false, 
                 qrToken: this._orderService.token$ ? this._orderService.token$ : null,
-                tableNo: this.tableNumber
+                tableNo: isSelfCollect ? null : this.tableNumber
             })
             .subscribe((response) => {
 

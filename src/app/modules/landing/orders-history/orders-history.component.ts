@@ -171,24 +171,16 @@ export class OrdersHistoryComponent implements OnInit
                 });
 
             // resolver get group order with details
-            this._orderService.searchOrderGroup({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
+            this._orderService.searchOrderGroupConsolidated({ orderGroupIds: this.groupcustomerOrderIds})
                 .subscribe((orders: OrderGroup[]) => {
                     // Set loading to false
                     this.isLoadingOnInit = false;
                     this._loadingScreenService.hide()
                 });
-
-            // resolver get group order with details
-            // this._orderService.searchQROrder({ page:0, pageSize: 3, orderGroupIds: this.groupcustomerOrderIds})
-            //     .subscribe((orders: OrderGroup[]) => {
-            //         // Set loading to false
-            //         this.isLoadingOnInit = false;
-            //         this._loadingScreenService.hide()
-            //     });
                 
             // set order details to be display and will be use in html
             this.ordersDetails$ = this._orderService.ordersDetails$;
-            this.ordersGroups$ = this._orderService.orderGroups$;
+            this.ordersGroups$ = this._orderService.orderGroupsConsolidated$;
         }
         else {
             // Set loading to false
@@ -218,7 +210,7 @@ export class OrdersHistoryComponent implements OnInit
                 this._changeDetectorRef.markForCheck();
             });
 
-        this._orderService.orderGroups$
+        this._orderService.orderGroupsConsolidated$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((response: OrderGroup[])=>{
                 if (response) {        
@@ -283,49 +275,6 @@ export class OrdersHistoryComponent implements OnInit
             });
 
 
-            /*
-        this._orderService.qrOrders$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((qrOrders: QrOrder[])=>{
-                if (qrOrders) {                    
-                    this.qrOrdersList = qrOrders;
-                    this.groupOrderList = qrOrders.map(x => x.orderGroupList)[0];
-
-                    // this.displayAllGroup = this.groupOrderList.map(item => {
-                    //     return {
-                    //         orderGroupId: item.id,
-                    //         orderList: item.orderList.map((element => {
-                    //             return {
-                    //                 orderId: element.id,
-                    //                 orderItemsId: element.orderItemWithDetails.map((object, index) => {
-                    //                     return {
-                    //                         orderItemId: object.id,
-                    //                         isDisplay: index > 2 ? false : true
-                    //                     };
-                    //                 }),
-                    //                 isDisplayAll: element.orderItemWithDetails.length > 3 ? true : false
-                    //             }
-                    //         }))
-                    //     };
-                    // });
-                    
-                }
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Get the orders details pagination
-        this._orderService.qrOrdersPagination$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((response)=>{
-                if(response) {                    
-                    this.qrOrdersPagination = response;
-                }
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-            */
-
         this.tabControl.setValue(this.orderCountSummary.find(item => item.id === "ALL").completionStatus);        
 
         this.filterCustNameControl.valueChanges
@@ -387,8 +336,8 @@ export class OrdersHistoryComponent implements OnInit
                 if (item.charAt(0) === 'G'){
                     return item.substring(1);
                 }
-            }) : [];            
-
+            }) : [];   
+            
         // Mark for check
         this._changeDetectorRef.markForCheck(); 
     }

@@ -31,6 +31,7 @@ export class OrderService
     private _qrOrders: ReplaySubject<QrOrder[]> = new ReplaySubject<QrOrder[]>(1);
     private _qrOrderPagination: BehaviorSubject<OrderPagination | null> = new BehaviorSubject(null);
 
+    private _orderGroupsConsolidated: ReplaySubject<OrderGroup[]> = new ReplaySubject<OrderGroup[]>(1);
     /**
      * Constructor
      */
@@ -81,6 +82,9 @@ export class OrderService
     get qrOrders$(): Observable<QrOrder[]> { return this._qrOrders.asObservable(); }
     /** Getter for qr orders pagination **/
     get qrOrdersPagination$(): Observable<OrderPagination>{ return this._qrOrderPagination.asObservable(); }
+
+    /** Getter for orderGroupsConsolidated **/
+    get orderGroupsConsolidated$(): Observable<OrderGroup[]> { return this._orderGroupsConsolidated.asObservable(); }
 
     
     // -----------------------------------------------------------------------------------------------------
@@ -464,6 +468,40 @@ export class OrderService
                 this._qrOrders.next(response.data.content);
                 this._qrOrderPagination.next(_pagination);
 
+                return response["data"].content;
+            })
+        );
+    }
+
+    searchOrderGroupConsolidated(params: { orderGroupIds?: string[]
+    } = { orderGroupIds : null }):
+    Observable<any>
+    {        
+        let orderService = this._apiServer.settings.apiServer.orderService;
+        let accessToken = this._authService.publicToken;
+        let clientId = this._jwtService.getJwtPayload(this._authService.jwtAccessToken).uid;
+
+        const header = {
+            headers: new HttpHeaders().set("Authorization", `${accessToken}`),
+            params: params
+        };
+
+        // Delete empty value
+        Object.keys(header.params).forEach(key => {
+            if (Array.isArray(header.params[key])) {
+                header.params[key] = header.params[key].filter(element => element !== null)
+            }
+            if (header.params[key] === null || (header.params[key].constructor === Array && header.params[key].length === 0)) {
+                delete header.params[key];
+            }
+        });        
+
+        return this._httpClient.get<any>(orderService +'/ordergroups/searchconsolidated', header).pipe(
+            map((response) => {
+
+                this._logging.debug("Response from CartService (searchOrderGroupConsolidated)", response);
+
+                this._orderGroupsConsolidated.next(response.data.content);
                 return response["data"].content;
             })
         );
