@@ -12,7 +12,7 @@ import { CustomerAuthenticate } from 'app/core/auth/auth.types';
 import { CartService } from 'app/core/cart/cart.service';
 import { CheckoutService } from 'app/core/checkout/checkout.service';
 import { LocationService } from 'app/core/location/location.service';
-import { Tag } from 'app/core/location/location.types';
+import { StoreAssets, Tag } from 'app/core/location/location.types';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
 import { StoresService } from 'app/core/store/store.service';
@@ -583,6 +583,15 @@ export class OrdersHistoryComponent implements OnInit
             this._router.navigate(['/store/' + storeTag +'/all-products']);
         } else {
             this._router.navigate(['/restaurant/restaurant-list'], {queryParams: { storeTag: storeTag }});
+        }
+    }
+
+    displayStoreLogo(storeAssets: StoreAssets[]) {
+        let storeAssetsIndex = storeAssets.findIndex(item => item.assetType === 'LogoUrl');
+        if (storeAssetsIndex > -1) {
+            return storeAssets[storeAssetsIndex].assetUrl;
+        } else {
+            return this.platform.logoSquare;
         }
     }
 

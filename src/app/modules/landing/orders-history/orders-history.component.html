@@ -264,10 +264,13 @@
                                         <div class="flex flex-col md:flex-row w-full justify-between bg-card border border-gray-300 rounded-lg p-2 mb-1 sm:mb-2">
                                             <div class="flex flex-col w-full">
                                                 <!-- Header -->
-                                                <div class="flex flex-row my-1 items-start justify-between w-full sm:w-1/2 sm:px-2">
+                                                <div class="flex flex-row mt-1 mb-2 items-start justify-between w-full sm:w-1/2 sm:px-2">
                                                     <!-- Store Details -->
-                                                    <div class="flex flex-row w-full">
-                                                        <mat-icon class="text-primary" svgIcon="mat_solid:storefront"></mat-icon>
+                                                    <div class="flex flex-row w-full items-center">
+                                                        <!-- <mat-icon class="text-primary" svgIcon="mat_solid:storefront"></mat-icon> -->
+                                                        <img
+                                                            class="object-cover w-8 h-8 rounded-full shadow ring-1 ring-white"
+                                                            [src]="displayStoreLogo(orderDetails.store.storeAssets)">
                                                         <div class="flex flex-col pl-2 w-full leading-none gap-1">
                                                             <span class="font-semibold cursor-pointer line-clamp-1" (click)="redirectToStore(orderDetails.store.domain)">{{orderDetails.store.name}}</span>
                                                             <span class="text-gray-400 font-normal text-xs">Order ID : {{orderDetails.invoiceId}}</span>
@@ -298,9 +301,9 @@
                                                         <ng-container *ngIf="displayAllGroup[i].orderList[j] && displayAllGroup[i].orderList[j].orderItemsId[k].isDisplay">
                                                             <div (click)="redirectToProduct(orderDetails.store.id, orderDetails.store.domain, orderItemDetail.product.seoNameMarketplace)"  
                                                                 class="flex flex-row items-center justify-around w-full py-2 cursor-pointer group hover:bg-primary-50 sm:px-2 gap-1 sm:gap-2">
-                                                                <div class="w-13 h-13 relative flex flex-0 items-center justify-center mr-2 rounded overflow-hidden border">
+                                                                <div class="w-12 h-12 relative flex flex-0 items-center justify-center mr-2 rounded overflow-hidden border">
                                                                     <img
-                                                                        class="w-full"
+                                                                        class="h-full object-cover"
                                                                         [alt]="'Product thumbnail image of ' + orderItemDetail.productName"
                                                                         [src]=
                                                                             "orderItemDetail.itemAssetDetails ? orderItemDetail.itemAssetDetails.url 
