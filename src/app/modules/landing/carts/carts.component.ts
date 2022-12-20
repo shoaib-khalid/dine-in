@@ -2084,12 +2084,14 @@ export class CartListComponent implements OnInit, OnDestroy
                     this._cartService.orderIds = JSON.stringify([order]);
                     
                 } else {
+                    
                     let existingOrderIds = JSON.parse(this._cartService.orderIds$);
                     // push next order response in the existing order array
-                    existingOrderIds.push(order);
+                    existingOrderIds.unshift(order);
+                    // limit to only 15 elements
+                    const resizedExistingOrderIds = existingOrderIds.slice(0, 15)
                     // then, set the new order array as the new response added
-                    this._cartService.orderIds = JSON.stringify(existingOrderIds)
-                    
+                    this._cartService.orderIds = JSON.stringify(resizedExistingOrderIds)
                 }
                 
                 let dateTime = new Date();
@@ -2182,7 +2184,7 @@ export class CartListComponent implements OnInit, OnDestroy
                         } else {
                             let existingSessionOrderIds = JSON.parse(this._checkoutService.sessionOrderIds$);
                             // push next order response in the existing order array
-                            existingSessionOrderIds.push(order.id);
+                            existingSessionOrderIds.unshift(order.id);
                             // then, set the new order array as the new response added
                             this._checkoutService.sessionOrderIds = JSON.stringify(existingSessionOrderIds)
                         }

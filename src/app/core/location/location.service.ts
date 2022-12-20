@@ -36,7 +36,7 @@ export class LocationService
     // Famous Product
     private _famousItem: BehaviorSubject<FamousItem[] | null> = new BehaviorSubject<FamousItem[]>(null);
     private _famousItemPagination: BehaviorSubject<FamousItemPagination | null> = new BehaviorSubject(null);
-
+    private _famousProducts: BehaviorSubject<any[] | null> = new BehaviorSubject<any[]>(null);
     // Featured Location
     private _featuredLocation: BehaviorSubject<LandingLocation | null> = new BehaviorSubject<LandingLocation>(null);
     private _featuredLocations: BehaviorSubject<LandingLocation[] | null> = new BehaviorSubject<LandingLocation[]>(null);
@@ -138,6 +138,9 @@ export class LocationService
     get famousItem$(): Observable<FamousItem[]> { return this._famousItem.asObservable(); }
     /** Getter for productDetailPagination */
     get famousItemPagination$(): Observable<FamousItemPagination> { return this._famousItemPagination.asObservable(); }
+
+    /** Getter for famous item **/
+    get famousProducts$(): Observable<any[]> { return this._famousProducts.asObservable(); }
 
     // ----------------------
     // Featured Product
@@ -647,6 +650,8 @@ export class LocationService
             headers: new HttpHeaders().set("Authorization", `Bearer ${accessToken}`)
         }; 
 
+        if (!tagKeyword) return of(null)
+
         return this._httpClient.get<any>(locationService + '/famous/' + tagKeyword, header)
             .pipe(
                 catchError(() =>
@@ -655,7 +660,7 @@ export class LocationService
                 ),
                 switchMap(async (response: any) => {
                     this._logging.debug("Response from LocationService (getFamousProduct)", response);
-
+                    this._famousProducts.next(response.data);
                     return response.data;
                 })
             );

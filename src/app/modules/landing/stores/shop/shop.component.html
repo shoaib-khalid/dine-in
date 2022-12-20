@@ -65,12 +65,6 @@
                             (click)="chooseCategory(null, 'top10')">
                             <span class="m-1 text-sm text-center font-semibold line-clamp-2 leading-4">Best Seller</span>
                         </div>
-                        <div 
-                            [ngClass]="(!selectedCategory && selectedCustomCategory === 'all') ? 'border-primary border-b-4 ' : '' "
-                            class="flex flex-col w-28 filter-article justify-center cursor-pointer hover:bg-primary-300 " 
-                            (click)="chooseCategory(null, 'all')">
-                            <span class="m-1 text-sm text-center font-semibold line-clamp-2 leading-4">All</span>
-                        </div>
                         <ng-container #categoriesElement *ngFor="let category of storeCategories; let i = index">
                             <div 
                                 id="cat-{{i}}"
@@ -80,15 +74,22 @@
                                 <span class="my-1 mx-2 text-sm text-center font-semibold line-clamp-2 leading-4">{{category.name}}</span>
                             </div>
                         </ng-container>
+                        <div 
+                            [ngClass]="(!selectedCategory && selectedCustomCategory === 'all') ? 'border-primary border-b-4 ' : '' "
+                            class="flex flex-col w-28 filter-article justify-center cursor-pointer hover:bg-primary-300 " 
+                            (click)="chooseCategory(null, 'all')">
+                            <span class="m-1 text-sm text-center font-semibold line-clamp-2 leading-4">All</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex flex-col md:flex-row w-full gap-0 md:gap-4">
+                <div class="flex md:flex-row w-full gap-0 md:gap-4"
+                [ngClass]="(!selectedCategory && selectedCustomCategory === 'top10') ? 'flex-row items-center' : 'flex-col'">
                     <!-- Search -->
                     <search (search)="searchClicked()" class="w-full mb-2 sm:mt-2 sm:mb-4 z-10" [storeId]="store.id" [store]="storeDetails"></search>
                     <!-- Sort -->
-                    <div class="flex flex-row items-center md:justify-end mt-1 md:mt-0 md:mb-2 w-full pb-2 sm:pb-0"
-                        [ngClass]="(!selectedCategory && selectedCustomCategory === 'top10') ? 'justify-end' : 'justify-between'">
+                    <div class="flex flex-row items-center md:justify-end mt-1 md:mt-0 md:mb-2 pb-2 sm:pb-0"
+                    [ngClass]="(!selectedCategory && selectedCustomCategory === 'top10') ? 'justify-end w-auto ml-2' : 'justify-between w-full'">
                         <mat-select
                             *ngIf="!(!selectedCategory && selectedCustomCategory === 'top10')"
                             class="order-1 md:order-2 border border-gray-300 w-44 p-2 rounded text-sm"

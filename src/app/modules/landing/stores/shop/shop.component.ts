@@ -409,6 +409,31 @@ export class LandingShopComponent implements OnInit
                 this._changeDetectorRef.markForCheck();
             });
 
+        // Famous Product
+        this._locationService.famousProducts$
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((famousProducts)=>{
+
+
+            if (famousProducts && famousProducts.length > 0) {
+                const top10products = famousProducts.slice(0,10);
+
+                this.famousProducts = top10products;
+                
+                // set loading to false
+                this.isLoading = false;
+
+            }
+            // If no famous products, set selectedCustomCategory 'first' to load first category products
+            else {
+                // this.selectedCustomCategory = 'all';
+                this.selectedCustomCategory = 'first';
+            }
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+        });
+    
 
         // Get searches from url parameter 
         this._activatedRoute.queryParams
@@ -462,7 +487,6 @@ export class LandingShopComponent implements OnInit
                                 )
                                 .subscribe((storeCategory: StoreCategory) => {
 
-                                    
                                     if (this.selectedCategory && storeCategory && (storeCategory.id === this.selectedCategory.id)) {
                                         return;
                                     }
@@ -474,6 +498,10 @@ export class LandingShopComponent implements OnInit
                                     // Select the category if its already selected before
                                     if (storeCategory && this.storeCategories.map(x => x.id).includes(storeCategory.id)){
                                         this.selectedCategory = storeCategory;
+                                    }
+                                    // Take the first category
+                                    else if (this.selectedCustomCategory === 'first') {
+                                        this.selectedCategory = this.storeCategories[0];
                                     }
                                     else {
                                         this.selectedCategory = null;
@@ -506,30 +534,6 @@ export class LandingShopComponent implements OnInit
                         this._changeDetectorRef.markForCheck();
                     });
                 
-                // Famous Product
-                let storeId = this.store.id
-                this._locationService.getFamousProduct(storeId)
-                    .pipe(takeUntil(this._unsubscribeAll))
-                    .subscribe((famousProducts)=>{
-
-                        if (famousProducts && famousProducts.length > 0) {
-                            const top10products = famousProducts.slice(0,10);
-    
-                            this.famousProducts = top10products;
-                            
-                            // set loading to false
-                            this.isLoading = false;
-
-                        }
-                        // If no famous products, set selectedCustomCategory 'all' to load all products
-                        else {
-                            this.selectedCustomCategory = 'all';
-                        }
-
-                        // Mark for check
-                        this._changeDetectorRef.markForCheck();
-                    });
-
         });
 
         // Get the products
@@ -970,6 +974,9 @@ export class LandingShopComponent implements OnInit
 
     searchClicked(){
         this.selectedCustomCategory = "all";
+
+        // Mark for check
+        this._changeDetectorRef.markForCheck();
     }
     
 }

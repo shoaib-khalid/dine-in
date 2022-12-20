@@ -89,7 +89,7 @@
                                     </div>
                                     <!-- Footer -->
                                     <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0 pt-1 md:pt-0">
-                                        <div class="flex flex-col md:border rounded-lg py-1 px-0.5 md:px-2 md:py-2">
+                                        <div class="flex flex-col md:border rounded-lg py-1 px-0.5 md:px-2 md:py-2 md:h-full">
                                             <!-- Order Summary -->
                                             <div class="flex flex-col w-full mb-2 leading-none gap-2">
                                                 <!-- Title -->
@@ -250,7 +250,7 @@
                                                     >
                                                 <label 
                                                     (click)="goToHome()"
-                                                    class="flex items-center justify-center h-8 w-20 w-full px-1 sm:px-2 rounded-lg bg-primary"
+                                                    class="flex items-center justify-center h-8 w-20 w-full px-1 sm:px-2 rounded-lg bg-primary cursor-pointer"
                                                     for="order-more-button"
                                                     matRipple>
                                                     <span class="text-sm font-light text-white tracking-tighter px-1">Order More</span>
@@ -261,7 +261,8 @@
             
                                     <ng-container *ngFor="let orderDetails of ordersGroup.orderList; let j = index">
                                         <!-- Orders -->
-                                        <div class="flex flex-col md:flex-row w-full justify-between bg-card border border-gray-300 rounded-lg p-2 mb-1 sm:mb-2">
+                                        <div class="flex flex-col md:flex-row w-full justify-between bg-card border border-gray-300 rounded-lg p-2 sm:mb-2"
+                                            [ngClass]="ordersGroup.orderList.length > 1 ? 'mb-1' : 'mb-0'">
                                             <div class="flex flex-col w-full">
                                                 <!-- Header -->
                                                 <div class="flex flex-row mt-1 mb-2 items-start justify-between w-full sm:w-1/2 sm:px-2">
@@ -313,7 +314,7 @@
                                                                 </div>
                                                                 <div class="w-full flex flex-col pr-1">
                                                                     <h3 
-                                                                        class="font-medium text-sm group-hover:text-primary line-clamp-3">
+                                                                        class="font-medium text-sm group-hover:text-primary line-clamp-2">
                                                                         {{orderItemDetail.productName}}
                                                                     </h3>
                                                                     <div class="">
@@ -361,13 +362,13 @@
                                                     </ng-container>
                                                     <ng-container *ngIf="displayAllGroup[i].orderList[j] && displayAllGroup[i].orderList[j].isDisplayAll === true">
                                                         <div class="border-b w-full py-1"></div>
-                                                        <span class="text-primary pt-2 pb-2 sm:pb-0 cursor-pointer" (click)="showAllGroupOrderItems(ordersGroup.id, orderDetails.id)">See More</span>
+                                                        <span class="text-primary text-md sm:text-base pt-2 pb-2 sm:pb-0 cursor-pointer" (click)="showAllGroupOrderItems(ordersGroup.id, orderDetails.id)">See More</span>
                                                     </ng-container>
                                                 </div>
                                             </div>
                                             <!-- Footer -->
                                             <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0 pt-1 md:pt-0">
-                                                <div class="flex flex-col md:border rounded-lg py-1 px-0.5 md:px-2 md:py-2">
+                                                <div class="flex flex-col md:border rounded-lg py-1 px-0.5 md:px-2 md:py-2 md:h-full">
                                                     <!-- Order Summary -->
                                                     <div class="flex flex-col w-full md:mb-1 leading-none gap-2">
                                                         <!-- Title -->
@@ -476,23 +477,24 @@
                                     </ng-container>
 
                                     <!-- Footer -->
-                                    <div class="flex flex-col sm:items-end w-full px-2 sm:px-4 leading-tight gap-1">
-                                        <!-- Total Order Amount -->
-                                        <div class="flex flex-row justify-between">
-                                            <p class="text-left font-medium text-gray-500 text-sm w-56">Total Order Amount</p> 
-                                            <!-- <span class="items-center font-medium text-gray-400 text-sm">:</span> -->
-                                            <h3 class="text-right font-medium text-gray-500 text-sm w-20">{{ ordersGroup.totalOrderAmount | currency: platform.currency }}</h3>
-                                        </div>
-                                        <!-- Platform Voucher Discount -->
+                                    <div *ngIf="ordersGroup.orderList.length > 1" 
+                                        class="flex flex-col sm:items-end w-full px-2 sm:px-4 leading-tight gap-1 my-1 sm:my-0">
                                         <ng-container *ngIf="ordersGroup.platformVoucherDiscount && ordersGroup.platformVoucherDiscount !== 0">
+                                            <!-- Total Order Amount -->
+                                            <div class="flex flex-row justify-between">
+                                                <p class="text-left font-medium text-gray-500 text-sm w-56">Total Order Amount</p> 
+                                                <!-- <span class="items-center font-medium text-gray-400 text-sm">:</span> -->
+                                                <h3 class="text-right font-medium text-gray-500 text-sm w-20">{{ ordersGroup.totalOrderAmount | currency: platform.currency }}</h3>
+                                            </div>
+                                            <!-- Platform Voucher Discount -->
                                             <div class="flex flex-row justify-between">
                                                 <p class="text-left font-medium text-primary-600 text-sm w-56">Deliverin Voucher Discount</p> 
                                                 <!-- <span class="items-center font-medium text-gray-400 text-sm">:</span> -->
                                                 <h3 class="text-right font-medium text-primary-600 text-sm w-20">-{{ ordersGroup.platformVoucherDiscount | currency: platform.currency }}</h3>
                                             </div>
+                                            <!-- Separator -->
+                                            <div class="border-b w-full"></div>
                                         </ng-container>
-                                        <!-- Separator -->
-                                        <div class="border-b w-full"></div>
                                         <!-- Total Amount -->
                                         <div class="flex flex-row justify-between">
                                             <p class="text-left font-semibold text-sm w-56">Total Amount</p> 
