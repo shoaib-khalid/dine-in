@@ -226,7 +226,7 @@
                                             <div class="flex flex-row grow items-center justify-start ml-2 md:ml-4">
                                                 <img class="w-14 max-w-14 max-h-14 min-h-14 sm:w-18 sm:max-w-18 sm:h-18 sm:max-h-18 shadow rounded" [src]="cartItem.productAsset ? cartItem.productAsset.url : cartItem.productInventory.product.thumbnailUrl ? cartItem.productInventory.product.thumbnailUrl : displayStoreLogo(cart.store)">
                                                 <div class="flex flex-col ml-2 items-start justify-start sm:justify-center gap-1">
-                                                    <span class="text-md sm:text-md font-medium line-clamp-2 hover:cursor-pointer leading-snug">{{cartItem.productName}}</span>
+                                                    <span class="text-md sm:text-md font-semibold line-clamp-2 hover:cursor-pointer leading-snug">{{cartItem.productName}}</span>
                                                     <div *ngIf="cartItem.productInventory.productInventoryItems.length > 0 || cartItem.cartSubItem.length > 0 || cartItem.cartItemAddOn.length > 0">
                                                         <!-- Display variants -->
                                                         <ng-container *ngIf="cartItem.productInventory.productInventoryItems.length > 0">
@@ -505,7 +505,7 @@
                     <div class="flex flex-row border-b justify-between items-center pb-2 w-full">
                         <div class="flex flex-row j">
                             <mat-icon 
-                                class="icon-size-5 text-primary" 
+                                class="text-primary" 
                                 [svgIcon]="'mat_solid:add_shopping_cart'"></mat-icon>
                             <span class="ml-2 font-semibold">Cart Summary</span>
                         </div>
