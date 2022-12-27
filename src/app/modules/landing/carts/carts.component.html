@@ -170,10 +170,10 @@
                                                 </span>
                                                 <div 
                                                 [ngClass]="isStoreClose(cart.storeId) ? 'brightness-50 lg:brightness-100':''"
-                                                    class="flex flex-row">
+                                                    class="flex flex-row tracking-tight gap-1">
                                                     <span class="text-sm">Food to be served:</span>
-                                                    <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm font-medium text-primary">&nbsp;Send to table</span>
-                                                    <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm font-medium text-primary">&nbsp;Self collect</span>
+                                                    <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm font-medium text-primary">Send to table</span>
+                                                    <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm font-medium text-primary">Self collect</span>
                                                 </div>
                                             </div>
                                             <div class="flex flex-row items-center gap-2">
@@ -223,49 +223,55 @@
                                     <ng-container *ngFor="let cartItem of cart.cartItems; let j = index">
                                         <div class="w-full sticky mt-4" [ngClass]="currentScreenSize.includes('lg') ?  'cart-grid grid' : 'flex flex-row justify-between'">
                                             <!-- Image, Title, Variants -->
-                                            <div class="flex flex-row grow items-center justify-start ml-3 md:ml-4">
+                                            <div class="flex flex-row grow items-center justify-start ml-2 md:ml-4">
                                                 <img class="w-14 max-w-14 max-h-14 min-h-14 sm:w-18 sm:max-w-18 sm:h-18 sm:max-h-18 shadow rounded" [src]="cartItem.productAsset ? cartItem.productAsset.url : cartItem.productInventory.product.thumbnailUrl ? cartItem.productInventory.product.thumbnailUrl : displayStoreLogo(cart.store)">
                                                 <div class="flex flex-col ml-2 items-start justify-start sm:justify-center gap-1">
-                                                    <span class="text-md sm:text-md font-semibold line-clamp-2 hover:cursor-pointer">{{cartItem.productName}}</span>
-                                                    <div class="">
+                                                    <span class="text-md sm:text-md font-medium line-clamp-2 hover:cursor-pointer leading-snug">{{cartItem.productName}}</span>
+                                                    <div *ngIf="cartItem.productInventory.productInventoryItems.length > 0 || cartItem.cartSubItem.length > 0 || cartItem.cartItemAddOn.length > 0">
                                                         <!-- Display variants -->
                                                         <ng-container *ngIf="cartItem.productInventory.productInventoryItems.length > 0">
-                                                            <div class="flex flex-wrap items-center gap-1">
+                                                            <div class="flex flex-wrap items-center gap-x-1">
                                                                 <ng-container *ngFor="let variant of cartItem.productInventory.productInventoryItems; let isLast=last">
                                                                     <span class="truncate tracking-tight max-w-32 leading-tight text-xs lg:text-sm text-secondary">{{variant.productVariantAvailable.productVariant.name}}: {{variant.productVariantAvailable.value}}{{isLast ? '' : ', '}}</span>
-                                                                    <!-- <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span> -->
                                                                 </ng-container>
                                                             </div>
                                                         </ng-container>
                                                         <!-- Display Combo -->
                                                         <ng-container *ngIf="cartItem.cartSubItem.length > 0">
-                                                            <div class="flex flex-wrap items-center gap-1">
+                                                            <div class="flex flex-wrap items-center gap-x-1">
                                                                 <ng-container *ngFor="let combo of cartItem.cartSubItem; let isLast=last">
                                                                     <span class="truncate tracking-tight max-w-32 leading-tight text-xs lg:text-sm text-secondary">{{combo.productName}}{{isLast ? '' : ', '}}</span>
-                                                                    <!-- <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span> -->
                                                                 </ng-container>
                                                             </div>
                                                         </ng-container>
                                                         <!-- Display AddOn -->
                                                         <ng-container *ngIf="cartItem.cartItemAddOn.length > 0">
-                                                            <div class="flex flex-wrap items-center gap-1">
+                                                            <div class="flex flex-wrap items-center gap-x-1">
                                                                 <ng-container *ngFor="let addon of cartItem.cartItemAddOn; let isLast=last">
                                                                     <ng-container *ngIf="addon.productAddOn && addon.productAddOn.addOnTemplateItem">
                                                                         <span class="truncate tracking-tight max-w-32 leading-tight text-xs lg:text-sm text-secondary">{{addon.productAddOn.addOnTemplateItem.name}}{{isLast ? '' : ', '}}</span>
                                                                     </ng-container>
-                                                                    <!-- <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span> -->
                                                                 </ng-container>
                                                             </div>
                                                         </ng-container>
                                                     </div>
                                                     <!-- Display Special Instruction -->
-                                                    <div *ngIf="cartItem.specialInstruction" class="flex flex-row items-center">
+                                                    <div *ngIf="cartItem.specialInstruction; else noSpecialInstruction" 
+                                                        (click)="editCartItem(cart.id, cartItem)"
+                                                        class="flex flex-row items-center cursor-pointer">
+                                                        <!-- Edit Item -->
+                                                        <mat-icon
+                                                            class="icon-size-3 mr-0.5"
+                                                            [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
                                                         <span class="leading-tight text-xs md:text-sm text-secondary flex flex-wrap">Instruction: {{cartItem.specialInstruction}}</span>
                                                         <!-- <span class="leading-tight text-xs text-secondary flex flex-wrap">{{cartItem.specialInstruction}}</span> -->
                                                     </div>
-                                                    <!-- Quantity -->
+                                                    <ng-template #noSpecialInstruction>
+                                                        <span (click)="editCartItem(cart.id, cartItem)" class="leading-tight text-xs md:text-sm text-secondary flex flex-wrap underline text-primary cursor-pointer">Add instruction (optional)</span>
+                                                    </ng-template>
+                                                    <!-- Quantity (mobile)-->
                                                     <div class="block md:hidden flex flex-col justify-center items-center mt-0.5">
-                                                        <div class="flex flex-row h-6 w-16 justify-center items-center rounded-md relative border border-primary">
+                                                        <!-- <div class="flex flex-row h-6 w-16 justify-center items-center rounded-md relative border border-primary">
                                                             <button (click)="checkQuantity(cart.id,cartItem,null,'decrement')" class="text-black hover:bg-primary h-full w-20 rounded-l-md cursor-pointer outline-none">
                                                                 <span class="flex justify-center text-sm">−</span>
                                                             </button>
@@ -279,6 +285,26 @@
                                                             <button (click)="checkQuantity(cart.id,cartItem,null,'increment')" class="text-black hover:bg-primary h-full w-20 rounded-r-md cursor-pointer">
                                                                 <span class="flex justify-center text-sm">+</span>
                                                             </button>
+                                                        </div> -->
+                                                        <div class="flex flex-row h-6 w-16 rounded ring-1 ring-primary relative bg-white mt-0.5">
+                                                            <button (click)="checkQuantity(cart.id,cartItem,null,'decrement'); $event.stopPropagation()" 
+                                                                class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                                                <mat-icon 
+                                                                    class="icon-size-4 text-black group-hover:text-white" 
+                                                                    [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
+                                                            </button>
+                                                            <input 
+                                                                [value]="cartItem.quantity" 
+                                                                (change)="checkQuantity(cart.id,cartItem,$event.target.value)" 
+                                                                type="number" 
+                                                                class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-md cursor-default flex items-center outline-none leading-none" 
+                                                                name="custom-input-number-small"/>
+                                                            <button (click)="checkQuantity(cart.id,cartItem,null,'increment'); $event.stopPropagation()" 
+                                                                class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                                                <mat-icon 
+                                                                    class="icon-size-4 text-black group-hover:text-white" 
+                                                                    [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+                                                            </button>
                                                         </div>
                                                         <ng-container *ngIf="cartItem.productInventory.product.allowOutOfStockPurchases === false">
                                                             <ng-container *ngIf="cartItem.productInventory.quantity <= 10 ">
@@ -291,6 +317,7 @@
                                                             </ng-container>
                                                         </ng-container>
                                                     </div>
+
                                                 </div>
                                             </div>
                                             <!-- Unit Price -->
@@ -305,9 +332,9 @@
                                                         {{cartItem.productPrice | currency: cart.store.regionCountry.currencySymbol}}</span>
                                                 </ng-template>
                                             </div>
-                                            <!-- Quantity -->
+                                            <!-- Quantity (desktop) -->
                                             <div class="hidden md:flex flex-col justify-center items-center mx-2">
-                                                <div class="flex flex-row h-6 w-16 justify-center items-center rounded-md relative border border-primary">
+                                                <!-- <div class="flex flex-row h-6 w-16 justify-center items-center rounded-md relative border border-primary">
                                                     <button (click)="checkQuantity(cart.id,cartItem,null,'decrement')" class="pb-[0.1rem] text-black hover:bg-primary h-full w-20 rounded-l-md cursor-pointer outline-none">
                                                         <span class="flex justify-center">−</span>
                                                     </button>
@@ -319,6 +346,26 @@
                                                             [value]="cartItem.quantity"/>
                                                     <button (click)="checkQuantity(cart.id,cartItem,null,'increment')" class="pb-[0.1rem] text-black hover:bg-primary h-full w-20 rounded-r-md cursor-pointer">
                                                         <span class="flex justify-center">+</span>
+                                                    </button>
+                                                </div> -->
+                                                <div class="flex flex-row h-6 w-16 rounded ring-1 ring-primary relative bg-white">
+                                                    <button (click)="checkQuantity(cart.id,cartItem,null,'decrement'); $event.stopPropagation()" 
+                                                        class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                                        <mat-icon 
+                                                            class="icon-size-4 text-black group-hover:text-white" 
+                                                            [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
+                                                    </button>
+                                                    <input 
+                                                        [value]="cartItem.quantity" 
+                                                        (change)="checkQuantity(cart.id,cartItem,$event.target.value)" 
+                                                        type="number" 
+                                                        class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-md cursor-default flex items-center outline-none leading-none" 
+                                                        name="custom-input-number"/>
+                                                    <button (click)="checkQuantity(cart.id,cartItem,null,'increment'); $event.stopPropagation()" 
+                                                        class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                                        <mat-icon 
+                                                            class="icon-size-4 text-black group-hover:text-white" 
+                                                            [svgIcon]="'heroicons_solid:plus'"></mat-icon>
                                                     </button>
                                                 </div>
                                                 <ng-container *ngIf="cartItem.productInventory.product.allowOutOfStockPurchases === false">
@@ -335,24 +382,30 @@
                                             <!-- Total Price -->
                                             <span class="hidden sm:flex justify-center items-center font-semibold text-center text-sm md:text-md min-w-20 max-w-auto truncate">{{ cartItem.cartItemAddOn.length > 0 ? (cartItem.totalPrice | currency: cart.store.regionCountry.currencySymbol) : 
                                                 (cartItem.price | currency: cart.store.regionCountry.currencySymbol)}}</span>
-                                            <!-- Remove Item -->
-                                            <span class="hidden sm:flex justify-center items-center text-center px-1 cursor-pointer">
-                                                <mat-icon 
-                                                    [matTooltip]="'Delete item'"
-                                                    (click)="deleteCartItem(cart.id, cartItem)"
-                                                    class="icon-size-4"
-                                                    [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                                            </span>
-                                            <!-- Total Price , Unit Price , Remove button for sm-->
-                                            <div class="flex flex-col sm:hidden items-end justify-between">
+                                            <!-- Edit / Delete cart for desktop -->
+                                            <div class="hidden sm:flex flex-row justify-end">
                                                 <!-- Remove Item -->
                                                 <span class="flex justify-center items-center text-center px-1 cursor-pointer">
-                                                    <mat-icon
+                                                    <mat-icon 
                                                         [matTooltip]="'Delete item'"
-                                                        (click)="deleteCartItem(cart.id, cartItem)" 
+                                                        (click)="deleteCartItem(cart.id, cartItem)"
                                                         class="icon-size-4"
                                                         [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                                                 </span>
+                                            </div>
+                                            <!-- Total Price , Unit Price , Remove button for sm-->
+                                            <div class="flex flex-col sm:hidden items-end justify-between">
+                                                <!-- Edit / Delete cart for mobile -->
+                                                <div class="flex flex-row justify-end w-full">
+                                                    <!-- Remove Item -->
+                                                    <span class="flex justify-center items-center text-center mx-1 cursor-pointer">
+                                                        <mat-icon
+                                                            [matTooltip]="'Delete item'"
+                                                            (click)="deleteCartItem(cart.id, cartItem)" 
+                                                            class="icon-size-4"
+                                                            [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                                                    </span>
+                                                </div>
                                                 <div class="flex flex-col w-26 justify-end items-end">
                                                     <!-- Unit Price -->
                                                     <div class="flex flex-col justify-center items-end text-center px-1">
@@ -454,16 +507,16 @@
                             <mat-icon 
                                 class="icon-size-5 text-primary" 
                                 [svgIcon]="'mat_solid:add_shopping_cart'"></mat-icon>
-                            <span class="ml-2 font-bold">Cart Summary</span>
+                            <span class="ml-2 font-semibold">Cart Summary</span>
                         </div>
                         <div class="flex flex-col text-center">
-                            <span class="font-semibold">Table No.:&nbsp;{{tableNumber}}</span>
-                            <span class="text-gray-500 text-xs">
+                            <span class="font-semibold mb-0.5">Table No.:&nbsp;{{tableNumber}}</span>
+                            <span class="leading-none text-gray-500 text-xs">
                                 {{(tagType && tagType === 'restaurant' && (tableNumber.length === 0 || !tableNumber.trim())) ? 'Gotten your seat?' : 'Wrong table no.?'}}</span>
-                            <div class="leading-none">
-                                <span class="text-gray-500 text-xs tracking-tight">
+                            <div class="flex justify-center leading-snug gap-1">
+                                <span class="text-gray-500 text-xs">
                                     {{(tagType && tagType === 'restaurant' && (tableNumber.length === 0 || !tableNumber.trim())) ? 'Enter table no. ' : 'Change '}}</span>
-                                <span (click)="changeTableNumber()" class="text-primary text-xs underline cursor-pointer tracking-tight">
+                                <span (click)="changeTableNumber()" class="text-primary text-xs underline cursor-pointer">
                                     here</span>
                             </div>
                         </div>
@@ -677,9 +730,9 @@
 
                 </div>
                 <div class="w-full flex flex-col border rounded-lg p-2 mt-4">
-                    <div class="flex flex-row">
+                    <div class="flex flex-row items-center">
                         <mat-icon class="text-primary" svgIcon="mat_outline:account_balance_wallet"></mat-icon>
-                        <span class="font-bold ml-2">Payment Method</span>
+                        <span class="font-semibold ml-2">Payment Method</span>
                     </div>
                     <mat-radio-group
                         class="flex flex-col"

@@ -332,7 +332,6 @@
                                                                             <div class="flex flex-wrap items-center gap-x-1">
                                                                                 <ng-container *ngFor="let combo of orderItemDetail.orderSubItem; let isLast=last">
                                                                                     <span class="truncate tracking-tight max-w-32 leading-tight text-xs lg:text-sm text-secondary">{{combo.productName}}{{isLast ? '' : ', '}}</span>
-                                                                                    <!-- <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span> -->
                                                                                 </ng-container>
                                                                             </div>
                                                                         </ng-container>
@@ -343,7 +342,6 @@
                                                                                     <ng-container *ngIf="addon.productAddOn && addon.productAddOn.addOnTemplateItem">
                                                                                         <span class="truncate tracking-tight max-w-32 leading-tight text-xs lg:text-sm text-secondary">{{addon.productAddOn.addOnTemplateItem.name}}{{isLast ? '' : ', '}}</span>
                                                                                     </ng-container>
-                                                                                    <!-- <span class="block last:hidden leading-tight text-xs lg:text-sm text-secondary">,&nbsp;</span> -->
                                                                                 </ng-container>
                                                                             </div>
                                                                         </ng-container>

@@ -49,7 +49,7 @@ export interface CustomerCart
 export interface CartItem
 {
     id?: string;
-    quantity: number;
+    quantity?: number;
     cartId: string;
     productId: string;
     itemCode: string;

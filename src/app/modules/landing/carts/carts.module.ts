@@ -23,12 +23,15 @@ import { SelfPickupInfoDialog } from './modal-self-pickup-info/modal-self-pickup
 import { CartAddressComponent } from './modal-address/cart-addresses.component';
 import { CartAddressModule } from './modal-address/cart-addresses.module';
 import { FloatingStoreListModule } from 'app/layout/common/_floating-store-list/floating-store-list.module';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { EditCartItemModalComponent } from './modal-edit-cart-item/modal-edit-cart-item.component';
 
 @NgModule({
     declarations: [
         CartListComponent,
         ModalConfirmationDeleteItemComponent,
         SelfPickupInfoDialog,
+        EditCartItemModalComponent
     ],
     imports     : [
         RouterModule.forChild(voucherRoutes),

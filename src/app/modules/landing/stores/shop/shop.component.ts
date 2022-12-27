@@ -246,12 +246,6 @@ export class LandingShopComponent implements OnInit
         private _datePipe: DatePipe,
         private _shopService: ShopService,
         private _locationService: LocationService,
-        private _diningService: DiningService,
-        private _fuseConfirmationService: FuseConfirmationService,
-        private _apiServer: AppConfig,
-        private _cartService: CartService,
-        private _authService: AuthService,
-        private _jwtService: JwtService,
         private _bottomSheet: MatBottomSheet,
         @Inject(DOCUMENT) private _document: Document
 

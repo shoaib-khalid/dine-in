@@ -34,6 +34,8 @@ import { StoresDetails, Tag } from 'app/core/location/location.types';
 import { CountdownService } from 'app/layout/common/_countdown/countdown.service';
 import { TimeComponents } from 'app/layout/common/_countdown/countdown.types';
 import { OrderService } from 'app/core/_order/order.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { EditCartItemModalComponent } from './modal-edit-cart-item/modal-edit-cart-item.component';
 
 @Component({
     selector     : 'carts',
@@ -329,8 +331,7 @@ export class CartListComponent implements OnInit, OnDestroy
         private _titleService: Title,
         private _location: Location,
         private _countdownService: CountdownService,
-        private _orderService: OrderService,
-        private _userService: UserService
+        private _orderService: OrderService
 
     )
     {
@@ -2252,5 +2253,34 @@ export class CartListComponent implements OnInit, OnDestroy
         
     }
 
+    editCartItem(cartId: string, cartItem: CartItem) {
 
+        const dialogRef = this._dialog.open( 
+            EditCartItemModalComponent, {
+                data:{ 
+                    product: cartItem
+                },
+                disableClose: true
+            });
+            
+        dialogRef.afterClosed().subscribe((result) => 
+            {
+
+                if (result.saved && result.specialInstruction) {
+                    const cartItemBody = {
+                        cartId: cartItem.cartId,
+                        id: cartItem.id,
+                        itemCode: cartItem.itemCode,
+                        productId: cartItem.productId,
+                        specialInstruction: result.specialInstruction
+                    }
+
+                    this._cartService.putCartItem(cartId, cartItemBody, cartItem.id)
+                        .subscribe(()=>{
+                            this.initializeCheckoutList();
+                        });
+                }
+            }
+        )
+    }
 }
