@@ -166,10 +166,6 @@ import { DiningService } from 'app/core/_dining/dining.service';
                 border: 2px double black !important;
             }  
 
-            .cupertino-class {
-                z-index: 99;
-            }
-            
         `
     ],
     encapsulation: ViewEncapsulation.None,
@@ -546,7 +542,7 @@ export class LandingShopComponent implements OnInit
                 }
                 
             })
-        
+
     }
 
     /**
@@ -570,7 +566,23 @@ export class LandingShopComponent implements OnInit
                       });
                 }
             }
+            // get the sticky element
+            const stickyElm = this._document.getElementById('category-header');
+            
+            // Add shadow when sticks
+            const observer = new IntersectionObserver( 
+                ([e]) => e.target.classList.toggle('shadow-md', e.intersectionRatio < 1),
+                {
+                    rootMargin: '-1px 0px 0px 0px',
+                    threshold: [1],
+                });
+    
+            observer.observe(stickyElm)
+
         }, 500);
+
+                
+        
     }
 
     /**

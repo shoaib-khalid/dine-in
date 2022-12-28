@@ -56,12 +56,12 @@
                 </fuse-card>
                 <!-- Category -->                    
                 <div fuseScrollbar
-                [fuseScrollbarOptions]="{wheelPropagation: false, suppressScrollY: true}" class="scrollbar-hide flex h-14 flex-nowrap items-center justify-start overflow-x-auto md:rounded-md w-screen md:w-full bg-card md:ring-1 md:ring-gray-300 md:mx-0 -mx-2 sticky top-0 my-2 md:mt-4 z-40">
+                [fuseScrollbarOptions]="{wheelPropagation: false, suppressScrollY: true}" id="category-header" class="transition scrollbar-hide flex h-14 flex-nowrap items-center justify-start overflow-x-auto md:rounded-md w-screen md:w-full bg-card md:ring-1 md:ring-gray-300 md:mx-0 -mx-2 sticky top-0 my-2 md:mt-4 z-40">
                     <div class="h-full grid grid-flow-col grid-rows-1">
                         <div 
                             *ngIf="famousProducts && famousProducts.length > 0"
                             [ngClass]="(!selectedCategory && selectedCustomCategory === 'top10') ? 'border-primary border-b-4 ' : '' "
-                            class="flex flex-col w-28 filter-article justify-center cursor-pointer hover:bg-primary-300 " 
+                            class="flex flex-col w-28 filter-article justify-center cursor-pointer md:hover:bg-primary-300 " 
                             (click)="chooseCategory(null, 'top10')">
                             <span class="m-1 text-sm text-center font-semibold line-clamp-2 leading-4">Best Seller</span>
                         </div>
@@ -69,14 +69,14 @@
                             <div 
                                 id="cat-{{i}}"
                                 [ngClass]="selectedCategory && selectedCategory.id === category.id ? 'border-primary border-b-4 ' : '' "
-                                class="flex flex-col w-30 filter-article justify-center cursor-pointer hover:bg-primary-300 " 
+                                class="flex flex-col w-30 filter-article justify-center cursor-pointer md:hover:bg-primary-300 " 
                                 (click)="chooseCategory(category)">
                                 <span class="my-1 mx-2 text-sm text-center font-semibold line-clamp-2 leading-4">{{category.name}}</span>
                             </div>
                         </ng-container>
                         <div 
                             [ngClass]="(!selectedCategory && selectedCustomCategory === 'all') ? 'border-primary border-b-4 ' : '' "
-                            class="flex flex-col w-28 filter-article justify-center cursor-pointer hover:bg-primary-300 " 
+                            class="flex flex-col w-28 filter-article justify-center cursor-pointer md:hover:bg-primary-300 " 
                             (click)="chooseCategory(null, 'all')">
                             <span class="m-1 text-sm text-center font-semibold line-clamp-2 leading-4">All</span>
                         </div>
@@ -84,15 +84,15 @@
                 </div>
 
                 <div class="flex md:flex-row w-full gap-0 md:gap-4"
-                [ngClass]="(!selectedCategory && selectedCustomCategory === 'top10') ? 'flex-row items-center' : 'flex-col'">
+                [ngClass]="(!selectedCategory && selectedCustomCategory === 'top10') ? 'flex-row' : 'flex-col'">
                     <!-- Search -->
                     <search (search)="searchClicked()" class="w-full mb-2 sm:mt-2 sm:mb-4 z-10" [storeId]="store.id" [store]="storeDetails"></search>
                     <!-- Sort -->
-                    <div class="flex flex-row items-center md:justify-end mt-1 md:mt-0 md:mb-2 pb-2 sm:pb-0"
+                    <div class="flex flex-row items-center md:justify-end md:mb-2 pb-2 sm:pb-0"
                     [ngClass]="(!selectedCategory && selectedCustomCategory === 'top10') ? 'justify-end w-auto ml-2' : 'justify-between w-full'">
                         <mat-select
                             *ngIf="!(!selectedCategory && selectedCustomCategory === 'top10')"
-                            class="order-1 md:order-2 border border-gray-300 w-44 p-2 rounded text-sm"
+                            class="order-1 md:order-2 border border-gray-300 w-44 p-2 rounded-lg text-sm"
                             placeholder="Sort by name"
                             [formControl]="sortInputControl"
                             #sortSelector="matSelect"
@@ -120,7 +120,7 @@
                                 (click)="productViewOrientation = 'grid'"
                                 mat-button>
                             <label 
-                                class="flex items-center justify-center h-10 px-1 cursor-pointer mr-1"
+                                class="flex items-center justify-center px-1 cursor-pointer mr-1"
                                 for="grid-view-button"
                                 matRipple>
                                 <mat-icon
@@ -137,7 +137,7 @@
                                 (click)="productViewOrientation = 'list'"
                                 mat-button>
                             <label 
-                                class="flex items-center justify-center h-10 px-1 cursor-pointer sm:mr-2"
+                                class="flex items-center justify-center px-1 cursor-pointer sm:mr-2"
                                 for="list-view-button"
                                 matRipple>
                                 <mat-icon

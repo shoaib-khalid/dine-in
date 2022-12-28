@@ -166,17 +166,17 @@
                     <div class="flex w-1/3 flex-row justify-between items-center gap-2">
                         <div class="flex flex-row h-9 w-24 rounded ring-1 ring-primary relative bg-white">
                             <button (click)="checkQuantity('decrement', selectedProduct.id); $event.stopPropagation()" 
-                                class="px-2 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                class="px-2 text-black cursor-pointer outline-none flex justify-between items-center">
                                 <mat-icon 
-                                    class="icon-size-4 text-black group-hover:text-white" 
+                                    class="icon-size-4 text-black" 
                                     [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
                             </button>
                             <input [(ngModel)]="quantity" (change)="checkQuantity()" type="number" 
                                 class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/>
                             <button (click)="checkQuantity('increment', selectedProduct.id); $event.stopPropagation()" 
-                                class="px-2 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                class="px-2 text-black cursor-pointer outline-none flex justify-between items-center">
                                 <mat-icon 
-                                    class="icon-size-4 text-black group-hover:text-white" 
+                                    class="icon-size-4 text-black" 
                                     [svgIcon]="'heroicons_solid:plus'"></mat-icon>
                             </button>
                         </div>
