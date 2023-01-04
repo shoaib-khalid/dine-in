@@ -65,18 +65,19 @@
                                     {{combo.title | uppercase}}: Select Min. {{ combo.minAllow }} of {{ combo.totalAllow }}
                                 </span> 
                                 <span *ngIf="combo.minAllow === 0">{{combo.title | uppercase}}: (Optional)</span>
+                                <span *ngIf="combo.minAllow === 0" class="ml-0.5">Max {{combo.totalAllow}}</span>
                             </label>
                             <ul class="grid grid-cols-1 gap-2.5 ml-2">
                                 <li *ngFor="let option of combo.productPackageOptionDetail; let i = index;" class="flex items-center">
-                                    <div class="flex justify-between w-full items-center">
+                                    <div class="flex justify-between w-full items-center gap-1">
                                         <label class="leading-tight text-sm line-clamp-2" [for]="'combo-checkbox-' + combo.id + '-' + option.productId">
                                             {{option.product.name}}
                                         </label>
                                         <!-- Quantity -->
                                         <div class="flex w-auto flex-row justify-between items-center gap-2 mr-2">
-                                            <div class="flex flex-row h-7 w-20 rounded ring-1 ring-primary relative bg-white">
+                                            <div class="flex flex-row h-7 w-22 rounded ring-1 ring-primary relative bg-white">
                                                 <button (click)="onChangeComboQuantity(combo.id, option.productId, 'decrement'); $event.stopPropagation()" 
-                                                    class="px-2 text-black cursor-pointer outline-none flex justify-between items-center">
+                                                    class="px-3 text-black cursor-pointer outline-none flex justify-between items-center">
                                                     <mat-icon 
                                                         class="icon-size-3 text-black" 
                                                         [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
@@ -84,7 +85,7 @@
                                                 <input [(ngModel)]="option.quantity" (change)="onChangeComboQuantity()" type="number" readonly 
                                                     class="focus:outline-none text-center w-full font-normal text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/>
                                                 <button (click)="onChangeComboQuantity(combo.id, option.productId, 'increment'); $event.stopPropagation()" 
-                                                    class="px-2 text-black cursor-pointer outline-none flex justify-between items-center">
+                                                    class="px-3 text-black cursor-pointer outline-none flex justify-between items-center">
                                                     <mat-icon 
                                                         class="icon-size-3 text-black" 
                                                         [svgIcon]="'heroicons_solid:plus'"></mat-icon>
