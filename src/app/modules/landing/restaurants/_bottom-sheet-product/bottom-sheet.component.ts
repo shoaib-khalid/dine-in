@@ -430,11 +430,14 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
             try {
                 this.combos.forEach(item => {
                     let message: string;
+                    const totalAllow = item.totalAllow * this.quantity;
+
                     if (item.minAllow > 0 && item.minAllow >  this.selectedCombo[item.id].length) {
-                        message = "You need to select " + item.minAllow + " item(s) of <b>" + item.title + "</b>";
-                    } else if (this.selectedCombo[item.id].length > item.totalAllow) {
-                        message = "You need to select " + item.totalAllow + " item(s) of <b>" + item.title + " only</b>";
+                        message = "You need to select minimum " + item.minAllow + " item(s) of <b>" + item.title + "</b>";
+                    } else if (this.selectedCombo[item.id].length > totalAllow) {
+                        message = "You need to select minimum " + totalAllow + " item(s) of <b>" + item.title + " only</b>";
                     } 
+
 
                     if (message) {
                         this._fuseConfirmationService.open({
@@ -806,6 +809,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         const comboIndex = this.combos.findIndex(combo => combo.id === comboId);
         const combo = this.combos[comboIndex];
         const allowSameItem: boolean = combo.allowSameItem;
+        const totalAllow = combo.totalAllow * this.quantity;
 
         if (comboIndex > -1) {
             const productIndex = combo.productPackageOptionDetail.findIndex(prod => prod.productId === productId);
@@ -814,7 +818,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                 if (allowSameItem === true || (allowSameItem === false && combo.productPackageOptionDetail[productIndex].quantity < 1)) {
 
                     // Only add item when total allowed hasn't reached
-                    if (this.selectedCombo[comboId].length < combo.totalAllow) {
+                    if (this.selectedCombo[comboId].length < totalAllow) {
                         combo.productPackageOptionDetail[productIndex].quantity++;
                         this.selectedCombo[comboId].push(productId);
                     }

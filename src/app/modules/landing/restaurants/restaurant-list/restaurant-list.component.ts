@@ -18,7 +18,7 @@ import { OrderService } from 'app/core/_order/order.service';
 import { SearchService } from 'app/layout/common/_search/search.service';
 import { Subject, takeUntil, map, merge, combineLatest } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { _BottomSheetComponent } from '../_bottom-sheet-product/bottom-sheet.component';
+import { _BottomSheetComponent } from '../../stores/_bottom-sheet-product/bottom-sheet.component';
 
 @Component({
     selector     : 'landing-restaurants',
