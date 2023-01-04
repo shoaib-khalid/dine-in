@@ -60,18 +60,38 @@
                         <div 
                             [id]="combo.title" 
                             class="py-1 flex flex-col gap-1">
-                            <label *ngIf="combo.totalAllow !== 0" class="font-semibold text-sm" for="{{combo.title}}">{{combo.title | uppercase}}: (Select {{ combo.totalAllow }} of {{ combo.productPackageOptionDetail.length }})</label>
-                            <label *ngIf="combo.totalAllow === 0" class="font-semibold text-sm" for="{{combo.title}}">{{combo.title | uppercase}}: (Optional)</label>
-                            <ul class="grid grid-cols-2 gap-1">
+                            <label class="font-semibold text-sm" for="{{combo.title}}">
+                                <span *ngIf="combo.minAllow !== 0">
+                                    {{combo.title | uppercase}}: Select Min. {{ combo.minAllow }} of {{ combo.totalAllow }}
+                                </span> 
+                                <span *ngIf="combo.minAllow === 0">{{combo.title | uppercase}}: (Optional)</span>
+                            </label>
+                            <ul class="grid grid-cols-1 gap-2.5 ml-2">
                                 <li *ngFor="let option of combo.productPackageOptionDetail; let i = index;" class="flex items-center">
-                                    <input type="checkbox" 
-                                        [id]="'combo-checkbox-' + combo.id + '-' + option.productId"
-                                        [value]="option.productId" 
-                                        [name]="'combo-checkbox-' + combo.id + '-' + option.productId"
-                                        [checked]="selectedCombo[combo.id].indexOf(option.productId) > -1"
-                                        (change)="onChangeCombo(combo.id, option.productId, $event)"
-                                    >
-                                    <label class="pl-2 leading-tight text-sm" [for]="'combo-checkbox-' + combo.id + '-' + option.productId">{{option.product.name}}</label>
+                                    <div class="flex justify-between w-full items-center">
+                                        <label class="leading-tight text-sm line-clamp-2" [for]="'combo-checkbox-' + combo.id + '-' + option.productId">
+                                            {{option.product.name}}
+                                        </label>
+                                        <!-- Quantity -->
+                                        <div class="flex w-auto flex-row justify-between items-center gap-2 mr-2">
+                                            <div class="flex flex-row h-7 w-20 rounded ring-1 ring-primary relative bg-white">
+                                                <button (click)="onChangeComboQuantity(combo.id, option.productId, 'decrement'); $event.stopPropagation()" 
+                                                    class="px-2 text-black cursor-pointer outline-none flex justify-between items-center">
+                                                    <mat-icon 
+                                                        class="icon-size-3 text-black" 
+                                                        [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
+                                                </button>
+                                                <input [(ngModel)]="option.quantity" (change)="onChangeComboQuantity()" type="number" readonly 
+                                                    class="focus:outline-none text-center w-full font-normal text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/>
+                                                <button (click)="onChangeComboQuantity(combo.id, option.productId, 'increment'); $event.stopPropagation()" 
+                                                    class="px-2 text-black cursor-pointer outline-none flex justify-between items-center">
+                                                    <mat-icon 
+                                                        class="icon-size-3 text-black" 
+                                                        [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </li>
                             </ul>
                         </div>
@@ -92,28 +112,30 @@
                             </label>
                             <ul class="grid grid-cols-1 gap-2.5 ml-2">
                                 <li *ngFor="let option of addOn.productAddOnItemDetail; let i = index;" class="flex items-center">
-                                    <input type="checkbox" 
+                                    <mat-checkbox 
+                                        [disableRipple]="true"
+                                        class="flex w-full"
                                         [id]="'addon-checkbox-' + addOn.id + '-' + option.id"
                                         [value]="option.id" 
+                                        [color]="'primary'"
                                         [name]="'addon-checkbox-' + addOn.id + '-' + option.id"
                                         (change)="onChangeAddOn(addOn, option, $event)"
-                                        [checked]="validateCheckbox(option.id, addOn.id)"
-                                        >
-                                        <!-- [checked]="selectedAddOn[addOn.id].indexOf(option.id) > -1" -->
-                                    <div class="flex justify-between w-full">
-                                        <label class="ml-4 leading-tight text-sm" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
-                                            {{option.name}}
-                                        </label>
-                                        <label class="mr-6 leading-tight text-sm text-secondary" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
-                                            {{ option.dineInPrice < 0 ? '' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol) : '+' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol)}}
-                                        </label>
-                                    </div>
+                                        [checked]="validateCheckbox(option.id, addOn.id)">
+                                        <div class="flex justify-between w-full">
+                                            <span class="ml-2 leading-tight text-sm" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
+                                                {{option.name}}
+                                            </span>
+                                            <span class="mr-6 leading-tight text-sm text-secondary" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
+                                                {{ option.dineInPrice < 0 ? '' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol) : '+' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol)}}
+                                            </span>
+                                        </div>
+                                    </mat-checkbox>
                                 </li>
                             </ul>
                         </div>
                     </ng-container>
                 </ng-container>
-                <!-- Variants / Combo -->
+                <!-- Variants -->
                 <ng-container *ngIf="!selectedProduct.isPackage && !selectedProduct.hasAddOn">
                     <!-- Variants -->
                     <ng-container *ngFor="let variant of selectedProduct.productVariants; let i = index;">
@@ -141,7 +163,7 @@
                 <!-- Special Instruction -->
                 <form [formGroup]="specialInstructionForm">
                     <div class="w-full mt-2">
-                        <span class="font-semibold text-base">Special Instruction{{ selectedProduct.isNoteOptional === false ? ' (required)' : ''}}:</span> 
+                        <span class="font-semibold text-md">Special Instruction{{ selectedProduct.isNoteOptional === false ? ' (required)' : ''}}:</span> 
                         <mat-form-field class="mt-1 fuse-mat-textarea fuse-mat-no-subscript w-full" floatLabel="always">
                             <textarea
                                 style="resize: none;"

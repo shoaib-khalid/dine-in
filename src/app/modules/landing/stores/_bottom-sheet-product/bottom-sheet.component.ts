@@ -17,24 +17,41 @@ import { Cart, CartItem, CustomerCart } from 'app/core/cart/cart.types';
 import { Store } from 'app/core/store/store.types';
 import { StoresService } from 'app/core/store/store.service';
 import { AppConfig } from 'app/config/service.config';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
     selector     : 'bottom-sheet',
     templateUrl  : './bottom-sheet.component.html',
-    encapsulation: ViewEncapsulation.None,
     styles       : [
         `
-        .mat-bottom-sheet-container {
-            padding: 10px 16px 0px 16px;
-            min-width: 100vw;
-            box-sizing: border-box;
-            display: block;
-            outline: 0;
-            max-height: 100vh;
-            overflow: hidden;
-            border-top-right-radius: 10px;
-            border-top-left-radius: 10px;
-        }
+            ::ng-deep .mat-bottom-sheet-container {
+                padding: 10px 16px 0px 16px;
+                min-width: 100vw;
+                box-sizing: border-box;
+                display: block;
+                outline: 0;
+                max-height: 100vh;
+                overflow: hidden;
+                border-top-right-radius: 10px;
+                border-top-left-radius: 10px;
+            }
+
+            :host ::ng-deep .mat-checkbox .mat-checkbox-layout {
+                width: 100% !important;
+            }
+
+            :host ::ng-deep .mat-checkbox .mat-checkbox-layout .mat-checkbox-label {
+                width: 100% !important;
+            }
+
+            :host ::ng-deep .mat-checkbox-inner-container {
+                width: 14px;
+                height: 14px;
+            }
+
+            :host ::ng-deep .mat-checkbox-frame {
+                border-width: 1px;
+            }
         `
     ],
 })
@@ -184,6 +201,9 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                 // if (firstValue !== undefined) {
                 //     this.selectedCombo[combo.id].push(firstValue);
                 // }
+                combo.productPackageOptionDetail.forEach((product) => {
+                    product['quantity'] = 0;
+                })
             });
         }
 
@@ -410,10 +430,17 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
             let BreakException = {};
             try {
                 this.combos.forEach(item => {
-                    if (item.totalAllow !== 0 && item.totalAllow !== this.selectedCombo[item.id].length) {
-                        const confirmation = this._fuseConfirmationService.open({
+                    let message: string;
+                    if (item.minAllow > 0 && item.minAllow >  this.selectedCombo[item.id].length) {
+                        message = "You need to select " + item.minAllow + " item(s) of <b>" + item.title + "</b>";
+                    } else if (this.selectedCombo[item.id].length > item.totalAllow) {
+                        message = "You need to select " + item.totalAllow + " item(s) of <b>" + item.title + " only</b>";
+                    } 
+
+                    if (message) {
+                        this._fuseConfirmationService.open({
                             "title": "Incomplete Product Combo selection",
-                            "message": 'You need to select ' + item.totalAllow + ' item of <b>"' + item.title + '"</b>',
+                            "message": message,
                             "icon": {
                                 "show": true,
                                 "name": "heroicons_outline:exclamation",
@@ -433,7 +460,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                             "dismissible": true
                         });
                         throw BreakException;
-                    }                 
+                    }
                 });
             } catch (error) {
                 // console.error(error);
@@ -454,7 +481,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                     } 
 
                     if (message) {
-                        const confirmation = this._fuseConfirmationService.open({
+                        this._fuseConfirmationService.open({
                             "title": "Incomplete Product Add-On selection",
                             "message": message,
                             "icon": {
@@ -768,39 +795,59 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
     //----------------
     //  Combo Section
     //----------------
-    onChangeCombo(comboId, productId , event){
+    /**
+     * 
+     * @param comboId 
+     * @param productId 
+     * @param operator 
+     * @returns 
+     */
+    onChangeComboQuantity(comboId, productId, operator: string = null) {
 
-        let productID = event.target.value;
+        const comboIndex = this.combos.findIndex(combo => combo.id === comboId);
+        const combo = this.combos[comboIndex];
+        const allowSameItem: boolean = combo.allowSameItem;
 
-        // remove only unchecked item in array
-        if (event.target.checked === false) {
-            let index = this.selectedCombo[comboId].indexOf(productID);
-            if (index !== -1) {
-                this.selectedCombo[comboId].splice(index, 1);
-                return;
+        if (comboIndex > -1) {
+            const productIndex = combo.productPackageOptionDetail.findIndex(prod => prod.productId === productId);
+            if (operator === 'increment') {
+                // If allowSameItem false, cannot add same item more than 1
+                if (allowSameItem === true || (allowSameItem === false && combo.productPackageOptionDetail[productIndex].quantity < 1)) {
+
+                    // Only add item when total allowed hasn't reached
+                    if (this.selectedCombo[comboId].length < combo.totalAllow) {
+                        combo.productPackageOptionDetail[productIndex].quantity++;
+                        this.selectedCombo[comboId].push(productId);
+                    }
+
+                }
+                else return
+            }
+            else if (operator === 'decrement') {
+                // If quantity less or equal to 0, exit
+                if (combo.productPackageOptionDetail[productIndex].quantity <= 0) 
+                    return;
+
+                else {
+                    let index = this.selectedCombo[comboId].indexOf(productId);                    
+                    if (index !== -1) {
+                        this.selectedCombo[comboId].splice(index, 1);
+                    }
+
+                    combo.productPackageOptionDetail[productIndex].quantity--;
+                }
             }
         }
-
-        let currentComboSetting = this.combos.find(item => item.id === comboId);
-        
-        // remove first item in array if it exceed totalAllow
-        if (this.selectedCombo[comboId].length >= currentComboSetting.totalAllow){
-            this.selectedCombo[comboId].shift();
-        }
-
-        // set currentCombo
-        this.selectedCombo[comboId].push(productId);
-        
     }
 
     //----------------
     //  AddOn Section
     //----------------
-    onChangeAddOn(addOn: AddOnProduct, option: AddOnItemProduct, event){
-        let optionID = event.target.value;
+    onChangeAddOn(addOn: AddOnProduct, option: AddOnItemProduct, event: MatCheckboxChange){
+        let optionID = event.source.value;
 
         // remove only unchecked item in array
-        if (event.target.checked === false) {
+        if (event.checked === false) {
             let index = this.selectedAddOn[addOn.id].findIndex(x => x.id === optionID);
             if (index > -1) {
                 this.selectedAddOn[addOn.id].splice(index, 1);
