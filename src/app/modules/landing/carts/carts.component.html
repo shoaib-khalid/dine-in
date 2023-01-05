@@ -293,12 +293,16 @@
                                                                     class="icon-size-4 text-black group-active:text-white duration-75" 
                                                                     [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
                                                             </button>
-                                                            <input 
+                                                            <!-- <input 
                                                                 [value]="cartItem.quantity" 
                                                                 (change)="checkQuantity(cart.id,cartItem,$event.target.value)" 
                                                                 type="number" 
                                                                 class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-md cursor-default flex items-center outline-none leading-none" 
-                                                                name="custom-input-number-small"/>
+                                                                name="custom-input-number-small"/> -->
+                                                            <span 
+                                                                class="justify-center text-center w-full font-medium text-sm text-black focus:text-black md:text-md cursor-default flex items-center" name="custom-input-number-small">
+                                                                {{cartItem.quantity}}
+                                                            </span>
                                                             <button (click)="checkQuantity(cart.id,cartItem,null,'increment'); $event.stopPropagation()" 
                                                                 class="px-1 text-black group duration-75 active:bg-primary active:text-white cursor-pointer outline-none flex justify-between items-center">
                                                                 <mat-icon 
@@ -355,12 +359,16 @@
                                                             class="icon-size-4 text-black group-active:text-white duration-75" 
                                                             [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
                                                     </button>
-                                                    <input 
+                                                    <!-- <input 
                                                         [value]="cartItem.quantity" 
                                                         (change)="checkQuantity(cart.id,cartItem,$event.target.value)" 
                                                         type="number" 
                                                         class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-md cursor-default flex items-center outline-none leading-none" 
-                                                        name="custom-input-number"/>
+                                                        name="custom-input-number"/> -->
+                                                    <span 
+                                                        class="justify-center text-center w-full font-medium text-sm text-black focus:text-black md:text-md cursor-default flex items-center" name="custom-input-number">
+                                                        {{cartItem.quantity}}
+                                                    </span>
                                                     <button (click)="checkQuantity(cart.id,cartItem,null,'increment'); $event.stopPropagation()" 
                                                         class="px-1 text-black duration-75 group active:bg-primary active:text-white cursor-pointer outline-none flex justify-between items-center">
                                                         <mat-icon 

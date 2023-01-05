@@ -82,8 +82,12 @@
                                                         class="icon-size-3 text-black" 
                                                         [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
                                                 </button>
-                                                <input [(ngModel)]="option.quantity" (change)="onChangeComboQuantity()" type="number" readonly 
-                                                    class="focus:outline-none text-center w-full font-normal text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/>
+                                                <!-- <input [(ngModel)]="option.quantity" (change)="onChangeComboQuantity()" type="number" readonly 
+                                                    class="focus:outline-none text-center w-full font-normal text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/> -->
+                                                <span 
+                                                    class="justify-center text-center w-full font-normal text-sm text-black focus:text-black md:text-base cursor-default flex items-center" name="custom-input-number">
+                                                    {{option.quantity}}
+                                                </span>
                                                 <button (click)="onChangeComboQuantity(combo.id, option.productId, 'increment'); $event.stopPropagation()" 
                                                     class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-75">
                                                     <mat-icon 
@@ -194,8 +198,12 @@
                                     class="icon-size-4 text-black" 
                                     [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
                             </button>
-                            <input [(ngModel)]="quantity" (change)="checkQuantity()" type="number" 
-                                class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/>
+                            <!-- <input [(ngModel)]="quantity" (change)="checkQuantity()" type="number" 
+                                class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/> -->
+                                <span 
+                                    class="justify-center text-center w-full font-normal text-sm text-black focus:text-black md:text-base cursor-default flex items-center" name="custom-input-number">
+                                    {{quantity}}
+                                </span>
                             <button (click)="checkQuantity('increment', selectedProduct.id); $event.stopPropagation()" 
                                 class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-75">
                                 <mat-icon 
