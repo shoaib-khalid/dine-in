@@ -33,7 +33,7 @@
         </div>
         <fuse-card
             (click)="redirectToProduct(product); $event.stopPropagation()"
-            class="flex flex-col rounded-lg border border-gray-300 h-[190px] md:h-[220px] cursor-pointer filter-article z-0">
+            class="flex flex-col rounded-lg border border-gray-300 h-[196px] md:h-[220px] cursor-pointer filter-article z-0 duration-75 active:ring-1 ring-primary-600">
             <div class="relative w-full">
                 <ng-container *ngIf="!product.thumbnailUrl" >
                     <div class="leading-tight tracking-tight absolute flex flex-col gap-1 w-full justify-center items-center left-0 right-0 top-0 bottom-0 bg-black bg-opacity-40 rounded-t-lg">
@@ -45,14 +45,14 @@
                     class="object-cover w-full h-30 rounded-t-lg shadow"
                     [src]="product.thumbnailUrl ? product.thumbnailUrl : (product ? product.storeCategory.parentCategory.parentThumbnailUrl : displayStoreLogo(product.storeDetails.storeAssets))">
             </div>
-            <div class="flex flex-col p-2">
-                <div class="flex flex-col leading-tight">
+            <div class="flex flex-col p-2 gap-1">
+                <div class="flex flex-col leading-tight gap-1">
                     <span class="text-base md:text-lg font-semibold line-clamp-1">{{product.name}}</span>
                     <div class="flex flex-row items-center">
                         <mat-icon
-                            class="icon-size-4 text-primary mr-1"
+                            class="icon-size-3 text-primary mr-1"
                             [svgIcon]="'mat_outline:storefront'"></mat-icon>
-                        <span class="text-sm md:text-base line-clamp-1">{{product.storeDetails.name}}</span>
+                        <span class="text-sm md:text-base line-clamp-1 leading-none tracking-tight">{{product.storeDetails.name}}</span>
                     </div>
                     <ng-container *ngIf="product.storeDetails.distanceInMeter/1000 > 0">
                         <div class="flex flex-row items-center">
@@ -67,11 +67,11 @@
                 </div>
                 <div *ngIf="product.productInventories[0]" class="flex flex-row items-end justify-between">
                     <ng-container *ngIf="product.productInventories[0].itemDiscount; else noDiscount">
-                        <span class="line-through text-sm font-semibold">{{product.productInventories[0].itemDiscount.dineInNormalPrice | currency: platform.currency}}</span>
-                        <span class="text-lg font-semibold">{{product.productInventories[0].itemDiscount.dineInDiscountedPrice | currency: platform.currency}}</span>
+                        <span class="line-through text-xs md:text-sm">{{product.productInventories[0].itemDiscount.dineInNormalPrice | currency: platform.currency}}</span>
+                        <span class="text-base font-semibold">{{product.productInventories[0].itemDiscount.dineInDiscountedPrice | currency: platform.currency}}</span>
                     </ng-container>
                     <ng-template #noDiscount>
-                        <span class="text-lg font-semibold">{{product.productInventories[0].dineInPrice | currency: platform.currency}}</span>
+                        <span class="text-base font-semibold">{{product.productInventories[0].dineInPrice | currency: platform.currency}}</span>
                     </ng-template>
                 </div>
             </div>
