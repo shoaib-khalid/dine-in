@@ -2286,7 +2286,8 @@ export class CartListComponent implements OnInit, OnDestroy
                         id: cartItem.id,
                         itemCode: cartItem.itemCode,
                         productId: cartItem.productId,
-                        specialInstruction: result.specialInstruction
+                        specialInstruction: result.specialInstruction,
+                        quantity: cartItem.quantity
                     }
 
                     this._cartService.putCartItem(cartId, cartItemBody, cartItem.id)
