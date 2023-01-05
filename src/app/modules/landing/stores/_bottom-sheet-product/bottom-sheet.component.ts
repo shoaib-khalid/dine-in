@@ -385,7 +385,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                 "actions": {
                 "confirm": {
                     "show": true,
-                    "label": "Ok",
+                    "label": "OK",
                     "color": "warn"
                 },
                 "cancel": {
@@ -411,7 +411,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                 "actions": {
                 "confirm": {
                     "show": true,
-                    "label": "Ok",
+                    "label": "OK",
                     "color": "warn"
                 },
                 "cancel": {
@@ -451,7 +451,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                             "actions": {
                                 "confirm": {
                                 "show": true,
-                                "label": "Ok",
+                                "label": "OK",
                                 "color": "warn"
                                 },
                                 "cancel": {
@@ -494,7 +494,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                             "actions": {
                                 "confirm": {
                                 "show": true,
-                                "label": "Ok",
+                                "label": "OK",
                                 "color": "warn"
                                 },
                                 "cancel": {
@@ -565,7 +565,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                             "actions": {
                                 "confirm": {
                                 "show": true,
-                                "label": "Ok",
+                                "label": "OK",
                                 "color": "warn"
                                 },
                                 "cancel": {
@@ -601,7 +601,7 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
                             "actions": {
                                 "confirm": {
                                 "show": true,
-                                "label": "Ok",
+                                "label": "OK",
                                 "color": "warn"
                                 },
                                 "cancel": {

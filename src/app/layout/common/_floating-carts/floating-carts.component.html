@@ -1,18 +1,18 @@
 <div
     (click)="cartCheckout()"
-    class="mx-2 my-2 flex items-center justify-center shadow-lg rounded-lg z-90 cursor-pointer bg-primary-600"
+    class="mx-2 my-2 flex items-center justify-center shadow-lg rounded-lg z-90 cursor-pointer bg-primary-600 active:bg-primary-400 group duration-75"
     >
     <div class="w-full rounded-md p-3 flex flex-row items-center justify-between">
         <div class="flex flex-row items-center">
-            <mat-icon class="text-white icon-size-5" svgIcon="feather:shopping-cart"></mat-icon>
-            <span class="text-white font-semibold pl-2">{{subTotal | currency: currencySymbol }}</span>
+            <mat-icon class="text-white group-active:text-primary-200 icon-size-5" svgIcon="feather:shopping-cart"></mat-icon>
+            <span class="text-white group-active:text-primary-200 font-semibold pl-2">{{subTotal | currency: currencySymbol }}</span>
             <ng-container *ngIf="subTotal !== 0">
-                <span class="pt-1 text-xs pl-1 text-white">(Qty: {{totalItems}})</span>
+                <span class="pt-1 text-xs pl-1 text-white group-active:text-primary-200">(Qty: {{totalItems}})</span>
             </ng-container>
         </div>
         <div class="flex flex-row items-center cursor-pointer">
-            <span class="text-white font-semibold pl-2">View Carts</span>
-            <mat-icon class="text-white icon-size-5" svgIcon="heroicons_outline:chevron-right"></mat-icon>
+            <span class="text-white group-active:text-primary-200 font-semibold pl-2">View Carts</span>
+            <mat-icon class="text-white group-active:text-primary-200 icon-size-5" svgIcon="heroicons_outline:chevron-right"></mat-icon>
         </div>
     </div>
 </div>

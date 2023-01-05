@@ -57,10 +57,10 @@
                             <div class="flex flex-col w-full items-center cursor-pointer group" 
                                 (click)="chooseCategory(category.parentId, location)">
                                 <img
-                                    class="w-16 sm:w-20 sm:h-20 object-contain duration-100 group-hover:border-1 group-hover:p-0.5 items-start justify-start bg-stone-200 rounded-full shadow"
+                                    class="w-16 sm:w-20 sm:h-20 object-contain duration-75 group-hover:border-1 group-hover:p-0.5 items-start justify-start bg-stone-200 rounded-full shadow"
                                     [src]="category.parentThumbnailUrl ? category.parentThumbnailUrl : platform.logo">
                                 <span [ngClass]="category.parentId === selectedCategoryId  ? 'text-primary font-extrabold' : text-black"
-                                      class="w-full text-center duration-100 group-hover:text-primary text-sm sm:text-md mt-2 font-semibold text-ellipsis overflow-hidden">{{category.parentName}}</span>
+                                      class="w-full text-center duration-75 group-hover:text-primary text-sm sm:text-md mt-2 font-semibold text-ellipsis overflow-hidden">{{category.parentName}}</span>
                             </div>
                         </ng-template>
                     </ng-container>

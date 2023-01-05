@@ -28,7 +28,7 @@
                             <div class="flex w-full justify-center items-center">
                                 <button 
                                     (click)="addRequiredInfo(0)"
-                                    class="my-2 w-full bg-primary-500 hover:bg-primary-600 rounded-md flex flex-row items-center justify-center p-1"
+                                    class="my-2 w-full bg-primary-500 active:bg-primary-600 rounded-md flex flex-row items-center justify-center p-1 duration-75"
                                 >
                                     <mat-icon 
                                         class="icon-size-4 text-white" 
@@ -45,7 +45,7 @@
                         <div class="flex w-full justify-center items-center mt-2">
                             <button 
                             (click)="addRequiredInfo()"
-                                class="my-2 w-full bg-primary-500 hover:bg-primary-600 rounded-md flex flex-row items-center justify-center p-1"
+                                class="my-2 w-full bg-primary-500 active:bg-primary-600 rounded-md flex flex-row items-center justify-center p-1 duration-75"
                             >
                                 <mat-icon 
                                     class="icon-size-5 text-white" 
@@ -288,9 +288,9 @@
                                                         </div> -->
                                                         <div class="flex flex-row h-6 w-16 rounded ring-1 ring-primary relative bg-white mt-0.5">
                                                             <button (click)="checkQuantity(cart.id,cartItem,null,'decrement'); $event.stopPropagation()" 
-                                                                class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                                                class="px-1 text-black duration-75 group active:bg-primary active:text-white cursor-pointer outline-none flex justify-between items-center">
                                                                 <mat-icon 
-                                                                    class="icon-size-4 text-black group-hover:text-white" 
+                                                                    class="icon-size-4 text-black group-active:text-white duration-75" 
                                                                     [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
                                                             </button>
                                                             <input 
@@ -300,9 +300,9 @@
                                                                 class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-md cursor-default flex items-center outline-none leading-none" 
                                                                 name="custom-input-number-small"/>
                                                             <button (click)="checkQuantity(cart.id,cartItem,null,'increment'); $event.stopPropagation()" 
-                                                                class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                                                class="px-1 text-black group duration-75 active:bg-primary active:text-white cursor-pointer outline-none flex justify-between items-center">
                                                                 <mat-icon 
-                                                                    class="icon-size-4 text-black group-hover:text-white" 
+                                                                    class="icon-size-4 text-black group-active:text-white duration-75" 
                                                                     [svgIcon]="'heroicons_solid:plus'"></mat-icon>
                                                             </button>
                                                         </div>
@@ -350,9 +350,9 @@
                                                 </div> -->
                                                 <div class="flex flex-row h-6 w-16 rounded ring-1 ring-primary relative bg-white">
                                                     <button (click)="checkQuantity(cart.id,cartItem,null,'decrement'); $event.stopPropagation()" 
-                                                        class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                                        class="px-1 text-black duration-75 group active:bg-primary active:text-white cursor-pointer outline-none flex justify-between items-center">
                                                         <mat-icon 
-                                                            class="icon-size-4 text-black group-hover:text-white" 
+                                                            class="icon-size-4 text-black group-active:text-white duration-75" 
                                                             [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
                                                     </button>
                                                     <input 
@@ -362,9 +362,9 @@
                                                         class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-md cursor-default flex items-center outline-none leading-none" 
                                                         name="custom-input-number"/>
                                                     <button (click)="checkQuantity(cart.id,cartItem,null,'increment'); $event.stopPropagation()" 
-                                                        class="px-1 text-black group hover:bg-primary hover:text-white cursor-pointer outline-none flex justify-between items-center">
+                                                        class="px-1 text-black duration-75 group active:bg-primary active:text-white cursor-pointer outline-none flex justify-between items-center">
                                                         <mat-icon 
-                                                            class="icon-size-4 text-black group-hover:text-white" 
+                                                            class="icon-size-4 text-black group-active:text-white duration-75" 
                                                             [svgIcon]="'heroicons_solid:plus'"></mat-icon>
                                                     </button>
                                                 </div>
@@ -639,7 +639,7 @@
                                         >
                                         <button class="bg-primary py-2 px-4 rounded text-white"
                                         [disabled]="isLoading" 
-                                        [ngClass]="isLoading ? 'cursor-wait bg-gray-200' : 'bg-primary-500 hover:bg-primary-600'"
+                                        [ngClass]="isLoading ? 'cursor-wait bg-gray-200' : 'bg-primary-500 active:bg-primary-600 duration-75'"
                                         (click)="claimPromoCode(); $event.preventDefault()">
                                             Apply
                                         </button>
@@ -694,7 +694,7 @@
                                             >
                                             <button class="bg-primary py-2 px-4 rounded text-white"
                                             [disabled]="isLoading" 
-                                            [ngClass]="isLoading ? 'cursor-wait bg-gray-200' : 'bg-primary-500 hover:bg-primary-600'"
+                                            [ngClass]="isLoading ? 'cursor-wait bg-gray-200' : 'bg-primary-500 active:bg-primary-600 duration-75'"
                                             (click)="claimPromoCode(); $event.preventDefault()">
                                                 Apply
                                             </button>
@@ -752,7 +752,7 @@
                     <button 
                         (click)="goToCheckout()"
                         [disabled]="isLoading || isGettingDeliveryPrices || placingOrder"
-                        class="py-2 px-4 rounded w-full mt-2 text-white flex items-center justify-center text-center leading-tight"
+                        class="py-2 px-4 rounded w-full mt-2 text-white flex items-center justify-center text-center leading-tight active:bg-primary-600 active:text-black duration-75"
                         [ngClass]="{ 'cursor-wait bg-gray-400' : isLoading, 
                                      'cursor-pointer bg-primary' : !isLoading || !isPristine,
                                      'cursor-not-allowed bg-gray-400' : isPristine}">

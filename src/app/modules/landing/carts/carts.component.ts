@@ -702,7 +702,7 @@ export class CartListComponent implements OnInit, OnDestroy
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((checkoutItems: CheckoutItems[])=>{
             if (checkoutItems) {     
-                                                                            
+
                 this.checkoutItems = checkoutItems;
                 let cartsWithDetailsTotalItemsArr = checkoutItems.map(item => item.selectedItemId.length);
                 let cartsWithDetailsTotalItems = cartsWithDetailsTotalItemsArr.reduce((partialSum, a) => partialSum + a, 0);
@@ -1126,7 +1126,7 @@ export class CartListComponent implements OnInit, OnDestroy
                     this.carts.splice(thisCartIndex, 1);
                     
                 }
-                
+
                 this._cartService.deleteCartItem(result.cartId, result.itemId).subscribe((response)=>{
 
                     // Resolve cart after deletion
@@ -2030,6 +2030,9 @@ export class CartListComponent implements OnInit, OnDestroy
             name        : this.selfPickupInfo ? this.selfPickupInfo.name: ''
         }
 
+        // Getting all cart items ids from this.carts
+        const thisCartItemsIds = this.carts.map(x => x.cartItems.map(y => y.id)).flat();
+
         this.checkoutItems.forEach(checkout => {
             
             let dineInOptions = "";            
@@ -2041,14 +2044,25 @@ export class CartListComponent implements OnInit, OnDestroy
                 console.error("Should not happen")
             }
 
-            // by right shoul send checkout.orderNotes in customerNotes since we remove in order, we remove it as well
+            // by right should send checkout.orderNotes in customerNotes since we remove in order, we remove it as well
             const orderBody = {
                 cartId: checkout.cartId,
-                cartItems: checkout.selectedItemId.map(element => {
-                    return {
-                        id: element,
+
+                // This is required to avoid taking unexist cart item id 
+                cartItems: checkout.selectedItemId.reduce((accumulator, currentValue) => {
+                    if (thisCartItemsIds.includes(currentValue)) {
+                      return [...accumulator, { id: currentValue }];
                     }
-                }),
+                    return accumulator;
+                  }, []),
+                // cartItems2: checkout.selectedItemId.map(element => {
+
+                //     if (thisCartItemsIds.includes(element)) {
+                //         return {
+                //             id: element,
+                //         }
+                //     }
+                // }),
                 customerId         : this.customerId,
                 customerNotes      : dineInOptions,
                 dineInPack         : this.dineInPack,
@@ -2283,4 +2297,37 @@ export class CartListComponent implements OnInit, OnDestroy
             }
         )
     }
+
+    comboSubItemGrouping(cartSubItem: any[]) {
+        // console.log(cartSubItem.map(x => x.productName));
+
+        // const productNames = cartSubItem.map(x => x.productName);
+
+        // for (let index = 0; index < productNames.length; index++) {
+        //     const element = productNames[index];
+            
+        // }
+
+        // const countedNames = productNames.reduce((allNames, name) => {
+        //     const currCount = allNames[name] ?? 0;
+        //     return {
+        //       ...allNames,
+        //       [name]: currCount + 1,
+        //     };
+        //   }, {});
+
+        // const myArrayWithNoDuplicates = productNames.reduce((accumulator, currentValue, index) => {
+        //     if (!accumulator.includes(currentValue)) {
+        //       return [...accumulator, currentValue];
+        //     }
+        //     else {
+        //         return [...accumulator, currentValue + ` ${index}`];
+        //     }
+        //     return accumulator;
+        //   }, []);
+
+        // console.log(myArrayWithNoDuplicates);
+
+    }
+
 }

@@ -61,24 +61,24 @@
                         <div 
                             *ngIf="famousProducts && famousProducts.length > 0"
                             [ngClass]="(!selectedCategory && selectedCustomCategory === 'top10') ? 'border-primary border-b-4 ' : '' "
-                            class="flex flex-col w-28 filter-article justify-center cursor-pointer md:hover:bg-primary-300 " 
+                            class="flex flex-col w-28 filter-article justify-center cursor-pointer md:hover:bg-primary-300 active:bg-primary-300 duration-75" 
                             (click)="chooseCategory(null, 'top10')">
-                            <span class="m-1 text-sm text-center font-semibold line-clamp-2 leading-4">Best Seller</span>
+                            <span class="m-1 text-md text-center font-semibold line-clamp-2 leading-4">Best Seller</span>
                         </div>
                         <ng-container #categoriesElement *ngFor="let category of storeCategories; let i = index">
                             <div 
                                 id="cat-{{i}}"
                                 [ngClass]="selectedCategory && selectedCategory.id === category.id ? 'border-primary border-b-4 ' : '' "
-                                class="flex flex-col w-30 filter-article justify-center cursor-pointer md:hover:bg-primary-300 " 
+                                class="flex flex-col w-30 filter-article justify-center cursor-pointer md:hover:bg-primary-300 active:bg-primary-300 duration-75" 
                                 (click)="chooseCategory(category)">
-                                <span class="my-1 mx-2 text-sm text-center font-semibold line-clamp-2 leading-4">{{category.name}}</span>
+                                <span class="my-1 mx-2 text-md text-center font-semibold line-clamp-2 leading-4">{{category.name}}</span>
                             </div>
                         </ng-container>
                         <div 
                             [ngClass]="(!selectedCategory && selectedCustomCategory === 'all') ? 'border-primary border-b-4 ' : '' "
-                            class="flex flex-col w-28 filter-article justify-center cursor-pointer md:hover:bg-primary-300 " 
+                            class="flex flex-col w-28 filter-article justify-center cursor-pointer md:hover:bg-primary-300 active:bg-primary-300 duration-75" 
                             (click)="chooseCategory(null, 'all')">
-                            <span class="m-1 text-sm text-center font-semibold line-clamp-2 leading-4">All</span>
+                            <span class="m-1 text-md text-center font-semibold line-clamp-2 leading-4">All</span>
                         </div>
                     </div>
                 </div>

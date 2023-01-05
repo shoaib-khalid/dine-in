@@ -1,7 +1,7 @@
 <ng-container *ngIf="selectedProduct">
     <div class="flex flex-col max-h-full overflow-y-auto scrollbar-hide">
         <div class="flex flex-row justify-between items-center">
-            <span class="font-bold text-lg">{{store.name}}</span>
+            <span class="font-bold text-lg tracking-tight">{{store.name}}</span>
             <mat-icon (click)="closeSheet()" class="text-stone-500 icon-size-7 cursor-pointer" svgIcon="heroicons_solid:x-circle"></mat-icon>
         </div>
         <div class="content pt-1">
@@ -21,23 +21,23 @@
                 <div class="flex flex-col">
                     <!-- Details -->
                     <div class="flex flex-col gap-1">
-                        <span class="font-semibold line-clamp-2">{{selectedProduct.name}}</span> 
+                        <span class="font-semibold line-clamp-2 text-lg">{{selectedProduct.name}}</span> 
                         <div class="md:overflow-y-auto h-auto md:max-h-32">
-                            <span class="text-sm font-normal text-gray-400" [innerHTML]="selectedProduct.description"></span>
+                            <span class="text-md font-normal text-gray-400" [innerHTML]="selectedProduct.description"></span>
                         </div>
                     </div>
                     <!-- Price -->
                     <div class="flex mt-2">
                         <ng-container *ngIf="displayedProduct.discountAmount > 0; else noItemDiscount" >
                             <div class="font-semibold flex flex-col shrink">
-                                <div class="text-xs items-center text-primary-100 flex justify-start items-center">
+                                <div class="text-sm items-center text-primary-100 flex justify-start items-center">
                                     <span class="py-0.5 px-1 w-auto flex bg-red-600 rounded">{{displayedProduct.discountAmount}}% Off</span>
                                 </div> 
-                                <span class="mt-[0.15rem] text-xs line-through">{{displayedProduct.normalPrice | currency: store.regionCountry.currencySymbol}}</span> 
+                                <span class="mt-[0.15rem] text-sm line-through">{{displayedProduct.normalPrice | currency: store.regionCountry.currencySymbol}}</span> 
                                 <div class="flex flex-row gap-1">
                                     <span class="-mt-[0.15rem] text-base font-semibold text-primary ">{{displayedProduct.basePrice | currency: store.regionCountry.currencySymbol}}</span> 
                                     <span *ngIf="selectedProduct.hasAddOn && sumAddonPrice !== 0"
-                                        class="-mt-[0.15rem] text-sm font-medium text-secondary">
+                                        class="-mt-[0.15rem] text-md font-medium text-secondary">
                                         ({{sumAddonPrice > 0 ? '+' + (sumAddonPrice | number : '1.2-2') : (sumAddonPrice | number : '1.2-2')}})
                                     </span>
                                 </div>
@@ -47,7 +47,7 @@
                             <div class="flex flex-row gap-1">
                                 <span class="text-base font-semibold text-primary">{{displayedProduct.basePrice | currency: store.regionCountry.currencySymbol}}</span>
                                 <span *ngIf="selectedProduct.hasAddOn && sumAddonPrice !== 0"
-                                    class="text-sm font-medium text-secondary">
+                                    class="text-md font-medium text-secondary">
                                     ({{sumAddonPrice > 0 ? '+' + (sumAddonPrice | number : '1.2-2') : (sumAddonPrice | number : '1.2-2')}})
                                 </span>
                             </div>
@@ -59,25 +59,25 @@
                     <ng-container *ngFor="let combo of combos; let i = index;">
                         <div 
                             [id]="combo.title" 
-                            class="py-1 flex flex-col gap-1">
-                            <label class="font-semibold text-sm" for="{{combo.title}}">
+                            class="py-2 flex flex-col gap-2">
+                            <label class="font-semibold text-md" for="{{combo.title}}">
                                 <span *ngIf="combo.minAllow !== 0">
                                     {{combo.title | uppercase}}: Select Min. {{ combo.minAllow }} of {{ combo.totalAllow * quantity}}
                                 </span> 
                                 <span *ngIf="combo.minAllow === 0">{{combo.title | uppercase}}: (Optional)</span>
                                 <span *ngIf="combo.minAllow === 0" class="ml-0.5">Max {{combo.totalAllow * quantity}}</span>
                             </label>
-                            <ul class="grid grid-cols-1 gap-2.5 ml-2">
+                            <ul class="grid grid-cols-1 gap-4 ml-2">
                                 <li *ngFor="let option of combo.productPackageOptionDetail; let i = index;" class="flex items-center">
-                                    <div class="flex justify-between w-full items-center gap-1">
-                                        <label class="leading-tight text-sm line-clamp-2" [for]="'combo-checkbox-' + combo.id + '-' + option.productId">
+                                    <div class="flex justify-between w-full items-center gap-2">
+                                        <label class="leading-tight text-md line-clamp-2" [for]="'combo-checkbox-' + combo.id + '-' + option.productId">
                                             {{option.product.name}}
                                         </label>
                                         <!-- Quantity -->
                                         <div class="flex w-auto flex-row justify-between items-center gap-2 mr-2">
                                             <div class="flex flex-row h-7 w-22 rounded ring-1 ring-primary relative bg-white">
                                                 <button (click)="onChangeComboQuantity(combo.id, option.productId, 'decrement'); $event.stopPropagation()" 
-                                                    class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-100">
+                                                    class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-75">
                                                     <mat-icon 
                                                         class="icon-size-3 text-black" 
                                                         [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
@@ -85,7 +85,7 @@
                                                 <input [(ngModel)]="option.quantity" (change)="onChangeComboQuantity()" type="number" readonly 
                                                     class="focus:outline-none text-center w-full font-normal text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/>
                                                 <button (click)="onChangeComboQuantity(combo.id, option.productId, 'increment'); $event.stopPropagation()" 
-                                                    class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-100">
+                                                    class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-75">
                                                     <mat-icon 
                                                         class="icon-size-3 text-black" 
                                                         [svgIcon]="'heroicons_solid:plus'"></mat-icon>
@@ -103,15 +103,15 @@
                     <ng-container *ngFor="let addOn of addOns; let i = index;">
                         <div 
                             [id]="addOn.title" 
-                            class="py-1 flex flex-col gap-2">
-                            <label class="font-semibold text-sm" for="{{addOn.title}}">
+                            class="py-2 flex flex-col gap-2">
+                            <label class="font-semibold text-md" for="{{addOn.title}}">
                                 <span *ngIf="addOn.minAllowed !== 0">
                                     {{addOn.title | uppercase}}: (Select {{ addOn.minAllowed }} of {{ addOn.productAddOnItemDetail.length }})
                                 </span> 
                                 <span *ngIf="addOn.minAllowed === 0">{{addOn.title | uppercase}}: (Optional)</span>
                                 <span *ngIf="addOn.maxAllowed !== addOn.minAllowed" class="ml-0.5">Max {{addOn.maxAllowed}}</span>
                             </label>
-                            <ul class="grid grid-cols-1 gap-2.5 ml-2">
+                            <ul class="grid grid-cols-1 gap-4 ml-2">
                                 <li *ngFor="let option of addOn.productAddOnItemDetail; let i = index;" class="flex items-center">
                                     <mat-checkbox 
                                         [disableRipple]="true"
@@ -123,10 +123,10 @@
                                         (change)="onChangeAddOn(addOn, option, $event)"
                                         [checked]="validateCheckbox(option.id, addOn.id)">
                                         <div class="flex justify-between w-full">
-                                            <span class="ml-2 leading-tight text-sm" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
+                                            <span class="ml-2 leading-tight text-md" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
                                                 {{option.name}}
                                             </span>
-                                            <span class="mr-6 leading-tight text-sm text-secondary" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
+                                            <span class="mr-6 leading-tight text-md text-secondary" [for]="'addOn-checkbox-' + addOn.id + '-' + option.id">
                                                 {{ option.dineInPrice < 0 ? '' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol) : '+' + (option.dineInPrice  | currency: store.regionCountry.currencySymbol)}}
                                             </span>
                                         </div>
@@ -142,9 +142,9 @@
                     <ng-container *ngFor="let variant of selectedProduct.productVariants; let i = index;">
                         <div 
                             [id]="variant.name" 
-                            class="py-1 flex flex-col gap-1">
-                            <label class="font-semibold text-sm" for="{{variant.name}}">{{variant.name | titlecase }}: </label>
-                            <ul class="grid grid-cols-2 gap-1">
+                            class="py-2 flex flex-col gap-2">
+                            <label class="font-semibold text-md" for="{{variant.name}}">{{variant.name | titlecase }}: </label>
+                            <ul class="grid grid-cols-2 gap-2">
                                 <li *ngFor="let option of variant.productVariantsAvailable; let i = index;" class="flex items-center">
                                     <input type="radio"
                                         class=""
@@ -154,7 +154,7 @@
                                         [checked]="selectedVariants.indexOf(option.id) > -1"
                                         (change)="onChangeVariant(option.id, variant.name, option.productId)"
                                     >
-                                    <label class="pl-2 leading-tight text-sm" for="{{variant.name + i}}">{{option.value}}</label>
+                                    <label class="pl-2 leading-tight text-md" for="{{variant.name + i}}">{{option.value}}</label>
                                 </li>
                             </ul>
                         </div>
@@ -164,11 +164,11 @@
                 <!-- Special Instruction -->
                 <form [formGroup]="specialInstructionForm">
                     <div class="w-full mt-2">
-                        <span class="font-semibold text-md">Special Instruction{{ selectedProduct.isNoteOptional === false ? ' (required)' : ''}}:</span> 
+                        <span class="font-semibold">Special Instruction{{ selectedProduct.isNoteOptional === false ? ' (required)' : ''}}:</span> 
                         <mat-form-field class="mt-1 fuse-mat-textarea fuse-mat-no-subscript w-full" floatLabel="always">
                             <textarea
                                 style="resize: none;"
-                                class="text-sm"
+                                class="text-md"
                                 [ngClass]="'border border-red-600'"
                                 matInput
                                 [formControlName]="'specialInstructionValue'"
@@ -189,7 +189,7 @@
                     <div class="flex w-1/3 flex-row justify-between items-center gap-2">
                         <div class="flex flex-row h-9 w-24 rounded ring-1 ring-primary relative bg-white">
                             <button (click)="checkQuantity('decrement', selectedProduct.id); $event.stopPropagation()" 
-                                class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-100">
+                                class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-75">
                                 <mat-icon 
                                     class="icon-size-4 text-black" 
                                     [svgIcon]="'heroicons_solid:minus-sm'"></mat-icon>
@@ -197,7 +197,7 @@
                             <input [(ngModel)]="quantity" (change)="checkQuantity()" type="number" 
                                 class="focus:outline-none text-center w-full font-medium text-sm text-black focus:text-black md:text-base cursor-default flex items-center outline-none" name="custom-input-number" value="0"/>
                             <button (click)="checkQuantity('increment', selectedProduct.id); $event.stopPropagation()" 
-                                class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-100">
+                                class="px-2.5 text-black cursor-pointer outline-none flex justify-between items-center active:bg-primary-200 duration-75">
                                 <mat-icon 
                                     class="icon-size-4 text-black" 
                                     [svgIcon]="'heroicons_solid:plus'"></mat-icon>
@@ -212,16 +212,16 @@
                             class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
                             mat-button>
                         <label 
-                            class="flex items-center gap-1 text-white justify-center h-9 px-2 rounded cursor-pointer bg-primary group w-full ring-1 ring-primary active:bg-primary-600 active:text-black duration-100"
+                            class="flex items-center gap-1 text-white justify-center h-9 px-2 rounded cursor-pointer bg-primary group w-full ring-1 ring-primary active:bg-primary-600 active:text-black duration-75"
                             for="add-to-cart-button"
                             (click)="addToCart(); $event.stopPropagation()"
                             matRipple>
                             <mat-icon
-                                class="pr-1 text-white transform scale-75 group-active:text-black duration-100"
+                                class="pr-1 text-white transform scale-75 group-active:text-black duration-75"
                                 [svgIcon]="'heroicons_solid:shopping-cart'"></mat-icon>
-                            <span class="text-sm font-medium">Add to Cart</span>
-                            <span class="text-sm">&#8226;</span>
-                            <span class="text-sm">{{displayedProduct.price * quantity | currency: store.regionCountry.currencySymbol}}</span>
+                            <span class="text-md font-medium">Add to Cart</span>
+                            <span class="text-md">&#8226;</span>
+                            <span class="text-md">{{displayedProduct.price * quantity | currency: store.regionCountry.currencySymbol}}</span>
                         </label>
                     </div>
                 </div>
