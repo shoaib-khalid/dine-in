@@ -744,17 +744,18 @@
                     </div>
                     <mat-radio-group
                         class="flex flex-col"
+                        [(ngModel)]="paymentMethod"
                         [color]="'primary'">
                         <mat-radio-button
-                            class="m-1"
-                            [checked]="true">
+                            class="m-1 tracking-tight"
+                            [value]="'CASH'">
                             Cash
                         </mat-radio-button>
-                        <!-- <mat-radio-button
-                            class="my-1"
-                            [value]="false">
+                        <mat-radio-button
+                            class="m-1 tracking-tight"
+                            [value]="'ONLINE'">
                             Online Banking
-                        </mat-radio-button> -->
+                        </mat-radio-button>
                     </mat-radio-group>
                     <!-- Checkout -->
                     <button 
