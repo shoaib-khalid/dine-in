@@ -221,7 +221,7 @@ export class LandingStoreComponent implements OnInit
                                             name        : this.searchValue, 
                                             page        : 0, 
                                             size        : 12, 
-                                            sortByCol   : "name", 
+                                            sortByCol   : "sequenceNumber", 
                                             sortingOrder: "ASC", 
                                             status      : 'ACTIVE,OUTOFSTOCK', 
                                             categoryId  :this.storeCategory ? this.storeCategory.id : ''
@@ -240,7 +240,7 @@ export class LandingStoreComponent implements OnInit
                                         this._productsService.getProducts(this.store.id, {
                                             page        : this.oldPaginationIndex, 
                                             size        : 12,
-                                            sortByCol   : "name", 
+                                            sortByCol   : "sequenceNumber", 
                                             sortingOrder: "ASC",
                                             status      : 'ACTIVE,OUTOFSTOCK',
                                             categoryId  : this.storeCategory ? this.storeCategory.id : ''
@@ -301,7 +301,7 @@ export class LandingStoreComponent implements OnInit
                     name        : this.searchName, 
                     page        : 0, 
                     size        : 12, 
-                    sortByCol   : "name", 
+                    sortByCol   : "sequenceNumber", 
                     sortingOrder: "ASC", 
                     status      : "ACTIVE,OUTOFSTOCK", 
                     categoryId  : this.storeCategory ? this.storeCategory.id : ''
@@ -347,7 +347,7 @@ export class LandingStoreComponent implements OnInit
                         name        : this.searchName, 
                         page        : 0, 
                         size        : 12, 
-                        sortByCol   : "name", 
+                        sortByCol   : "sequenceNumber", 
                         sortingOrder: "ASC", 
                         status      : "ACTIVE,OUTOFSTOCK", 
                         categoryId  : this.storeCategory ? this.storeCategory.id : ''
@@ -430,7 +430,7 @@ export class LandingStoreComponent implements OnInit
                 name        : this.searchName, 
                 page        : (this.pageOfItems['currentPage'] - 1) < 0 ? 0 : (this.pageOfItems['currentPage'] - 1), 
                 size        : this.pageOfItems['pageSize'], 
-                sortByCol   : "name", 
+                sortByCol   : "sequenceNumber", 
                 sortingOrder: "ASC", 
                 status      : "ACTIVE,OUTOFSTOCK", 
                 categoryId  : this.storeCategory ? this.storeCategory.id : ''

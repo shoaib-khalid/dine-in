@@ -199,10 +199,10 @@ export class LandingShopComponent implements OnInit
     famousProducts: Product[] = [];
     pagination: ProductPagination;
 
-    sortInputControl: FormControl = new FormControl('recent');
+    sortInputControl: FormControl = new FormControl('');
     pageOfItems: Array<any>;
-    sortName: string = "created";
-    sortOrder: 'ASC' | 'DESC' | '' = 'DESC';
+    sortName: string = "sequenceNumber";
+    sortOrder: 'ASC' | 'DESC' | '' = 'ASC';
     searchName: string;
     oldPaginationIndex: number = 0;
 
@@ -309,10 +309,13 @@ export class LandingShopComponent implements OnInit
                 } else if (query === "z-a") {
                     this.sortName = "name";
                     this.sortOrder = "DESC";
+                } else if (query === "default") {
+                    this.sortName = "sequenceNumber";
+                    this.sortOrder = "ASC";
                 } else {
                     // default to recent (same as recent)
-                    this.sortName = "created";
-                    this.sortOrder = "DESC";
+                    this.sortName = "sequenceNumber";
+                    this.sortOrder = "ASC";
                 }
 
                 this._productsService.sortProduct = { sortByCol: this.sortName, sortingOrder: this.sortOrder};

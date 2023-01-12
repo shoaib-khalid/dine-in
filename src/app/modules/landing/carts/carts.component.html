@@ -6,7 +6,7 @@
         <ng-container *ngIf="carts && (carts.length > 0); else noCarts">
             <!-- Store pickup info (MOBILE)  -->
             <ng-container *ngIf="false">
-                <div class="block md:hidden w-full flex flex-col justify-center items-start border rounded-lg p-2 mb-2">
+                <div class="md:hidden w-full flex flex-col justify-center items-start border rounded-lg p-2 mb-2">
                     <!-- Header -->
                     <div class="flex flex-row border-b justify-start items-center pb-2 w-full">
                         <mat-icon 
@@ -267,10 +267,10 @@
                                                         <!-- <span class="leading-tight text-xs text-secondary flex flex-wrap">{{cartItem.specialInstruction}}</span> -->
                                                     </div>
                                                     <ng-template #noSpecialInstruction>
-                                                        <span (click)="editCartItem(cart.id, cartItem)" class="leading-tight text-xs md:text-sm text-secondary flex flex-wrap underline text-primary cursor-pointer">Add instruction (optional)</span>
+                                                        <span (click)="editCartItem(cart.id, cartItem)" class="leading-tight text-xs md:text-sm flex flex-wrap underline text-primary cursor-pointer">Add instruction (optional)</span>
                                                     </ng-template>
                                                     <!-- Quantity (mobile)-->
-                                                    <div class="block md:hidden flex flex-col justify-center items-center mt-0.5">
+                                                    <div class="md:hidden flex flex-col justify-center items-center mt-0.5">
                                                         <!-- <div class="flex flex-row h-6 w-16 justify-center items-center rounded-md relative border border-primary">
                                                             <button (click)="checkQuantity(cart.id,cartItem,null,'decrement')" class="text-black hover:bg-primary h-full w-20 rounded-l-md cursor-pointer outline-none">
                                                                 <span class="flex justify-center text-sm">−</span>

@@ -94,7 +94,7 @@
                         <mat-select
                             *ngIf="!(!selectedCategory && selectedCustomCategory === 'top10')"
                             class="order-1 md:order-2 border border-gray-300 w-44 p-2 rounded-lg text-sm"
-                            placeholder="Sort by name"
+                            placeholder="Sort"
                             [formControl]="sortInputControl"
                             #sortSelector="matSelect"
                             >
@@ -109,6 +109,7 @@
                                 <mat-option [value]="'expensive'">Price : Most Expensive</mat-option>
                                 <mat-option [value]="'a-z'">Name : Ascending</mat-option>
                                 <mat-option [value]="'z-a'">Name : Descending</mat-option>
+                                <mat-option [value]="'default'">Default</mat-option>
                             </ng-container>
                         </mat-select>
             

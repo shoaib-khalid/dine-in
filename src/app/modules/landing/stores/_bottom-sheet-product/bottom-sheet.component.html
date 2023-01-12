@@ -30,7 +30,7 @@
                     <div class="flex mt-2">
                         <ng-container *ngIf="displayedProduct.discountAmount > 0; else noItemDiscount" >
                             <div class="font-semibold flex flex-col shrink">
-                                <div class="text-sm items-center text-primary-100 flex justify-start items-center">
+                                <div class="text-sm text-primary-100 flex justify-start items-center">
                                     <span class="py-0.5 px-1 w-auto flex bg-red-600 rounded">{{displayedProduct.discountAmount}}% Off</span>
                                 </div> 
                                 <span class="mt-[0.15rem] text-sm line-through">{{displayedProduct.normalPrice | currency: store.regionCountry.currencySymbol}}</span> 
