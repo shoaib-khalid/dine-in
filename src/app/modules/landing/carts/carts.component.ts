@@ -2141,12 +2141,12 @@ export class CartListComponent implements OnInit, OnDestroy
 
                 // return
 
-                if (this.paymentMethod === 'ONLINE') {
-                    this._checkoutService.postMakePayment(paymentBody)
-                        .subscribe((response) => {
-    
-                            const payment = response;
-                                
+                this._checkoutService.postMakePayment(paymentBody)
+                    .subscribe((response) => {
+
+                        const payment = response;
+
+                        if (this.paymentMethod === 'ONLINE') {
                             if (payment.isSuccess === true) {
                                 if (payment.providerId == "1") {
                                     window.location.href = payment.paymentLink;
@@ -2207,56 +2207,56 @@ export class CartListComponent implements OnInit, OnDestroy
                                     console.error("Provider id not configured");
                                 }
                             }
-    
-                            // Save orders to current session
-                            if (this._checkoutService.sessionOrderIds$ === "" || !this._checkoutService.sessionOrderIds$ || this._checkoutService.sessionOrderIds$ === "[]") {
-                                // if the order array is empty, the set the array from first place order response
-                                this._checkoutService.sessionOrderIds = JSON.stringify([order.id]);
-                                
-                            } else {
-                                let existingSessionOrderIds = JSON.parse(this._checkoutService.sessionOrderIds$);
-                                // push next order response in the existing order array
-                                existingSessionOrderIds.unshift(order.id);
-                                // then, set the new order array as the new response added
-                                this._checkoutService.sessionOrderIds = JSON.stringify(existingSessionOrderIds)
-                            }
-    
-                            this._router.navigate(['/order-history']);
-    
-                            this._cartService.cartIds = '';
-                            this._cartService.cartsHeaderWithDetails = [];
-                            this._checkoutService.cartsWithDetails = null;
-                            this._cartService.cartsWithDetails = null;
-    
-                            // Set Loading to false
-                            this.isLoading = false;
-                            this.placingOrder = false;
-                        }, (error) => {
+                        }       
+                        
+                        else this._router.navigate(['/order-history']);
+
+                        // Save orders to current session
+                        if (this._checkoutService.sessionOrderIds$ === "" || !this._checkoutService.sessionOrderIds$ || this._checkoutService.sessionOrderIds$ === "[]") {
+                            // if the order array is empty, the set the array from first place order response
+                            this._checkoutService.sessionOrderIds = JSON.stringify([order.id]);
                             
-                            const confirmation = this._fuseConfirmationService.open({
-                                title  : 'Error ' + error.error.status,
-                                message: error.error.message,
-                                icon: {
-                                    show: true,
-                                    name: "heroicons_outline:exclamation",
-                                    color: "warn"
+                        } else {
+                            let existingSessionOrderIds = JSON.parse(this._checkoutService.sessionOrderIds$);
+                            // push next order response in the existing order array
+                            existingSessionOrderIds.unshift(order.id);
+                            // then, set the new order array as the new response added
+                            this._checkoutService.sessionOrderIds = JSON.stringify(existingSessionOrderIds)
+                        }
+
+                        this._cartService.cartIds = '';
+                        this._cartService.cartsHeaderWithDetails = [];
+                        this._checkoutService.cartsWithDetails = null;
+                        this._cartService.cartsWithDetails = null;
+
+                        // Set Loading to false
+                        this.isLoading = false;
+                        this.placingOrder = false;
+                    }, (error) => {
+                        
+                        const confirmation = this._fuseConfirmationService.open({
+                            title  : 'Error ' + error.error.status,
+                            message: error.error.message,
+                            icon: {
+                                show: true,
+                                name: "heroicons_outline:exclamation",
+                                color: "warn"
+                            },
+                            actions: {
+                                confirm: {
+                                    label: 'Okay',
+                                    color: "warn",
                                 },
-                                actions: {
-                                    confirm: {
-                                        label: 'Okay',
-                                        color: "warn",
-                                    },
-                                    cancel: {
-                                        show: false,
-                                    }
-                                },
-                                dismissible: true
-                            });
-    
-                            // Set Loading to false
-                            this.placingOrder = false;
+                                cancel: {
+                                    show: false,
+                                }
+                            },
+                            dismissible: true
                         });
-                }
+
+                        // Set Loading to false
+                        this.placingOrder = false;
+                    });
             }, (error) => {
 
                 const confirmation = this._fuseConfirmationService.open({
