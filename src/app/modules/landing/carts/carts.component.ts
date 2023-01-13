@@ -2063,7 +2063,7 @@ export class CartListComponent implements OnInit, OnDestroy
             // by right should send checkout.orderNotes in customerNotes since we remove in order, we remove it as well
             const orderBody = {
                 cartId: checkout.cartId,
-
+                paymentType: this.paymentMethod === 'ONLINE' ? 'ONLINEPAYMENT' : 'COD', // COD/ONLINEPAYMENT
                 // This is required to avoid taking unexist cart item id 
                 cartItems: checkout.selectedItemId.reduce((accumulator, currentValue) => {
                     if (thisCartItemsIds.includes(currentValue)) {
@@ -2110,21 +2110,6 @@ export class CartListComponent implements OnInit, OnDestroy
 
                 const order = response;   
 
-                if (this._cartService.orderIds$ === "" || !this._cartService.orderIds$ || this._cartService.orderIds$ === "[]") {
-                    // if the order array is empty, the set the array from first place order response
-                    this._cartService.orderIds = JSON.stringify([order]);
-                    
-                } else {
-                    
-                    let existingOrderIds = JSON.parse(this._cartService.orderIds$);
-                    // push next order response in the existing order array
-                    existingOrderIds.unshift(order);
-                    // limit to only 15 elements
-                    const resizedExistingOrderIds = existingOrderIds.slice(0, 15)
-                    // then, set the new order array as the new response added
-                    this._cartService.orderIds = JSON.stringify(resizedExistingOrderIds)
-                }
-                
                 let dateTime = new Date();
                 let transactionId = this._datePipe.transform(dateTime, "yyyyMMddhhmmss");
                 let dateTimeNow = this._datePipe.transform(dateTime, "yyyy-MM-dd hh:mm:ss"); //2022-05-18 09:51:36
@@ -2146,6 +2131,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
                         const payment = response;
 
+                        // If ONLINE PAYMENT
                         if (this.paymentMethod === 'ONLINE') {
                             if (payment.isSuccess === true) {
                                 if (payment.providerId == "1") {
@@ -2208,26 +2194,46 @@ export class CartListComponent implements OnInit, OnDestroy
                                 }
                             }
                         }       
-                        
-                        else this._router.navigate(['/order-history']);
+                        // If CASH
+                        else {
 
-                        // Save orders to current session
-                        if (this._checkoutService.sessionOrderIds$ === "" || !this._checkoutService.sessionOrderIds$ || this._checkoutService.sessionOrderIds$ === "[]") {
-                            // if the order array is empty, the set the array from first place order response
-                            this._checkoutService.sessionOrderIds = JSON.stringify([order.id]);
+                            // Save to local storage
+                            if (this._cartService.orderIds$ === "" || !this._cartService.orderIds$ || this._cartService.orderIds$ === "[]") {
+                                // if the order array is empty, the set the array from first place order response
+                                this._cartService.orderIds = JSON.stringify([order]);
+                                
+                            } else {
+                                
+                                let existingOrderIds = JSON.parse(this._cartService.orderIds$);
+                                // push next order response in the existing order array
+                                existingOrderIds.unshift(order);
+                                // limit to only 15 elements
+                                const resizedExistingOrderIds = existingOrderIds.slice(0, 15)
+                                // then, set the new order array as the new response added
+                                this._cartService.orderIds = JSON.stringify(resizedExistingOrderIds)
+                            }
+
+                            // Save orders to current session storage
+                            if (this._checkoutService.sessionOrderIds$ === "" || !this._checkoutService.sessionOrderIds$ || this._checkoutService.sessionOrderIds$ === "[]") {
+                                // if the order array is empty, the set the array from first place order response
+                                this._checkoutService.sessionOrderIds = JSON.stringify([order.id]);
+                                
+                            } else {
+                                let existingSessionOrderIds = JSON.parse(this._checkoutService.sessionOrderIds$);
+                                // push next order response in the existing order array
+                                existingSessionOrderIds.unshift(order.id);
+                                // then, set the new order array as the new response added
+                                this._checkoutService.sessionOrderIds = JSON.stringify(existingSessionOrderIds)
+                            }
+    
+                            this._cartService.cartIds = '';
+                            this._cartService.cartsHeaderWithDetails = [];
+                            this._checkoutService.cartsWithDetails = null;
+                            this._cartService.cartsWithDetails = null;
+
+                            this._router.navigate(['/order-history']);
                             
-                        } else {
-                            let existingSessionOrderIds = JSON.parse(this._checkoutService.sessionOrderIds$);
-                            // push next order response in the existing order array
-                            existingSessionOrderIds.unshift(order.id);
-                            // then, set the new order array as the new response added
-                            this._checkoutService.sessionOrderIds = JSON.stringify(existingSessionOrderIds)
                         }
-
-                        this._cartService.cartIds = '';
-                        this._cartService.cartsHeaderWithDetails = [];
-                        this._checkoutService.cartsWithDetails = null;
-                        this._cartService.cartsWithDetails = null;
 
                         // Set Loading to false
                         this.isLoading = false;

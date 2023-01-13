@@ -16,7 +16,7 @@ import { Store, StoreAssets, StoreCategory } from 'app/core/store/store.types';
 import { BottomPopUpService } from 'app/layout/common/_bottom-popup/bottom-popup.service';
 import { SearchService } from 'app/layout/common/_search/search.service';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from 'ngx-gallery-9';
-import { debounceTime, map, Observable, Subject, switchMap, takeUntil, take, distinctUntilChanged, startWith } from 'rxjs';
+import { debounceTime, map, Observable, Subject, switchMap, takeUntil, take, distinctUntilChanged, startWith, combineLatest } from 'rxjs';
 import { ShopService } from './shop.service';
 import { AppConfig } from 'app/config/service.config';
 import { CupertinoPane } from 'cupertino-pane';
@@ -27,7 +27,7 @@ import { JwtService } from 'app/core/jwt/jwt.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { _BottomSheetComponent } from '../_bottom-sheet-product/bottom-sheet.component';
 import { LocationService } from 'app/core/location/location.service';
-import { StoresDetails } from 'app/core/location/location.types';
+import { StoresDetails, Tag } from 'app/core/location/location.types';
 import { DiningService } from 'app/core/_dining/dining.service';
 
 @Component({
@@ -224,6 +224,7 @@ export class LandingShopComponent implements OnInit
     selectedProduct: Product = null;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    tagType: string = '';
 
     /**
      * Constructor
@@ -402,31 +403,48 @@ export class LandingShopComponent implements OnInit
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Famous Product
-        this._locationService.famousProducts$
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((famousProducts)=>{
+        combineLatest([
+            this._locationService.famousProducts$,
+            this._locationService.tags$
+        ]).pipe(takeUntil(this._unsubscribeAll))
+        .subscribe(([famousProducts, tags] : [Product[], Tag[]])=>{
+            if (famousProducts && tags) {
+                if (tags.length) {
+                    let typeIndex = tags[0].tagConfig.findIndex(item => item.property === "type");
 
+                    if (typeIndex > -1) {
+                        this.tagType = tags[0].tagConfig[typeIndex].content;
+                    }
+                }
+                if (famousProducts.length > 0) {
+                    const top10products = famousProducts.slice(0, 10);
+    
+                    this.famousProducts = top10products;
+                    
+                    // set loading to false
+                    this.isLoading = false;
+    
+                }
+                // If no famous products, i.e. new restaurant; get display featured products 
+                else if (tags[0].productFeatureList.length > 0 && this.tagType === 'restaurant') {
+                    const top5featuredProducts = tags[0].productFeatureList.slice(0, 5);
 
-            if (famousProducts && famousProducts.length > 0) {
-                const top10products = famousProducts.slice(0,10);
-
-                this.famousProducts = top10products;
-                
-                // set loading to false
-                this.isLoading = false;
-
+                    this.famousProducts = top5featuredProducts.reduce((accumulator, currentValue) => {
+                        if (currentValue.productDetails.status === 'ACTIVE'|| currentValue.productDetails.status === 'OUTOFSTOCK') {
+                          return [...accumulator, currentValue.productDetails];
+                        }
+                        return accumulator;
+                      }, []);
+                }
+                // If no famous products, set selectedCustomCategory 'first' to load first category products
+                else {
+                    // this.selectedCustomCategory = 'all';
+                    this.selectedCustomCategory = 'first';
+                }
             }
-            // If no famous products, set selectedCustomCategory 'first' to load first category products
-            else {
-                // this.selectedCustomCategory = 'all';
-                this.selectedCustomCategory = 'first';
-            }
-
             // Mark for check
             this._changeDetectorRef.markForCheck();
-        });
-    
+        })    
 
         // Get searches from url parameter 
         this._activatedRoute.queryParams

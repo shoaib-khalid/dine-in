@@ -8,6 +8,7 @@ import { CategoryPagination, ChildCategory, FamousItem, FamousItemPagination, La
 import { ProductPagination, StorePagination } from '../store/store.types';
 import { DiningService } from '../_dining/dining.service';
 import { UserService } from '../user/user.service';
+import { Product } from '../product/product.types';
 
 @Injectable({
     providedIn: 'root'
@@ -140,7 +141,7 @@ export class LocationService
     get famousItemPagination$(): Observable<FamousItemPagination> { return this._famousItemPagination.asObservable(); }
 
     /** Getter for famous item **/
-    get famousProducts$(): Observable<any[]> { return this._famousProducts.asObservable(); }
+    get famousProducts$(): Observable<Product[]> { return this._famousProducts.asObservable(); }
 
     // ----------------------
     // Featured Product
@@ -641,7 +642,7 @@ export class LocationService
             );
     }
 
-    getFamousProduct(tagKeyword: string): Observable <any>
+    getFamousProduct(tagKeyword: string): Observable <Product[]>
     {
         let locationService = this._apiServer.settings.apiServer.locationService;
         let accessToken = this._authService.publicToken;

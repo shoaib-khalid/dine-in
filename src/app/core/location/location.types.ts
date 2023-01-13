@@ -1,4 +1,4 @@
-import { ProductInventory } from "../product/product.types";
+import { Product, ProductInventory } from "../product/product.types";
 
 export interface ApiResponseModel<T>
 {
@@ -196,6 +196,28 @@ export interface Tag
     id          : string;
     keyword     : string;
     tagConfig   : TagConfig[];
+    productFeatureList? : ProductFeature[];
+    tagStoreDetails? : TagStoreDetail[];
+}
+
+export interface ProductFeature
+{
+    productDetails  : Product,
+    id              : number;
+    sequence        : number;
+    tagId           : number;
+    productId       : string;
+}
+
+export interface TagStoreDetail
+{
+    isFoodCourtOwner: boolean;
+    storeId         : string;
+    tagId           : number;
+    tagKeyword      : {
+        id      : number;
+        keyword : string;
+    }
 }
 
 export interface TagConfig
