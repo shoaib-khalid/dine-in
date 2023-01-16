@@ -239,8 +239,11 @@
                                                         <!-- Display Combo -->
                                                         <ng-container *ngIf="cartItem.cartSubItem.length > 0">
                                                             <div class="flex flex-wrap items-center gap-x-1">
-                                                                <ng-container *ngFor="let combo of cartItem.cartSubItem; let isLast=last">
+                                                                <!-- <ng-container *ngFor="let combo of cartItem.cartSubItem; let isLast=last">
                                                                     <span class="truncate tracking-tight max-w-32 leading-tight text-xs lg:text-sm text-secondary">{{combo.productName}}{{isLast ? '' : ', '}}</span>
+                                                                </ng-container> -->
+                                                                <ng-container *ngFor="let combo of comboSubItemGrouping(cartItem.cartSubItem); let isLast=last">
+                                                                    <span class="tracking-tight leading-tight text-xs lg:text-sm text-secondary">{{combo}}{{isLast ? '' : ', '}}</span>
                                                                 </ng-container>
                                                             </div>
                                                         </ng-container>
@@ -391,9 +394,15 @@
                                             <span class="hidden sm:flex justify-center items-center font-semibold text-center text-sm md:text-md min-w-20 max-w-auto truncate">{{ cartItem.cartItemAddOn.length > 0 ? (cartItem.totalPrice | currency: cart.store.regionCountry.currencySymbol) : 
                                                 (cartItem.price | currency: cart.store.regionCountry.currencySymbol)}}</span>
                                             <!-- Edit / Delete cart for desktop -->
-                                            <div class="hidden sm:flex flex-row justify-end">
+                                            <div class="hidden sm:flex flex-row justify-end gap-2">
+                                                <span class="flex justify-center items-center text-center cursor-pointer">
+                                                    <mat-icon 
+                                                        (click)="openDrawerToEdit(cart, cartItem)"
+                                                        class="icon-size-4" 
+                                                        [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
+                                                </span>
                                                 <!-- Remove Item -->
-                                                <span class="flex justify-center items-center text-center px-1 cursor-pointer">
+                                                <span class="flex justify-center items-center text-center cursor-pointer">
                                                     <mat-icon 
                                                         [matTooltip]="'Delete item'"
                                                         (click)="deleteCartItem(cart.id, cartItem)"
@@ -404,9 +413,16 @@
                                             <!-- Total Price , Unit Price , Remove button for sm-->
                                             <div class="flex flex-col sm:hidden items-end justify-between">
                                                 <!-- Edit / Delete cart for mobile -->
-                                                <div class="flex flex-row justify-end w-full">
+                                                <div class="flex flex-row justify-end w-full gap-2">
+                                                    <span class="flex justify-center items-center text-center cursor-pointer">
+                                                        <mat-icon 
+                                                            (click)="openDrawerToEdit(cart, cartItem)"
+                                                            class="icon-size-4" 
+                                                            [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
+                                                    </span>
+
                                                     <!-- Remove Item -->
-                                                    <span class="flex justify-center items-center text-center mx-1 cursor-pointer">
+                                                    <span class="flex justify-center items-center text-center cursor-pointer">
                                                         <mat-icon
                                                             [matTooltip]="'Delete item'"
                                                             (click)="deleteCartItem(cart.id, cartItem)" 

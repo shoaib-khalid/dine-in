@@ -595,4 +595,23 @@ export class OrdersHistoryComponent implements OnInit
         }
     }
 
+    comboSubItemGrouping(cartSubItem: any[]) {
+
+        const groupedCombo = cartSubItem.reduce((acc, item) => {
+            const currCount = acc['productName'] ?? 0;
+            (acc[item['productName']] = acc[item['productName']] || [])
+                .push(currCount + 1);
+            return acc;
+        }, {});
+
+        let combosArray = [];
+        for (const property in groupedCombo) {
+            const first = property.length > 25 ? `${property.slice(0, 25)}...` : property;
+            const last = groupedCombo[property].length > 1 ? ` x${groupedCombo[property].length}` : '';
+            combosArray.push(first + last)
+        }
+
+        return combosArray;
+    }
+
 }

@@ -24,6 +24,8 @@ import { CartAddressComponent } from './modal-address/cart-addresses.component';
 import { CartAddressModule } from './modal-address/cart-addresses.module';
 import { FloatingStoreListModule } from 'app/layout/common/_floating-store-list/floating-store-list.module';
 import { EditCartItemModalComponent } from './modal-edit-cart-item/modal-edit-cart-item.component';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { _BottomSheetModule } from '../stores/_bottom-sheet-product/bottom-sheet.module';
 
 @NgModule({
     declarations: [
@@ -50,7 +52,9 @@ import { EditCartItemModalComponent } from './modal-edit-cart-item/modal-edit-ca
         FuseCardModule,
         MatRadioModule,
         CartAddressModule,
-        FloatingStoreListModule
+        FloatingStoreListModule,
+        MatBottomSheetModule,
+        _BottomSheetModule
     ],
     providers: [
         CurrencyPipe,

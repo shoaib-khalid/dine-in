@@ -63,7 +63,7 @@ export interface CartItem
     discountLabel?: string;
     discountCalculationType?: string;
     discountCalculationValue?: null,
-    cartSubItem?: [];
+    cartSubItem?: CartSubItem[];
     productInventory?: ProductInventory;
     productAsset?: {
         id: string;
@@ -76,6 +76,23 @@ export interface CartItem
     SKU?: string;
     cartItemAddOn?: [];
     totalPrice? : number;
+}
+
+export interface CartSubItem 
+{
+    SKU	        : string;
+    cartItemId  : string;
+    id	        : string;
+    itemCode	: string;
+    price	    : number;
+    productId	: string;
+    productInventory	: ProductInventory
+    productName	        : string;
+    productPrice	    : number;
+    quantity	        : number;
+    specialInstruction	: string;
+    weight	            : number;
+    productPackageOptionId: string;
 }
 
 export interface ProductInventory

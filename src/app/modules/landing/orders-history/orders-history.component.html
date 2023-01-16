@@ -319,7 +319,7 @@
                                                                     </h3>
                                                                     <div class="">
                                                                         <!-- Display variants -->
-                                                                        <h3 class="font-normal text-xs sm:text-base text-gray-400">{{orderItemDetail.productVariant}}</h3>
+                                                                        <h3 class="tracking-tight leading-tight text-xs lg:text-sm text-secondary">{{orderItemDetail.productVariant}}</h3>
                                                                         <!-- <ng-container *ngIf="orderItem.productInventory.productInventoryItems.length > 0">
                                                                             <div class="flex flex-wrap items-center gap-1">
                                                                                 <ng-container *ngFor="let variant of cartItem.productInventory.productInventoryItems; let isLast=last">
@@ -330,8 +330,11 @@
                                                                         <!-- Display Combo -->
                                                                         <ng-container *ngIf="orderItemDetail.orderSubItem.length > 0">
                                                                             <div class="flex flex-wrap items-center gap-x-1">
-                                                                                <ng-container *ngFor="let combo of orderItemDetail.orderSubItem; let isLast=last">
+                                                                                <!-- <ng-container *ngFor="let combo of orderItemDetail.orderSubItem; let isLast=last">
                                                                                     <span class="truncate tracking-tight max-w-32 leading-tight text-xs lg:text-sm text-secondary">{{combo.productName}}{{isLast ? '' : ', '}}</span>
+                                                                                </ng-container> -->
+                                                                                <ng-container *ngFor="let combo of comboSubItemGrouping(orderItemDetail.orderSubItem); let isLast=last">
+                                                                                    <span class="tracking-tight leading-tight text-xs lg:text-sm text-secondary">{{combo}}{{isLast ? '' : ', '}}</span>
                                                                                 </ng-container>
                                                                             </div>
                                                                         </ng-container>

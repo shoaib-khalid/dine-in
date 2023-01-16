@@ -11,8 +11,8 @@ import { JwtService } from 'app/core/jwt/jwt.service';
 import { Platform } from 'app/core/platform/platform.types';
 import { Store, StoreSnooze, StoreTiming } from 'app/core/store/store.types';
 import { fuseAnimations } from '@fuse/animations';
-import { distinctUntilChanged, filter, Subject, takeUntil, combineLatest, merge, Observable } from 'rxjs';
-import { elementAt, map, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, Subject, takeUntil, combineLatest, merge, Observable, of } from 'rxjs';
+import { elementAt, map, mergeMap, switchMap } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { CartDiscount, CheckoutItems, DeliveryCharges, DeliveryProvider, DeliveryProviders } from 'app/core/checkout/checkout.types';
 import { PlatformService } from 'app/core/platform/platform.service';
@@ -39,6 +39,9 @@ import { EditCartItemModalComponent } from './modal-edit-cart-item/modal-edit-ca
 import { AppConfig } from 'app/config/service.config';
 import { AnalyticService } from 'app/core/analytic/analytic.service';
 import { CustomerActivity } from 'app/core/analytic/analytic.types';
+import { ProductsService } from 'app/core/product/product.service';
+import { Product } from 'app/core/product/product.types';
+import { _BottomSheetComponent } from '../stores/_bottom-sheet-product/bottom-sheet.component';
 
 @Component({
     selector     : 'carts',
@@ -139,6 +142,10 @@ import { CustomerActivity } from 'app/core/analytic/analytic.types';
           
             .custom-number-input button:focus {
               outline: none !important;
+            }
+
+            .mat-radio-ripple {
+                display: none;
             }
         `
     ],
@@ -340,7 +347,10 @@ export class CartListComponent implements OnInit, OnDestroy
         private _orderService: OrderService,
         private _apiServer: AppConfig,
         private _platformLocation: PlatformLocation,
-        private _analyticService: AnalyticService
+        private _analyticService: AnalyticService,
+        private _bottomSheet: MatBottomSheet,
+        private _productsService: ProductsService,
+
     )
     {
     }
@@ -2323,35 +2333,80 @@ export class CartListComponent implements OnInit, OnDestroy
         )
     }
 
+    openDrawerToEdit(cart: CartWithDetails, cartItem: CartItem){
+        let productType: 'ADDON' | 'COMBO' | 'VARIANT' | 'NORMAL' = 'NORMAL';
+
+        this._productsService.getProductsById(cart.storeId, cartItem.productId)
+            .pipe(
+                mergeMap((product: Product) => {
+                    // If combo
+                    if (product.isPackage) {
+                        productType = 'COMBO';
+                        return this._productsService.getProductPackageOptions(cart.storeId, cartItem.productId)
+                            .pipe(
+                                map(combo => {
+                                    return { product: product, combo: combo }
+                                })
+                            )
+                    }
+                    // If has addon
+                    else if (product.hasAddOn) {
+                        productType = 'ADDON';
+                        return this._productsService.getAddOnItemsOnProduct({ productId: cartItem.productId })
+                            .pipe(
+                                map(addon => {
+                                    return { product: product, addon: addon }
+                                })
+                            )
+                    }
+                    // If normal product/variant
+                    else return of({ product: product });
+                })
+            )
+            .subscribe((resp) => {
+
+                setTimeout(() => {
+                    let bottomSheet = this._bottomSheet.open(_BottomSheetComponent, { 
+                        data: {
+                            product: resp['product'],
+                            combos : productType === 'COMBO' ? resp['combo'] : [],
+                            addOns : productType === 'ADDON' ? resp['addon'] : [],
+                            cartItem: cartItem,
+                            store: cart.store
+                        }
+                    });
+                    bottomSheet.afterDismissed()
+                    .subscribe((result) => 
+                        {
+                            if (result === 'saved') {
+                                this.initializeCheckoutList();
+                            }
+                        }
+                    )
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                }, 0);
+                
+            })
+    }
+
     comboSubItemGrouping(cartSubItem: any[]) {
-        // console.log(cartSubItem.map(x => x.productName));
 
-        // const productNames = cartSubItem.map(x => x.productName);
+        const groupedCombo = cartSubItem.reduce((acc, item) => {
+            const currCount = acc['productName'] ?? 0;
+            (acc[item['productName']] = acc[item['productName']] || [])
+                .push(currCount + 1);
+            return acc;
+        }, {});
 
-        // for (let index = 0; index < productNames.length; index++) {
-        //     const element = productNames[index];
-            
-        // }
+        let combosArray = [];
+        for (const property in groupedCombo) {
+            const first = property.length > 25 ? `${property.slice(0, 25)}...` : property;
+            const last = groupedCombo[property].length > 1 ? ` x${groupedCombo[property].length}` : '';
+            combosArray.push(first + last)
+        }
 
-        // const countedNames = productNames.reduce((allNames, name) => {
-        //     const currCount = allNames[name] ?? 0;
-        //     return {
-        //       ...allNames,
-        //       [name]: currCount + 1,
-        //     };
-        //   }, {});
-
-        // const myArrayWithNoDuplicates = productNames.reduce((accumulator, currentValue, index) => {
-        //     if (!accumulator.includes(currentValue)) {
-        //       return [...accumulator, currentValue];
-        //     }
-        //     else {
-        //         return [...accumulator, currentValue + ` ${index}`];
-        //     }
-        //     return accumulator;
-        //   }, []);
-
-        // console.log(myArrayWithNoDuplicates);
+        return combosArray;
 
     }
 
