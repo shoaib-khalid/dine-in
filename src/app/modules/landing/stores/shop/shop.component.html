@@ -102,7 +102,7 @@
                                 [autocomplete]="'off'"
                                 [placeholder]="'Search item'"
                                 [matAutocomplete]="matAutocomplete">
-                            <mat-icon (click)="clearSearch(); $event.stopPropagation()" class="text-primary" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                            <mat-icon @fadeIn *ngIf="searchControl.value" (click)="clearSearch(); $event.stopPropagation()" class="text-primary icon-size-5" [svgIcon]="'feather:x-circle'"></mat-icon>
                         </mat-form-field>
                     </div>
                     <!-- Sort -->

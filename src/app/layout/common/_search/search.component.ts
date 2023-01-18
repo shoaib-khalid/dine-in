@@ -563,10 +563,10 @@ export class _SearchComponent implements OnInit, OnDestroy
         this._router.navigate(['/search'], {queryParams: {tag: tag}})
     }
 
-    close() {
-        this.search.emit('closed');
-        this.searchControl.reset();
-        this._router.navigate(['/store/' + this.store.domain]);
-    }
+    // close() {
+    //     this.search.emit('closed');
+    //     this.searchControl.reset();
+    //     this._router.navigate(['/store/' + this.store.domain]);
+    // }
 
 }
