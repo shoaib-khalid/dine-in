@@ -713,6 +713,9 @@ export class LandingShopComponent implements OnInit
 
     chooseCategory(category : StoreCategory, customCategory: string = null) {
 
+        this.searchName = null;
+        this.searchControl.reset(null, { onlySelf:true, emitEvent:false });
+
         if (customCategory) {
             this.selectedCustomCategory = customCategory;
         } 
