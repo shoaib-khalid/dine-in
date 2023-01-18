@@ -51,6 +51,7 @@ export interface Store
     // snoozeReason: boolean;
     storeSnooze: StoreSnooze;
     storeDeliveryDetail :StoreDeliveryDetails;
+    dineInConsolidatedOrder: boolean;
 }
 
 export interface CreateStore

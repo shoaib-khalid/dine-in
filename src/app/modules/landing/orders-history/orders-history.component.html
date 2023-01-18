@@ -236,6 +236,15 @@
                                                     <!-- <span class="text-gray-400 text-xs">Order ID : {{ ordersGroup.id }}</span> -->
                                                     <span class="text-gray-400 text-xs">Total Order Summary : Ordered from {{ ordersGroup.orderList.length }} {{ ordersGroup.orderList.length > 1 ? 'shops' : 'shop' }}</span>
                                                     <span class="text-gray-400 text-xs">Order Placed : {{ convertDate(ordersGroup.orderTimeConverted) | date:'MMM dd, h:mm a' }} </span>
+                                                    <div class="flex flex-row text-xs">
+                                                        <span class="text-gray-400">Payment Status :&nbsp;</span>
+                                                        <span 
+                                                        [ngClass]="{
+                                                            'text-green-500' : ordersGroup.paymentStatus === 'PAID',
+                                                            'text-amber-500' : ordersGroup.paymentStatus === 'PENDING',
+                                                            'text-red-500' : ordersGroup.paymentStatus === 'FAILED'
+                                                        }">{{ordersGroup.paymentStatus}}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div

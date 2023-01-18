@@ -266,11 +266,11 @@
                                                         <mat-icon
                                                             class="icon-size-3 mr-0.5"
                                                             [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
-                                                        <span class="leading-tight text-xs md:text-sm text-secondary flex flex-wrap">Instruction: {{cartItem.specialInstruction}}</span>
+                                                        <span class="leading-tight tracking-tight text-xs md:text-sm text-secondary flex flex-wrap">Instruction: {{cartItem.specialInstruction}}</span>
                                                         <!-- <span class="leading-tight text-xs text-secondary flex flex-wrap">{{cartItem.specialInstruction}}</span> -->
                                                     </div>
                                                     <ng-template #noSpecialInstruction>
-                                                        <span (click)="editCartItem(cart.id, cartItem)" class="leading-tight text-xs md:text-sm flex flex-wrap underline text-primary cursor-pointer">Add instruction (optional)</span>
+                                                        <span (click)="editCartItem(cart.id, cartItem)" class="leading-tight tracking-tight text-xs md:text-sm flex flex-wrap underline text-primary cursor-pointer">Add instruction (optional)</span>
                                                     </ng-template>
                                                     <!-- Quantity (mobile)-->
                                                     <div class="md:hidden flex flex-col justify-center items-center mt-0.5">
@@ -765,9 +765,10 @@
                         <mat-radio-button
                             class="m-1 tracking-tight"
                             [value]="'CASH'">
-                            Cash
+                            {{ enableOnlinePayment ? 'Cash' : 'Pay at Counter'}}
                         </mat-radio-button>
                         <mat-radio-button
+                            *ngIf="enableOnlinePayment"
                             class="m-1 tracking-tight"
                             [value]="'ONLINE'">
                             Online Payment
