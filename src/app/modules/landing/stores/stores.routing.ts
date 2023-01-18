@@ -48,7 +48,7 @@ export const landingStoresRoutes: Route[] = [
                         },
                         component: LandingProductDetailsComponent,
                         resolve  : {
-                            product: ProductResolver,
+                            product: ProductResolver
                         }
                     }
                 ],

@@ -12,6 +12,14 @@
             [matAutocomplete]="matAutocomplete"
             (keypress)="onKeypress($event)"
             (keydown.enter)="goToSearch($event.target.value)">
+        <!-- <button
+            disableRipple="true"
+            class="absolute top-1/2 right-5 sm:right-7 shrink-0 w-10 h-10 -mt-5"
+            mat-icon-button
+            (click)="close(); $event.stopPropagation()">
+            <mat-icon class="text-primary" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button> -->
+        <mat-icon (click)="close(); $event.stopPropagation()" class="text-primary" [svgIcon]="'heroicons_outline:x'"></mat-icon>
         <!-- Search button -->
         <div *ngIf="currentScreenSize.includes('sm')" class="text-white font-semibold" matSuffix>
             <button class="p-2.5 font-bold" (click)="goToSearch(searchControl.value);">Search</button>

@@ -325,6 +325,9 @@ export class StoresService
 
     getStoreCategories(storeId: string = "", name: string="", page: number = 0, size: number = 30, sort: string = 'sequenceNumber', order: 'asc' | 'desc' | '' = 'asc'): Observable<any>
     {
+
+        if (!storeId) return of([])
+
         let productService = this._apiServer.settings.apiServer.productService;
         //let accessToken = this._jwt.getJwtPayload(this._authService.jwtAccessToken).act;
         let accessToken = "accessToken";

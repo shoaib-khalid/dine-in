@@ -174,6 +174,7 @@ import { DiningService } from 'app/core/_dining/dining.service';
 })
 export class LandingShopComponent implements OnInit
 {
+    @ViewChild('searchInput') public searchElement: ElementRef;
     platform: Platform;
 
     isLoading: boolean = false;
@@ -203,7 +204,7 @@ export class LandingShopComponent implements OnInit
     pageOfItems: Array<any>;
     sortName: string = "sequenceNumber";
     sortOrder: 'ASC' | 'DESC' | '' = 'ASC';
-    searchName: string;
+    searchName: string = null;
     oldPaginationIndex: number = 0;
 
     productViewOrientation: string = 'grid';
@@ -225,6 +226,7 @@ export class LandingShopComponent implements OnInit
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     tagType: string = '';
+    searchControl: FormControl = new FormControl();
 
     /**
      * Constructor
@@ -263,6 +265,63 @@ export class LandingShopComponent implements OnInit
 
         // Set route to 'store' on init		
         this._searchService.route = 'store'
+
+        // Subscribe to search control reactive form
+        this.searchControl.valueChanges
+        .pipe(
+            debounceTime(400),
+            takeUntil(this._unsubscribeAll),
+            map((value) => {
+                // this.isLoading = true;
+                // Continue
+                return value;
+            })
+        )
+        .subscribe((userInput: string) => {
+            
+            this.searchName = userInput;
+            let catId = '';
+
+            // If clear the search input
+            if (!userInput) {
+                // If has best seller category
+                if (this.famousProducts && this.famousProducts.length > 0) {
+                    this.selectedCategory = null;
+                    this.selectedCustomCategory = 'top10';
+                    this._storesService.storeCategory = null; 
+                    catId = 'cat-top10';
+                }
+                // If no, set to first category
+                else {
+                    // this.selectedCategory = this.storeCategories[0];
+                    this.selectedCustomCategory = 'first';
+                    this._storesService.storeCategory = this.storeCategories[0];
+                    catId = 'cat-0';
+                    
+                }
+            }
+            // If searching, set to All category
+            else {
+                this.selectedCategory = null;
+                this.selectedCustomCategory = "all";
+                this._storesService.storeCategory = null; 
+                catId = 'cat-all';
+            }
+
+            // Scroll selected category into view
+            setTimeout(() => {
+                
+                const locateButton = this._document.getElementById(catId) as HTMLInputElement;
+                locateButton.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest', 
+                    inline: 'start'
+                });
+            }, 300);
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+        })
 
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
@@ -446,106 +505,106 @@ export class LandingShopComponent implements OnInit
             this._changeDetectorRef.markForCheck();
         })    
 
-        // Get searches from url parameter 
-        this._activatedRoute.queryParams
-            .subscribe(params => {
-                this.isLoading = true;
-
-                // get back the previous pagination page
-                // more than 2 means it won't get back the previous pagination page when navigate back from 'carts' page
-                if (this._shopService.getPreviousUrl() && this._shopService.getPreviousUrl().split("/").length > 4) {                            
-                    this.oldPaginationIndex = this.pagination ? this.pagination.page : 0;
+        // get back the previous pagination page
+        // more than 2 means it won't get back the previous pagination page when navigate back from 'carts' page
+        if (this._shopService.getPreviousUrl() && this._shopService.getPreviousUrl().split("/").length > 4) {                            
+            this.oldPaginationIndex = this.pagination ? this.pagination.page : 0;
+            
+            // Used for first query back end, considered as hack to make product loading looks 'nicer', no popping2
+            this._productsService.sortProduct$
+                .pipe(take(1))
+                .subscribe((response: { sortByCol: string, sortingOrder: 'ASC' | 'DESC' | ''}) => {
+                    if (response) {
+                        this.sortName = response.sortByCol;
+                        this.sortOrder = response.sortingOrder;
+                    }
                     
-                    // Used for first query back end, considered as hack to make product loading looks 'nicer', no popping2
-                    this._productsService.sortProduct$
-                        .pipe(take(1))
-                        .subscribe((response: { sortByCol: string, sortingOrder: 'ASC' | 'DESC' | ''}) => {
-                            if (response) {
-                                this.sortName = response.sortByCol;
-                                this.sortOrder = response.sortingOrder;
-                            }
-                            
-                            // Mark for check
-                            this._changeDetectorRef.markForCheck();
-                        });
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                });
 
-                    // This will trigger back the sortInputControl and query back end
-                    this._productsService.sortProductByLabel$
-                        .pipe(take(1))
-                        .subscribe((responseLabel: string) => {
-                            if (responseLabel) {
-                                this.sortInputControl.patchValue(responseLabel)
+            // This will trigger back the sortInputControl and query back end
+            this._productsService.sortProductByLabel$
+                .pipe(take(1))
+                .subscribe((responseLabel: string) => {
+                    if (responseLabel) {
+                        this.sortInputControl.patchValue(responseLabel)
+                    }
+                    
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                });
+        }
+
+        // this.searchName = params['keyword'] ? params['keyword'] : null;
+
+        this._storesService.storeCategories$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((storeCategories: StoreCategory[]) => {
+                if (storeCategories) {
+                    
+                    this.storeCategories = storeCategories;
+
+                    this._storesService.storeCategory$
+                        .pipe(
+                            distinctUntilChanged((prev, curr) => curr && prev === curr),
+                            takeUntil(this._unsubscribeAll)
+                        )
+                        .subscribe((storeCategory: StoreCategory) => {
+
+                            if (this.selectedCategory && storeCategory && (storeCategory.id === this.selectedCategory.id)) {
+                                return;
                             }
+
+                            // if (this.selectedCustomCategory === "all" && storeCategory === null && this.selectedCategory === null) {
+                            //     return;
+                            // } 
                             
+                            // Select the category if its already selected before
+                            if (storeCategory && this.storeCategories.map(x => x.id).includes(storeCategory.id)){
+                                this.selectedCategory = storeCategory;
+                            }
+                            // Take the first category
+                            else if (this.selectedCustomCategory === 'first') {
+                                this.selectedCategory = this.storeCategories[0];
+                            }
+                            else {
+                                this.selectedCategory = null;
+                            }
+
+                            this._productsService.getProducts(this.store.id, {
+                                name        : this.searchName,
+                                page        : this.searchName ? 0 : this.oldPaginationIndex, 
+                                size        : 12,
+                                sortByCol   : this.searchName ? 'created' : this.sortName, 
+                                sortingOrder: this.searchName ? 'DESC' : this.sortOrder, 
+                                status      : 'ACTIVE,OUTOFSTOCK',
+                                categoryId  : this.selectedCategory ? this.selectedCategory.id : null
+                            }, false)
+                            .pipe(takeUntil(this._unsubscribeAll))
+                            .subscribe(()=>{
+                                // set loading to false
+                                this.isLoading = false;
+        
+                                // Mark for check
+                                this._changeDetectorRef.markForCheck();
+                            });
+
                             // Mark for check
                             this._changeDetectorRef.markForCheck();
                         });
+                    
                 }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+        // Get searches from url parameter 
+        // this._activatedRoute.queryParams
+        //     .subscribe(params => {
+        //         this.isLoading = true;
 
-                this.searchName = params['keyword'] ? params['keyword'] : null;
-
-                this._storesService.getStoreCategories(this.store.id)
-                    .pipe(takeUntil(this._unsubscribeAll))
-                    .subscribe((storeCategories: StoreCategory[]) => {
-                        if (storeCategories) {
-                            
-                            this.storeCategories = storeCategories;
-
-                            this._storesService.storeCategory$
-                                .pipe(
-                                    distinctUntilChanged((prev, curr) => curr && prev === curr),
-                                    takeUntil(this._unsubscribeAll)
-                                )
-                                .subscribe((storeCategory: StoreCategory) => {
-
-                                    if (this.selectedCategory && storeCategory && (storeCategory.id === this.selectedCategory.id)) {
-                                        return;
-                                    }
-
-                                    // if (this.selectedCustomCategory === "all" && storeCategory === null && this.selectedCategory === null) {
-                                    //     return;
-                                    // } 
-                                    
-                                    // Select the category if its already selected before
-                                    if (storeCategory && this.storeCategories.map(x => x.id).includes(storeCategory.id)){
-                                        this.selectedCategory = storeCategory;
-                                    }
-                                    // Take the first category
-                                    else if (this.selectedCustomCategory === 'first') {
-                                        this.selectedCategory = this.storeCategories[0];
-                                    }
-                                    else {
-                                        this.selectedCategory = null;
-                                    }
-
-                                    this._productsService.getProducts(this.store.id, {
-                                        name        : this.searchName,
-                                        page        : this.searchName ? 0 : this.oldPaginationIndex, 
-                                        size        : 12,
-                                        sortByCol   : this.searchName ? 'created' : this.sortName, 
-                                        sortingOrder: this.searchName ? 'DESC' : this.sortOrder, 
-                                        status      : 'ACTIVE,OUTOFSTOCK',
-                                        categoryId  : this.selectedCategory ? this.selectedCategory.id : null
-                                    }, false)
-                                    .pipe(takeUntil(this._unsubscribeAll))
-                                    .subscribe(()=>{
-                                        // set loading to false
-                                        this.isLoading = false;
                 
-                                        // Mark for check
-                                        this._changeDetectorRef.markForCheck();
-                                    });
-
-                                    // Mark for check
-                                    this._changeDetectorRef.markForCheck();
-                                });
-                            
-                        }
-                        // Mark for check
-                        this._changeDetectorRef.markForCheck();
-                    });
-                
-        });
+        // });
 
         // Get the products
         this.products$ = this._productsService.products$;  
@@ -1000,10 +1059,15 @@ export class LandingShopComponent implements OnInit
     }
 
     searchClicked(){
+
         this.selectedCustomCategory = "all";
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+    }
+
+    clearSearch() {
+        this.searchControl.reset();
     }
     
 }

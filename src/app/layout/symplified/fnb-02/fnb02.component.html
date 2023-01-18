@@ -38,11 +38,11 @@
                             </button> -->
                             <!-- <notifications></notifications> -->
                             <!-- <span class="text-gray-300 hidden sm:block"> &nbsp; | &nbsp; </span> -->
-                            <button class="" mat-icon-button (click)="goToHome()">
+                            <button disableRipple="true" class="" mat-icon-button (click)="goToHome()">
                                 <mat-icon class="icon-size-5 text-primary" [svgIcon]="'heroicons_solid:home'"></mat-icon>
                             </button>
                             <!-- Order History -->
-                            <button class="" mat-icon-button [routerLink]="['./order-history']">
+                            <button disableRipple="true" class="" mat-icon-button [routerLink]="['./order-history']">
                                 <mat-icon class="icon-size-5 text-primary" [svgIcon]="'heroicons_solid:clipboard-check'" matBadgeHidden="true"  matBadgeSize="small" [matBadge]="15"></mat-icon>
                             </button>
                             <!-- cart -->

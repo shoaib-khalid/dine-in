@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
-import { tap, Observable, switchMap, map, take, of} from 'rxjs';
+import { tap, Observable, switchMap, map, take, of, forkJoin} from 'rxjs';
 import { StoresService } from 'app/core/store/store.service';
 import { ProductsService } from 'app/core/product/product.service';
 import { AppConfig } from 'app/config/service.config';
@@ -51,7 +51,13 @@ export class StoresResolver implements Resolve<any>
 
                     } 
                 }),
-                switchMap((store: Store) => this._locationService.getFamousProduct(store ? store.id : null))
+                switchMap((store: Store) => {
+                    return forkJoin(
+                        [
+                            this._locationService.getFamousProduct(store ? store.id : null),
+                            this._storesService.getStoreCategories(store ? store.id : null)
+                        ])
+                })
             );
     }
 }
