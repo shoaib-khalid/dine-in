@@ -61,7 +61,7 @@
             <div class="flex flex-col w-full items-center">
                 <div class="grid w-full">
                     <div class="flex flex-row items-center mb-2">
-                        <button class="flex flex-row items-center rounded border border-gray-300 p-0.5" (click)="goBack()">
+                        <button class="flex flex-row items-center rounded-lg border p-1" (click)="goBack()">
                             <mat-icon
                                 class="icon-size-5"
                                 [svgIcon]="'heroicons_solid:chevron-left'"></mat-icon>
@@ -164,14 +164,14 @@
                                         <div class="flex flex-row justify-between items-center">
                                             <div class="flex flex-col w-full">
                                                 <span 
-                                                    class="text-md sm:text-xl font-semibold hover:cursor-pointer max-w-2/3"
+                                                    class="text-base sm:text-xl font-semibold hover:cursor-pointer max-w-2/3"
                                                     (click)="redirect('store', cart.store, null)">
                                                     {{cart.store.name}}
                                                 </span>
                                                 <div 
                                                 [ngClass]="isStoreClose(cart.storeId) ? 'brightness-50 lg:brightness-100':''"
                                                     class="flex flex-row tracking-tight gap-1">
-                                                    <span class="text-sm">Food to be served:</span>
+                                                    <span class="text-sm">Serving Method:</span>
                                                     <span *ngIf="cart.store.dineInOption === 'SENDTOTABLE'" class="text-sm font-medium text-primary">Send to table</span>
                                                     <span *ngIf="cart.store.dineInOption === 'SELFCOLLECT'" class="text-sm font-medium text-primary">Self collect</span>
                                                 </div>
@@ -527,11 +527,11 @@
                 <div class="flex flex-col border rounded-lg p-2">
                     <!-- Header -->
                     <div class="flex flex-row border-b justify-between items-center pb-2 w-full">
-                        <div class="flex flex-row j">
+                        <div class="flex flex-row items-center">
                             <mat-icon 
                                 class="text-primary" 
                                 [svgIcon]="'mat_solid:add_shopping_cart'"></mat-icon>
-                            <span class="ml-2 font-semibold">Cart Summary</span>
+                            <span class="ml-2 font-semibold leading-none">Cart Summary</span>
                         </div>
                         <div class="flex flex-col text-center">
                             <span class="font-semibold mb-0.5">Table No.:&nbsp;{{tableNumber}}</span>
@@ -754,12 +754,12 @@
 
                 </div>
                 <div class="w-full flex flex-col border rounded-lg p-2 mt-4">
-                    <div class="flex flex-row items-center">
+                    <div class="flex flex-row items-center pb-2 border-b">
                         <mat-icon class="text-primary" svgIcon="mat_outline:account_balance_wallet"></mat-icon>
-                        <span class="font-semibold ml-2">Payment Method</span>
+                        <span class="font-semibold ml-2 leading-none">Payment Method</span>
                     </div>
                     <mat-radio-group
-                        class="flex flex-col"
+                        class="flex flex-col mt-1"
                         [(ngModel)]="paymentMethod"
                         [color]="'primary'">
                         <mat-radio-button

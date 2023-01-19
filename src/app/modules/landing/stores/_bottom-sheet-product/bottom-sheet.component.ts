@@ -1,14 +1,12 @@
 import { ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { Router } from '@angular/router';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
 import { DOCUMENT } from '@angular/common';
-import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { MatBottomSheet, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from 'ngx-gallery-9';
 import { AddOnItemProduct, AddOnProduct, Product, ProductAssets, ProductInventory, ProductInventoryItem, ProductPackageOption } from 'app/core/product/product.types';
 import { FormBuilder } from '@angular/forms';
-import { ProductsService } from 'app/core/product/product.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CartService } from 'app/core/cart/cart.service';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -116,11 +114,9 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
     constructor(
         @Inject(DOCUMENT) private _document: Document,
         private _platformService: PlatformService,
-        private _router: Router,
         @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
         private _formBuilder: FormBuilder,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _productsService: ProductsService,
         private _fuseConfirmationService: FuseConfirmationService,
         private _cartService: CartService,
         private _authService: AuthService,
@@ -128,7 +124,6 @@ export class _BottomSheetComponent implements OnInit, OnDestroy
         private _storesService: StoresService,
         private _apiServer: AppConfig,
         private _bottomSheet: MatBottomSheet,
-        private _bottomSheetRef: MatBottomSheetRef,
 
     )
     {

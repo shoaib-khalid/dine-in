@@ -60,7 +60,12 @@
                             "src/@fuse/styles/main.scss",
                             "src/styles/styles.scss",
                             "src/styles/tailwind.scss",
-                            "./node_modules/font-awesome/css/font-awesome.css"
+                            "./node_modules/font-awesome/css/font-awesome.css",
+                            "./node_modules/ngx-spinner/animations/ball-fall.css",
+                            "./node_modules/ngx-spinner/animations/square-jelly-box.css",
+                            "./node_modules/ngx-spinner/animations/ball-beat.css",
+                            "./node_modules/ngx-spinner/animations/ball-running-dots.css",
+                            "./node_modules/ngx-spinner/animations/line-scale-pulse-out-rapid.css"
                         ],
                         "scripts": [],
                         "serviceWorker": true,

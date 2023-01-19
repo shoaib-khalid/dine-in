@@ -33,7 +33,7 @@
                                             <ng-container *ngFor="let orderItemDetail of orderDetails.orderItemWithDetails; let j = index">
                                                 <ng-container *ngIf="displayAll[i].orderItemsId[j].isDisplay">
                                                     <div (click)="redirectToProduct(orderDetails.store.id, orderDetails.store.domain, orderItemDetail.product.seoNameMarketplace)"  
-                                                        class="flex flex-row items-center justify-around w-full py-2 cursor-pointer group hover:bg-primary-50 sm:px-2 gap-1 sm:gap-2">
+                                                        class="flex flex-row items-center justify-around w-full py-2 cursor-pointer group active:bg-primary-50 sm:px-2 gap-1 sm:gap-2">
                                                         <div class="w-13 h-13 relative flex flex-0 items-center justify-center mr-2 rounded overflow-hidden border">
                                                             <img
                                                                 class="w-full"
@@ -46,7 +46,7 @@
                                                         </div>
                                                         <div class="w-full flex flex-col">
                                                             <h3 
-                                                                class="font-semibold text-sm group-hover:text-primary line-clamp-3">
+                                                                class="font-semibold text-sm group-active:text-primary line-clamp-3">
                                                                 {{orderItemDetail.productName}}
                                                             </h3>
                                                             <div class="">
@@ -71,7 +71,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="w-1/2 md:w-2/3 flex flex-row justify-between items-center leading-tight">
-                                                            <span class="text-gray-400 items-center text-sm group-hover:text-primary">x{{orderItemDetail.quantity}}</span>
+                                                            <span class="text-gray-400 items-center text-sm group-active:text-primary">x{{orderItemDetail.quantity}}</span>
                                                             <div class="flex flex-col md:flex-row justify-between w-3/5 items-end leading-none">
                                                                 <span *ngIf="orderItemDetail.normalPrice && orderItemDetail.normalPrice !== orderItemDetail.price && orderItemDetail.orderItemAddOn.length === 0"
                                                                     class="text-gray-400 items-start text-left text-xs line-through">{{orderItemDetail.normalPrice * orderItemDetail.quantity | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
@@ -88,7 +88,7 @@
                                         </div>
                                     </div>
                                     <!-- Footer -->
-                                    <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0 pt-1 md:pt-0">
+                                    <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0 pt-1.5 md:pt-0">
                                         <div class="flex flex-col md:border rounded-lg py-1 px-0.5 md:px-2 md:py-2 md:h-full">
                                             <!-- Order Summary -->
                                             <div class="flex flex-col w-full mb-2 leading-none gap-2">
@@ -183,7 +183,7 @@
                                                     >
                                                 <label 
                                                     [routerLink]="['/order-history/orders-history-details/  + orderDetails.id']"
-                                                    class="flex items-center justify-center h-8 sm:h-10 w-full px-1 sm:px-2 rounded-lg bg-primary hover:bg-primary-600 cursor-pointer"
+                                                    class="flex items-center justify-center h-8 sm:h-10 w-full px-1 sm:px-2 rounded-lg bg-primary active:bg-primary-600 cursor-pointer"
                                                     for="add-to-cart-button"
                                                     matRipple>
                                                     <span class="text-sm font-semibold text-black tracking-tight">Order Info</span>
@@ -227,18 +227,19 @@
                                 <!-- Order Groups -->
                                 <div class="flex flex-col w-full bg-primary-100 border border-gray-300 rounded-lg py-1 sm:py-2 px-1 sm:px-2 mb-4">
                                     <!-- Header -->
-                                    <div class="flex flex-row mb-1 mt-1 items-start justify-start w-full sm:px-1">
+                                    <div class="flex flex-row mb-2 mt-2 items-start justify-start w-full sm:px-1">
                                         <!-- Store Details -->
                                         <div class="flex flex-row justify-between items-center w-full mx-1">
                                             <div class="flex flex-row items-center">
                                                 <!-- <mat-icon class="text-primary" [svgIcon]="'mat_outline:receipt_long'"></mat-icon> -->
-                                                <div class="flex flex-col ml-0.5 leading-none gap-1">
+                                                <div class="flex flex-col ml-0.5 leading-none gap-1 tracking-tight">
                                                     <!-- <span class="text-gray-400 text-xs">Order ID : {{ ordersGroup.id }}</span> -->
-                                                    <span class="text-gray-400 text-xs">Total Order Summary : Ordered from {{ ordersGroup.orderList.length }} {{ ordersGroup.orderList.length > 1 ? 'shops' : 'shop' }}</span>
-                                                    <span class="text-gray-400 text-xs">Order Placed : {{ convertDate(ordersGroup.orderTimeConverted) | date:'MMM dd, h:mm a' }} </span>
-                                                    <div class="flex flex-row text-xs">
+                                                    <span class="text-gray-400 text-sm">Total Order Summary : Ordered from {{ ordersGroup.orderList.length }} {{ ordersGroup.orderList.length > 1 ? 'shops' : 'shop' }}</span>
+                                                    <span class="text-gray-400 text-sm">Order Placed : {{ convertDate(ordersGroup.orderTimeConverted) | date:'MMM dd, h:mm a' }} </span>
+                                                    <div class="flex flex-row text-sm">
                                                         <span class="text-gray-400">Payment Status :&nbsp;</span>
                                                         <span 
+                                                        class="font-medium"
                                                         [ngClass]="{
                                                             'text-green-500' : ordersGroup.paymentStatus === 'PAID',
                                                             'text-amber-500' : ordersGroup.paymentStatus === 'PENDING',
@@ -274,24 +275,24 @@
                                             [ngClass]="ordersGroup.orderList.length > 1 ? 'mb-1' : 'mb-0'">
                                             <div class="flex flex-col w-full">
                                                 <!-- Header -->
-                                                <div class="flex flex-row mt-1 mb-2 items-start justify-between w-full sm:w-1/2 sm:px-2">
+                                                <div class="flex flex-row mt-1 mb-3 items-start justify-between w-full sm:w-1/2 sm:px-2">
                                                     <!-- Store Details -->
                                                     <div class="flex flex-row w-full items-center">
                                                         <!-- <mat-icon class="text-primary" svgIcon="mat_solid:storefront"></mat-icon> -->
                                                         <img
                                                             class="object-cover w-8 h-8 rounded-full shadow ring-1 ring-white"
                                                             [src]="displayStoreLogo(orderDetails.store.storeAssets)">
-                                                        <div class="flex flex-col pl-2 w-full leading-none gap-1">
+                                                        <div class="flex flex-col pl-2 w-full leading-none gap-1 tracking-tight">
                                                             <span class="font-semibold cursor-pointer line-clamp-1" (click)="redirectToStore(orderDetails.store.domain)">{{orderDetails.store.name}}</span>
-                                                            <span class="text-gray-400 font-normal text-xs">Order ID : {{orderDetails.invoiceId}}</span>
-                                                            <!-- <span class="text-gray-400 text-xs">Order Placed : {{ convertDate(orderDetails.orderTimeConverted) | date:'MMM dd, h:mm a' }}</span> -->
+                                                            <span class="text-gray-400 font-normal text-sm">Order ID : {{orderDetails.invoiceId}}</span>
+                                                            <!-- <span class="text-gray-400 text-sm">Order Placed : {{ convertDate(orderDetails.orderTimeConverted) | date:'MMM dd, h:mm a' }}</span> -->
                                                             <div class="flex flex-row justify-between">
-                                                                <span class="text-blue-700 text-xs font-normal">Notes : {{ orderDetails.customerNotes }}</span>
+                                                                <span class="text-blue-700 text-sm font-normal">Notes : {{ orderDetails.customerNotes }}</span>
                                                                 <div *ngIf="orderDetails.dineInOption === 'SELFCOLLECT'" class="flex flex-row gap-1 items-center">
-                                                                    <span class="text-blue-700 text-xs font-normal">Phone No :</span>
+                                                                    <span class="text-blue-700 text-sm font-normal">Phone No :</span>
                                                                     <span 
                                                                         (click)="editPhoneNo(ordersGroup.id, orderDetails.id, orderDetails.orderShipmentDetail.phoneNumber)"
-                                                                        class="underline text-xs text-blue-700 font-normal tracking-tight cursor-pointer">{{ orderDetails.orderShipmentDetail.phoneNumber }}</span>
+                                                                        class="underline text-sm text-blue-700 font-normal tracking-tight cursor-pointer">{{ orderDetails.orderShipmentDetail.phoneNumber }}</span>
                                                                     <mat-icon 
                                                                         (click)="editPhoneNo(ordersGroup.id, orderDetails.id, orderDetails.orderShipmentDetail.phoneNumber)"
                                                                         class="icon-size-3 cursor-pointer text-primary" 
@@ -310,7 +311,7 @@
                                                         <!-- <span>{{i}} | {{j}} | {{k}} | {{ordersGroupsPagination.page}}</span> -->
                                                         <ng-container *ngIf="displayAllGroup[i].orderList[j] && displayAllGroup[i].orderList[j].orderItemsId[k].isDisplay">
                                                             <div (click)="redirectToProduct(orderDetails.store.id, orderDetails.store.domain, orderItemDetail.product.seoNameMarketplace)"  
-                                                                class="flex flex-row items-center justify-around w-full py-2 cursor-pointer group hover:bg-primary-50 sm:px-2 gap-1 sm:gap-2">
+                                                                class="flex flex-row items-center justify-around w-full py-2 cursor-pointer group active:bg-primary-50 sm:px-2 gap-1 sm:gap-2">
                                                                 <div class="w-12 h-12 relative flex flex-0 items-center justify-center mr-2 rounded overflow-hidden border">
                                                                     <img
                                                                         class="h-full object-cover"
@@ -323,7 +324,7 @@
                                                                 </div>
                                                                 <div class="w-full flex flex-col pr-1">
                                                                     <h3 
-                                                                        class="font-medium text-sm group-hover:text-primary line-clamp-2">
+                                                                        class="font-medium text-sm group-active:text-primary line-clamp-2">
                                                                         {{orderItemDetail.productName}}
                                                                     </h3>
                                                                     <div class="">
@@ -360,11 +361,11 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="w-1/2 md:w-2/3 flex flex-row justify-between items-center leading-tight">
-                                                                    <span class="text-gray-500 items-center text-sm group-hover:text-primary">x{{orderItemDetail.quantity}}</span>
+                                                                    <span class="text-gray-500 items-center text-sm group-active:text-primary">x{{orderItemDetail.quantity}}</span>
                                                                     <div class="flex flex-col justify-between w-3/5 items-end leading-none">
                                                                         <span *ngIf="orderItemDetail.normalPrice && orderItemDetail.normalPrice && orderItemDetail.normalPrice !== orderItemDetail.productPrice && orderItemDetail.orderItemAddOn.length === 0" 
                                                                             class="text-gray-400 items-start text-left text-xs line-through">{{orderItemDetail.normalPrice * orderItemDetail.quantity | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
-                                                                        <span class="font-medium text-gray-500 text-sm group-hover:text-primary">{{orderItemDetail.price | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
+                                                                        <span class="font-medium text-gray-500 text-md group-active:text-primary">{{orderItemDetail.price | currency: orderDetails.store.regionCountry.currencySymbol}}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -377,7 +378,7 @@
                                                 </div>
                                             </div>
                                             <!-- Footer -->
-                                            <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0 pt-1 md:pt-0">
+                                            <div class="flex flex-col w-full md:w-120 md:ml-4 border-t md:border-t-0 pt-1.5 md:pt-0">
                                                 <div class="flex flex-col md:border rounded-lg py-1 px-0.5 md:px-2 md:py-2 md:h-full">
                                                     <!-- Order Summary -->
                                                     <div class="flex flex-col w-full md:mb-1 leading-none gap-2">
@@ -402,25 +403,25 @@
                                                             <div class="flex flex-row w-full justify-between items-start">
                                                                 <div class="flex flex-col">
                                                                     <div class="flex flex-row items-end">
-                                                                        <span class="text-left font-medium text-gray-500 text-sm">Order Discount</span> 
+                                                                        <span class="text-left font-medium text-gray-500 text-md tracking-tight">Order Discount</span> 
                                                                         <!-- <span class="text-left text-gray-500 font-normal text-xs" *ngIf="orderDetails.appliedDiscountDescription">&nbsp;({{orderDetails.appliedDiscountDescription}})</span> -->
                                                                     </div>
                                                                     <span *ngIf="orderDetails.discountMaxAmount && orderDetails.discountMaxAmount != 0 && orderDetails.appliedDiscount >= orderDetails.discountMaxAmount && orderDetails.appliedDiscount != 0" 
-                                                                        class="text-xs text-gray-400 mt-1">Capped at {{orderDetails.discountMaxAmount | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
+                                                                        class="text-xs text-gray-400 mt-1 tracking-tight">Capped at {{orderDetails.discountMaxAmount | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
                                                                 </div>
                                                                 <div class="flex justify-end w-20">
-                                                                    <!-- <span class="items-center font-medium text-gray-500 text-sm">:</span> -->
-                                                                    <span class="text-right font-medium text-gray-500 text-sm w-20">-{{ orderDetails.appliedDiscount | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
+                                                                    <!-- <span class="items-center font-medium text-gray-500 text-md">:</span> -->
+                                                                    <span class="text-right font-medium text-gray-500 text-md w-20">-{{ orderDetails.appliedDiscount | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
                                                                 </div>
                                                             </div>
                                                         </ng-container>
                                                         <!-- Service Charges -->
                                                         <ng-container *ngIf="orderDetails.storeServiceCharges !== 0">
                                                             <div class="flex flex-row w-full justify-between items-start">
-                                                                <span class="text-left font-medium text-gray-500 text-sm">Service Charge</span>
+                                                                <span class="text-left font-medium text-gray-500 text-md tracking-tight">Service Charge</span>
                                                                 <div class="flex justify-end w-20">
-                                                                    <!-- <span class="items-center font-medium text-gray-500 text-sm">:</span> -->
-                                                                    <span class="text-right font-medium text-gray-500 text-sm w-20">{{ orderDetails.storeServiceCharges | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
+                                                                    <!-- <span class="items-center font-medium text-gray-500 text-md">:</span> -->
+                                                                    <span class="text-right font-medium text-gray-500 text-md w-20">{{ orderDetails.storeServiceCharges | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
                                                                 </div>
                                                             </div>
                                                         </ng-container>
@@ -428,12 +429,12 @@
                                                         <ng-container *ngIf="orderDetails.deliveryCharges !== 0">
                                                             <div class="flex flex-row w-full justify-between items-start">
                                                                 <div class="flex flex-row items-end">
-                                                                    <span class="text-left font-medium text-gray-500 text-sm">Delivery Fee&nbsp;</span>
+                                                                    <span class="text-left font-medium text-gray-500 text-md tracking-tight">Delivery Fee&nbsp;</span>
                                                                     <span class="text-left text-gray-500 text-xs">{{checkCombineShipping(orderDetails.orderPaymentDetail.deliveryQuotationReferenceId) > 1 ? '(combined x' + checkCombineShipping(orderDetails.orderPaymentDetail.deliveryQuotationReferenceId) + ' shops)' : ''}}</span>
                                                                 </div>
                                                                 <div class="flex justify-end w-20">
-                                                                    <!-- <span class="items-center font-medium text-gray-500 text-sm">:</span> -->
-                                                                    <span class="text-right font-medium text-gray-500 text-sm w-20">{{ orderDetails.deliveryCharges | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
+                                                                    <!-- <span class="items-center font-medium text-gray-500 text-md">:</span> -->
+                                                                    <span class="text-right font-medium text-gray-500 text-md w-20">{{ orderDetails.deliveryCharges | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
                                                                 </div>
                                                             </div>
                                                         </ng-container>
@@ -442,24 +443,24 @@
                                                             <div class="flex flex-row w-full justify-between items-start">
                                                                 <div class="flex flex-col">
                                                                     <div class="flex flex-row items-end">
-                                                                        <span class="text-left font-medium text-gray-500 text-sm">Delivery Discount</span> 
+                                                                        <span class="text-left font-medium text-gray-500 text-md tracking-tight">Delivery Discount</span> 
                                                                         <!-- <span class="text-left text-gray-500 font-normal text-xs" *ngIf="orderDetails.deliveryDiscountDescription">&nbsp;({{orderDetails.deliveryDiscountDescription}})</span> -->
                                                                     </div>
                                                                     <span *ngIf="orderDetails.deliveryDiscountMaxAmount && orderDetails.deliveryDiscountMaxAmount != 0 && orderDetails.deliveryDiscount >= orderDetails.deliveryDiscountMaxAmount && orderDetails.deliveryDiscount != 0" 
-                                                                        class="text-xs text-gray-400 mt-1">Capped at {{orderDetails.deliveryDiscountMaxAmount | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
+                                                                        class="text-xs text-gray-400 mt-1 tracking-tight">Capped at {{orderDetails.deliveryDiscountMaxAmount | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
                                                                 </div>
                                                                 <div class="flex justify-end w-20">
-                                                                    <!-- <span class="items-center font-medium text-gray-500 text-sm">:</span> -->
-                                                                    <span class="text-right font-medium text-gray-500 text-sm">-{{ orderDetails.deliveryDiscount | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
+                                                                    <!-- <span class="items-center font-medium text-gray-500 text-md">:</span> -->
+                                                                    <span class="text-right font-medium text-gray-500 text-md">-{{ orderDetails.deliveryDiscount | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
                                                                 </div>
                                                             </div>
                                                         </ng-container>
                                                         <!-- Total Amount -->
                                                         <div class="flex flex-row w-full justify-between items-start">
-                                                            <span class="text-left font-semibold text-sm">Total Amount</span> 
+                                                            <span class="text-left font-semibold text-md tracking-tight">Total Amount</span> 
                                                             <div class="flex justify-end w-20">
                                                                 <!-- <span class="items-center font-semibold text-sm">:</span> -->
-                                                                <span class="text-right font-semibold text-sm w-20">{{ orderDetails.total | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
+                                                                <span class="text-right font-semibold text-md w-20">{{ orderDetails.total | currency: orderDetails.store.regionCountry.currencySymbol }}</span>
                                                             </div>
                                                         </div>
                                                         <!-- <p class="items-center font-semibold text-gray-400 text-sm">Total Order :</p> 
@@ -475,7 +476,7 @@
                                                             >
                                                         <label 
                                                             [routerLink]="['/order-history/orders-history-details/'  + orderDetails.id]"
-                                                            class="flex items-center justify-center h-8 sm:h-10 w-full px-1 sm:px-2 duration-75 rounded-lg bg-primary hover:bg-primary-600 cursor-pointer"
+                                                            class="flex items-center justify-center h-8 sm:h-10 w-full px-1 sm:px-2 duration-75 rounded-lg bg-primary active:bg-primary-600 cursor-pointer"
                                                             for="add-to-cart-button"
                                                             matRipple>
                                                             <span class="text-sm font-semibold text-black tracking-tight">Order Info</span>

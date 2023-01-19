@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,6 +29,7 @@ import { _BottomPopUpModule } from 'app/layout/common/_bottom-popup/bottom-popup
 import { FloatingStoreListModule } from 'app/layout/common/_floating-store-list/floating-store-list.module';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { _BottomSheetModule } from './_bottom-sheet-product/bottom-sheet.module';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
     declarations: [
@@ -61,7 +62,8 @@ import { _BottomSheetModule } from './_bottom-sheet-product/bottom-sheet.module'
         FuseScrollbarModule,
         _BottomPopUpModule,
         MatBottomSheetModule,
-        _BottomSheetModule
+        _BottomSheetModule,
+        NgxSpinnerModule
 
     ],
     providers: [
@@ -71,7 +73,8 @@ import { _BottomSheetModule } from './_bottom-sheet-product/bottom-sheet.module'
     exports     : [
         FontAwesomeModule,
         NgxGalleryModule
-    ]
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class LandingStoresModule
 {

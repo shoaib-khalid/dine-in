@@ -5,30 +5,21 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { PlatformService } from 'app/core/platform/platform.service';
 import { Platform } from 'app/core/platform/platform.types';
 import { ProductsService } from 'app/core/product/product.service';
-import { AddOnProduct, Product, ProductAssets, ProductInventory, ProductInventoryItem, ProductPagination } from 'app/core/product/product.types';
+import { AddOnProduct, Product, ProductPagination } from 'app/core/product/product.types';
 import { StoresService } from 'app/core/store/store.service';
 import { Store, StoreAssets, StoreCategory } from 'app/core/store/store.types';
-import { BottomPopUpService } from 'app/layout/common/_bottom-popup/bottom-popup.service';
 import { SearchService } from 'app/layout/common/_search/search.service';
-import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from 'ngx-gallery-9';
 import { debounceTime, map, Observable, Subject, switchMap, takeUntil, take, distinctUntilChanged, startWith, combineLatest } from 'rxjs';
 import { ShopService } from './shop.service';
-import { AppConfig } from 'app/config/service.config';
-import { CupertinoPane } from 'cupertino-pane';
-import { Cart, CartItem, CustomerCart } from 'app/core/cart/cart.types';
-import { CartService } from 'app/core/cart/cart.service';
-import { AuthService } from 'app/core/auth/auth.service';
-import { JwtService } from 'app/core/jwt/jwt.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { _BottomSheetComponent } from '../_bottom-sheet-product/bottom-sheet.component';
 import { LocationService } from 'app/core/location/location.service';
 import { StoresDetails, Tag } from 'app/core/location/location.types';
-import { DiningService } from 'app/core/_dining/dining.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector     : 'landing-shop',
@@ -227,6 +218,7 @@ export class LandingShopComponent implements OnInit
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     tagType: string = '';
     searchControl: FormControl = new FormControl();
+    catId: string = '';
 
     /**
      * Constructor
@@ -246,7 +238,8 @@ export class LandingShopComponent implements OnInit
         private _shopService: ShopService,
         private _locationService: LocationService,
         private _bottomSheet: MatBottomSheet,
-        @Inject(DOCUMENT) private _document: Document
+        @Inject(DOCUMENT) private _document: Document,
+        private _spinner: NgxSpinnerService
 
     )
     {
@@ -272,7 +265,9 @@ export class LandingShopComponent implements OnInit
             debounceTime(400),
             takeUntil(this._unsubscribeAll),
             map((value) => {
-                // this.isLoading = true;
+                this.isLoading = true;
+                this._spinner.show();
+
                 // Continue
                 return value;
             })
@@ -280,7 +275,7 @@ export class LandingShopComponent implements OnInit
         .subscribe((userInput: string) => {
             
             this.searchName = userInput;
-            let catId = '';
+            // let catId = '';
 
             // If clear the search input
             if (!userInput) {
@@ -289,14 +284,14 @@ export class LandingShopComponent implements OnInit
                     this.selectedCategory = null;
                     this.selectedCustomCategory = 'top10';
                     this._storesService.storeCategory = null; 
-                    catId = 'cat-top10';
+                    this.catId = 'cat-top10';
                 }
                 // If no, set to first category
                 else {
                     // this.selectedCategory = this.storeCategories[0];
                     this.selectedCustomCategory = 'first';
                     this._storesService.storeCategory = this.storeCategories[0];
-                    catId = 'cat-0';
+                    this.catId = 'cat-0';
                     
                 }
             }
@@ -305,19 +300,19 @@ export class LandingShopComponent implements OnInit
                 this.selectedCategory = null;
                 this.selectedCustomCategory = "all";
                 this._storesService.storeCategory = null; 
-                catId = 'cat-all';
+                this.catId = 'cat-all';
             }
 
-            // Scroll selected category into view
-            setTimeout(() => {
+            // // Scroll selected category into view
+            // setTimeout(() => {
                 
-                const locateButton = this._document.getElementById(catId) as HTMLInputElement;
-                locateButton.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest', 
-                    inline: 'start'
-                });
-            }, 300);
+            //     const locateButton = this._document.getElementById(catId) as HTMLInputElement;
+            //     locateButton.scrollIntoView({
+            //         behavior: 'smooth',
+            //         block: 'nearest', 
+            //         inline: 'start'
+            //     });
+            // }, 300);
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
@@ -396,6 +391,7 @@ export class LandingShopComponent implements OnInit
             map(() => {
                 // set loading to false
                 this.isLoading = false;
+                this._spinner.hide();
             })
         ).subscribe();
 
@@ -482,6 +478,7 @@ export class LandingShopComponent implements OnInit
                     
                     // set loading to false
                     this.isLoading = false;
+                    this._spinner.hide();
     
                 }
                 // If no famous products, i.e. new restaurant; get display featured products 
@@ -583,9 +580,28 @@ export class LandingShopComponent implements OnInit
                             }, false)
                             .pipe(takeUntil(this._unsubscribeAll))
                             .subscribe(()=>{
+
                                 // set loading to false
                                 this.isLoading = false;
-        
+                                this._spinner.hide();
+                                
+                                if (this.catId) {
+                                    // Scroll selected category into view - only for search function
+                                    setTimeout(() => {
+                                        
+                                        const locateButton = this._document.getElementById(this.catId) as HTMLInputElement;
+                                        locateButton.scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'nearest', 
+                                            inline: 'start'
+                                        });
+                                        
+                                        this.catId = '';
+
+                                    }, 200);
+                                }
+
+                                
                                 // Mark for check
                                 this._changeDetectorRef.markForCheck();
                             });
@@ -692,6 +708,7 @@ export class LandingShopComponent implements OnInit
         if ( ( (this.pageOfItems['currentPage'] - 1) > -1 ) && (this.pageOfItems['currentPage'] - 1 !== this.pagination.page)) {
             // set loading to true
             this.isLoading = true;
+            this._spinner.show();
             this._productsService.getProducts(this.store.id, {
                 name        : this.searchName, 
                 page        : (this.pageOfItems['currentPage'] - 1) < 0 ? 0 : (this.pageOfItems['currentPage'] - 1), 
@@ -705,6 +722,7 @@ export class LandingShopComponent implements OnInit
             .subscribe((response)=>{
                 // set loading to false
                 this.isLoading = false;
+                this._spinner.hide();
             });
         }
         // Mark for check
@@ -740,6 +758,7 @@ export class LandingShopComponent implements OnInit
         
         // set loading to true
         this.isLoading = true;
+        this._spinner.show();
     }
 
     displayStoreLogo(storeAssets: StoreAssets[]) {

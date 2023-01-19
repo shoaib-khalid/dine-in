@@ -2331,7 +2331,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
                     this._cartService.putCartItem(cartId, cartItemBody, cartItem.id)
                         .subscribe(()=>{
-                            this.initializeCheckoutList();
+                            // this.initializeCheckoutList();
                         });
                 }
             }
@@ -2384,7 +2384,7 @@ export class CartListComponent implements OnInit, OnDestroy
                     .subscribe((result) => 
                         {
                             if (result === 'saved') {
-                                this.initializeCheckoutList();
+                                // this.initializeCheckoutList();
                             }
                         }
                     )
