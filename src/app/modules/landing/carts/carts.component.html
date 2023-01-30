@@ -208,7 +208,7 @@
                                                         <mat-icon 
                                                             [matTooltip]="'Delete cart'"
                                                             (click)="deleteCart(cart.id)"
-                                                            class="icon-size-4"
+                                                            class="icon-size-5"
                                                             [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                                                     </span>
                                                 </div>
@@ -265,7 +265,7 @@
                                                         <!-- Edit Item -->
                                                         <mat-icon
                                                             class="icon-size-3 mr-0.5"
-                                                            [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
+                                                            [svgIcon]="'feather:edit-3'"></mat-icon>
                                                         <span class="leading-tight tracking-tight text-xs md:text-sm text-secondary flex flex-wrap">Instruction: {{cartItem.specialInstruction}}</span>
                                                         <!-- <span class="leading-tight text-xs text-secondary flex flex-wrap">{{cartItem.specialInstruction}}</span> -->
                                                     </div>
@@ -394,31 +394,31 @@
                                             <span class="hidden sm:flex justify-center items-center font-semibold text-center text-sm md:text-md min-w-20 max-w-auto truncate">{{ cartItem.cartItemAddOn.length > 0 ? (cartItem.totalPrice | currency: cart.store.regionCountry.currencySymbol) : 
                                                 (cartItem.price | currency: cart.store.regionCountry.currencySymbol)}}</span>
                                             <!-- Edit / Delete cart for desktop -->
-                                            <div class="hidden sm:flex flex-row justify-end gap-2">
+                                            <div class="hidden sm:flex flex-row justify-end gap-2.5">
                                                 <span class="flex justify-center items-center text-center cursor-pointer">
                                                     <mat-icon 
                                                         (click)="openDrawerToEdit(cart, cartItem)"
-                                                        class="icon-size-4" 
-                                                        [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
+                                                        class="icon-size-5" 
+                                                        [svgIcon]="'feather:edit-3'"></mat-icon>
                                                 </span>
                                                 <!-- Remove Item -->
                                                 <span class="flex justify-center items-center text-center cursor-pointer">
                                                     <mat-icon 
                                                         [matTooltip]="'Delete item'"
                                                         (click)="deleteCartItem(cart.id, cartItem)"
-                                                        class="icon-size-4"
+                                                        class="icon-size-5"
                                                         [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                                                 </span>
                                             </div>
                                             <!-- Total Price , Unit Price , Remove button for sm-->
                                             <div class="flex flex-col sm:hidden items-end justify-between">
                                                 <!-- Edit / Delete cart for mobile -->
-                                                <div class="flex flex-row justify-end w-full gap-2">
+                                                <div class="flex flex-row justify-end w-full gap-2.5">
                                                     <span class="flex justify-center items-center text-center cursor-pointer">
                                                         <mat-icon 
                                                             (click)="openDrawerToEdit(cart, cartItem)"
-                                                            class="icon-size-4" 
-                                                            [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
+                                                            class="icon-size-5" 
+                                                            [svgIcon]="'feather:edit-3'"></mat-icon>
                                                     </span>
 
                                                     <!-- Remove Item -->
@@ -426,7 +426,7 @@
                                                         <mat-icon
                                                             [matTooltip]="'Delete item'"
                                                             (click)="deleteCartItem(cart.id, cartItem)" 
-                                                            class="icon-size-4"
+                                                            class="icon-size-5"
                                                             [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                                                     </span>
                                                 </div>
