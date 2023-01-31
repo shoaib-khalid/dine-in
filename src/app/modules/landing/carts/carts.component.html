@@ -765,14 +765,15 @@
                         <mat-radio-button
                             class="m-1 tracking-tight"
                             [value]="'CASH'">
-                            {{ enableOnlinePayment ? 'Cash' : 'Pay at Counter'}}
+                            Cash
                         </mat-radio-button>
-                        <mat-radio-button
+                        <!-- {{ enableOnlinePayment ? 'Cash' : 'Pay at Counter'}} -->
+                        <!-- <mat-radio-button
                             *ngIf="enableOnlinePayment"
                             class="m-1 tracking-tight"
                             [value]="'ONLINE'">
                             Online Payment
-                        </mat-radio-button>
+                        </mat-radio-button> -->
                     </mat-radio-group>
                     <!-- Checkout -->
                     <button 
