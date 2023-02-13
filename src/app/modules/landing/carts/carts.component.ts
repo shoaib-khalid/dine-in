@@ -321,7 +321,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
     paymentMethod: 'CASH' | 'ONLINE' = 'CASH'
     customerActivity: CustomerActivity;
-    enableOnlinePayment = true;
+    enableOnlinePayment: boolean = false;
 
     /**
      * Constructor
@@ -383,6 +383,27 @@ export class CartListComponent implements OnInit, OnDestroy
                     this.platform = platform;
                     // set title
                     this._titleService.setTitle(this.platform.name + " | " + "Carts");
+                }
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get List of stores
+        this._locationService.storesDetails$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((stores: StoresDetails[]) => {
+                if (stores) {
+                    if (stores.length === 1) {
+                        this.displayFloating = 'single';
+                    } else if (stores.length > 1) {
+                        this.displayFloating = 'multiple';
+                    } else {
+                        this.displayFloating = 'none';
+                    }
+
+                    // If all stores are set to ONLINEPAYMENT
+                    this.enableOnlinePayment = stores.every(store => store.dineInPaymentType === 'ONLINEPAYMENT');
+                    this.paymentMethod = this.enableOnlinePayment ? 'ONLINE' : 'CASH';
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -628,24 +649,6 @@ export class CartListComponent implements OnInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
             });
 
-
-        // Get List of stores
-        this._locationService.storesDetails$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((stores: StoresDetails[]) => {
-                if (stores) {
-                    if (stores.length === 1) {
-                        this.displayFloating = 'single';
-                    } else if (stores.length > 1) {
-                        this.displayFloating = 'multiple';
-                    } else {
-                        this.displayFloating = 'none';
-                    }
-                }
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
         // once selectCart() is triggered, it will set isLoading to true
         // this function will wait for both cartsWithDetails$ & cartSummary$ result first
         // then is isLoading to false
@@ -757,6 +760,7 @@ export class CartListComponent implements OnInit, OnDestroy
                         if (this.tagType === 'restaurant') {
                             if (this.carts.length > 0 && this.carts[0].store.dineInConsolidatedOrder === true) {
                                 this.enableOnlinePayment = false;
+                                this.paymentMethod = this.enableOnlinePayment ? 'ONLINE' : 'CASH';
                             }
                         }
                     }

@@ -17,6 +17,7 @@ export interface StoresDetails
     state           : string;
     postcode        : string;
     regionCountryId : string;
+    dineInPaymentType : string;
 }
 
 export interface StoresDetailPagination

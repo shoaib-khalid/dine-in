@@ -763,17 +763,18 @@
                         [(ngModel)]="paymentMethod"
                         [color]="'primary'">
                         <mat-radio-button
+                            *ngIf="!enableOnlinePayment"
                             class="m-1 tracking-tight"
                             [value]="'CASH'">
                             Cash
                         </mat-radio-button>
                         <!-- {{ enableOnlinePayment ? 'Cash' : 'Pay at Counter'}} -->
-                        <!-- <mat-radio-button
+                        <mat-radio-button
                             *ngIf="enableOnlinePayment"
                             class="m-1 tracking-tight"
                             [value]="'ONLINE'">
                             Online Payment
-                        </mat-radio-button> -->
+                        </mat-radio-button>
                     </mat-radio-group>
                     <!-- Checkout -->
                     <button 
