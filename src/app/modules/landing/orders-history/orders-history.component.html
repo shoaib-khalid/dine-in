@@ -247,7 +247,7 @@
                                                                     'text-amber-500' : ordersGroup.orderQrPaymentStatus === 'PENDING',
                                                                     'text-red-500' : ordersGroup.orderQrPaymentStatus === 'FAILED'
                                                                 }">
-                                                                {{ordersGroup.orderQrPaymentStatus}}
+                                                                {{ordersGroup.orderQrPaymentStatus === 'PENDING' ? 'PAY AT COUNTER' : ordersGroup.orderQrPaymentStatus}}
                                                             </span>
                                                         </ng-container>
                                                         <ng-template #normalOrder>
