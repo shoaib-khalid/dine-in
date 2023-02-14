@@ -30,6 +30,7 @@ import { FloatingStoreListModule } from 'app/layout/common/_floating-store-list/
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { _BottomSheetModule } from './_bottom-sheet-product/bottom-sheet.module';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @NgModule({
     declarations: [
@@ -63,7 +64,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
         _BottomPopUpModule,
         MatBottomSheetModule,
         _BottomSheetModule,
-        NgxSpinnerModule
+        NgxSpinnerModule,
+        InfiniteScrollModule
 
     ],
     providers: [

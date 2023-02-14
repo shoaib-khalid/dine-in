@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit, SecurityContext, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlatformService } from 'app/core/platform/platform.service';
@@ -11,6 +11,7 @@ import { BottomPopUpService } from '../_bottom-popup/bottom-popup.service';
 import { ProductsService } from 'app/core/product/product.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector     : 'store-products',
@@ -21,7 +22,7 @@ export class _StoreProductsComponent implements OnInit, OnDestroy
 {
 
     platform: Platform;
-    @Input() products: any;
+    @Input() products: Product[];
     @Input() store: any;
     @Input() productViewOrientation: string = "grid"; 
     @Input() catalogueSlug: any;
@@ -42,7 +43,7 @@ export class _StoreProductsComponent implements OnInit, OnDestroy
         private _productsService: ProductsService,
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
-
+        private _domSanitizer: DomSanitizer,
     )
     {
     }
@@ -59,7 +60,7 @@ export class _StoreProductsComponent implements OnInit, OnDestroy
      * On init
      */
     ngOnInit(): void
-    {        
+    {      
         this._platformService.platform$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((platform: Platform)=>{

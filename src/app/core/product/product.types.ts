@@ -2,7 +2,7 @@ export interface Product
 {
     id: string;
     name: string;
-    description: string;
+    description: any;
     storeDetails: StoresDetails;
     storeId: string;
     categoryId: string;

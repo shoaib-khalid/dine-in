@@ -54,6 +54,7 @@
                         </div>
                     </div>
                 </fuse-card>
+                <div id="top"></div>
                 <!-- Category -->                    
                 <div fuseScrollbar
                 [fuseScrollbarOptions]="{wheelPropagation: false, suppressScrollY: true}" id="category-header" 
@@ -169,22 +170,27 @@
                 </div>
 
                 <!-- Products Section -->
-                <div class="flex flex-col min-h-[40vh] relative rounded-lg">
-                    <ngx-spinner 
+                <div class="flex flex-col min-h-[40vh] relative rounded-lg items-center">
+                    <!-- <ngx-spinner 
                         [zIndex]="18" [showSpinner]="isLoading" bdColor = "rgba(255, 255, 255, 0.8)" size = "default" color = "#30D5C8" 
                         type = "line-scale-pulse-out-rapid" [fullScreen] = "false">
-                        <!-- <p style="color: #30D5C8" > Loading.. </p> -->
-                    </ngx-spinner>
+                    </ngx-spinner> -->
                     <!-- Products -->
-                    <ng-container *ngIf="(products$ | async) as products">
-                        <ng-container *ngIf="isLoading === false;">
+                    <!-- <ng-container *ngIf="(products$ | async) as products"></ng-container> -->
+                    <ng-container *ngIf="products">
+                        <ng-container>
                             <ng-container *ngIf="!selectedCategory && selectedCustomCategory === 'top10'; else notTop10">
                                 <store-products class="w-full" [products]="famousProducts" [productViewOrientation]="productViewOrientation" [store]="store" [storeSlug]="storeDomain" [catalogueSlug]="catalogueSlug"></store-products>
                             </ng-container>
                             <ng-template #notTop10>
                                 <store-products class="w-full" [products]="products" [productViewOrientation]="productViewOrientation" [store]="store" [storeSlug]="storeDomain" [catalogueSlug]="catalogueSlug"></store-products>
+                                <!-- Button -->
+                                <div 
+                                    id="view-more-button" 
+                                    class="bg-primary text-base text-white font-medium cursor-pointer tracking-tighter rounded p-2 w-50 text-center ring-0 active:ring-1 ring-primary duration-50" 
+                                    (click)="viewMore()">View More</div>
                                 <!-- Pagination -->
-                                <ng-container *ngIf="pagination">
+                                <!-- <ng-container *ngIf="pagination">
                                     <div class="flex w-full items-center justify-center mb-2">
                                         <pagination 
                                             [itemLength]="pagination.length" 
@@ -194,7 +200,7 @@
                                             (click)="scroll('scrollContainer')"
                                             #productPaginator></pagination>
                                     </div>
-                                </ng-container>
+                                </ng-container> -->
                             </ng-template>
                         </ng-container>
                     </ng-container>

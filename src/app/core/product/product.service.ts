@@ -154,7 +154,7 @@ export class ProductsService
      */
     getProducts(storeId: string, params: {
         page        : number; 
-        size        : number;
+        pageSize    : number;
         sortByCol   : string;
         sortingOrder: 'ASC' | 'DESC' | '';
         name?       : string;
@@ -162,15 +162,18 @@ export class ProductsService
         categoryId? : string;
     } = {
         page        : 0, 
-        size        : 20, 
-        sortByCol   : 'name', 
+        pageSize    : 500, 
+        sortByCol   : 'sequenceNumber', 
         sortingOrder: 'ASC', 
         name        : '', 
-        status      : 'ACTIVE,INACTIVE', 
+        status      : 'ACTIVE,OUTOFSTOCK', 
         categoryId  : null, 
-    }, isPopular: boolean):
+    }, isPopular: boolean = false):
         Observable<{ pagination: ProductPagination; products: Product[] }>
     {
+
+        if (!storeId) return of({ pagination: null, products: [] })
+
         let productService = this._apiServer.settings.apiServer.productService;
         //let accessToken = this._jwt.getJwtPayload(this.accessToken).act;
         let accessToken = "accessToken";

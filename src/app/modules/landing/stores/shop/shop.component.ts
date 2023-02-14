@@ -20,6 +20,7 @@ import { _BottomSheetComponent } from '../_bottom-sheet-product/bottom-sheet.com
 import { LocationService } from 'app/core/location/location.service';
 import { StoresDetails, Tag } from 'app/core/location/location.types';
 import { NgxSpinnerService } from 'ngx-spinner';
+import arraySort from 'array-sort';
 
 @Component({
     selector     : 'landing-shop',
@@ -188,13 +189,15 @@ export class LandingShopComponent implements OnInit
     // product
     products$: Observable<Product[]>;
     products: Product[] = [];
+    allProducts: Product[] = [];
     famousProducts: Product[] = [];
     pagination: ProductPagination;
 
-    sortInputControl: FormControl = new FormControl('');
+    sortInputControl: FormControl = new FormControl('default');
     pageOfItems: Array<any>;
     sortName: string = "sequenceNumber";
     sortOrder: 'ASC' | 'DESC' | '' = 'ASC';
+    reverseSortOrder: boolean = false;
     searchName: string = null;
     oldPaginationIndex: number = 0;
 
@@ -219,6 +222,14 @@ export class LandingShopComponent implements OnInit
     tagType: string = '';
     searchControl: FormControl = new FormControl();
     catId: string = '';
+    // viewMoreItems: {
+    //     categoryId: string,
+    //     itemSize: number,
+    // }[] = [];
+    viewMorePageSize = 12;
+
+    throttle = 300;
+    scrollDistance = 1;
 
     /**
      * Constructor
@@ -281,38 +292,27 @@ export class LandingShopComponent implements OnInit
             if (!userInput) {
                 // If has best seller category
                 if (this.famousProducts && this.famousProducts.length > 0) {
+                    this.catId = 'cat-top10';
                     this.selectedCategory = null;
                     this.selectedCustomCategory = 'top10';
                     this._storesService.storeCategory = null; 
-                    this.catId = 'cat-top10';
                 }
                 // If no, set to first category
                 else {
                     // this.selectedCategory = this.storeCategories[0];
+                    this.catId = 'cat-0';
                     this.selectedCustomCategory = 'first';
                     this._storesService.storeCategory = this.storeCategories[0];
-                    this.catId = 'cat-0';
                     
                 }
             }
             // If searching, set to All category
             else {
+                this.catId = 'cat-all';
                 this.selectedCategory = null;
                 this.selectedCustomCategory = "all";
                 this._storesService.storeCategory = null; 
-                this.catId = 'cat-all';
             }
-
-            // // Scroll selected category into view
-            // setTimeout(() => {
-                
-            //     const locateButton = this._document.getElementById(catId) as HTMLInputElement;
-            //     locateButton.scrollIntoView({
-            //         behavior: 'smooth',
-            //         block: 'nearest', 
-            //         inline: 'start'
-            //     });
-            // }, 300);
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
@@ -347,26 +347,32 @@ export class LandingShopComponent implements OnInit
         .pipe(
             takeUntil(this._unsubscribeAll),
             debounceTime(300),
-            switchMap((query) => {                
+            map((query) => {                
 
                 if (query === "recent") {
                     this.sortName = "created";
                     this.sortOrder = "DESC";
+                    this.reverseSortOrder = true;
                 } else if (query === "cheapest") {
                     this.sortName = "price";
                     this.sortOrder = "ASC";
+                    this.reverseSortOrder = false;
                 } else if (query === "expensive") {
                     this.sortName = "price";
                     this.sortOrder = "DESC";
+                    this.reverseSortOrder = true;
                 } else if (query === "a-z") {
                     this.sortName = "name";
                     this.sortOrder = "ASC";
+                    this.reverseSortOrder = false;
                 } else if (query === "z-a") {
                     this.sortName = "name";
                     this.sortOrder = "DESC";
+                    this.reverseSortOrder = true;
                 } else if (query === "default") {
                     this.sortName = "sequenceNumber";
                     this.sortOrder = "ASC";
+                    this.reverseSortOrder = false;
                 } else {
                     // default to recent (same as recent)
                     this.sortName = "sequenceNumber";
@@ -378,20 +384,26 @@ export class LandingShopComponent implements OnInit
 
                 // set loading to true
                 // this.isLoading = true;
-                return this._productsService.getProducts(this.store.id, {
-                    name        : this.searchName, 
-                    page        : this.oldPaginationIndex, 
-                    size        : 12, 
-                    sortByCol   : this.sortName,
-                    sortingOrder: this.sortOrder,
-                    status      : "ACTIVE,OUTOFSTOCK" , 
-                    categoryId  : this.selectedCategory ? this.selectedCategory.id : null
-                }, false);
+                // return this._productsService.getProducts(this.store.id, {
+                //     name        : this.searchName, 
+                //     page        : this.oldPaginationIndex, 
+                //     size        : 12, 
+                //     sortByCol   : this.sortName,
+                //     sortingOrder: this.sortOrder,
+                //     status      : "ACTIVE,OUTOFSTOCK" , 
+                //     categoryId  : this.selectedCategory ? this.selectedCategory.id : null
+                // }, false);
+                this.products =  this.filterProducts(this.selectedCategory ? this.selectedCategory.id : null);
+
+                return;
             }),
             map(() => {
                 // set loading to false
                 this.isLoading = false;
                 this._spinner.hide();
+
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
             })
         ).subscribe();
 
@@ -442,6 +454,35 @@ export class LandingShopComponent implements OnInit
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((stores: StoresDetails[]) => {
                 this.displayFloating = stores && stores.length > 1 ? 'multiple' : 'none';                    
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Get the products
+        this._productsService.products$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((products: Product[]) => {
+                                  
+                // Add price key value pair to all products, mainly to be used for sorting 
+                // this.allProducts = products.map(product => ({...product, price: product.productInventories[0].itemDiscount ? 
+                //     product.productInventories[0].itemDiscount.dineInDiscountedPrice :
+                //     product.productInventories[0].dineInPrice}));
+
+                this.allProducts = products.map(product => {
+                    return {
+                            ...product, 
+                            price:  product.productInventories[0].itemDiscount ? 
+                                    product.productInventories[0].itemDiscount.dineInDiscountedPrice :
+                                    product.productInventories[0].dineInPrice,
+                            hasStock: this.isProductHasStock(product),
+                            // description: this._domSanitizer.bypassSecurityTrustHtml(product.description)
+                            imageId: product.thumbnailUrl ? product.thumbnailUrl.split('product-assets/')[1] : ''
+                        }
+                    })
+
+                // console.log(this.allProducts);
+                
+                
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -497,11 +538,26 @@ export class LandingShopComponent implements OnInit
                     // this.selectedCustomCategory = 'all';
                     this.selectedCustomCategory = 'first';
                 }
+
+                // Add key value pair of hasStock
+                this.famousProducts = famousProducts.map(product => {
+                    return {
+                            ...product, 
+                            price:  product.productInventories[0].itemDiscount ? 
+                                    product.productInventories[0].itemDiscount.dineInDiscountedPrice :
+                                    product.productInventories[0].dineInPrice,
+                            hasStock: this.isProductHasStock(product),
+                            // description: this._domSanitizer.bypassSecurityTrustHtml(product.description)
+                            imageId: product.thumbnailUrl ? product.thumbnailUrl.split('product-assets/')[1] : ''
+                        }
+                    })
+                
             }
             // Mark for check
             this._changeDetectorRef.markForCheck();
         })    
 
+        /*
         // get back the previous pagination page
         // more than 2 means it won't get back the previous pagination page when navigate back from 'carts' page
         if (this._shopService.getPreviousUrl() && this._shopService.getPreviousUrl().split("/").length > 4) {                            
@@ -532,6 +588,7 @@ export class LandingShopComponent implements OnInit
                     this._changeDetectorRef.markForCheck();
                 });
         }
+        */
 
         // this.searchName = params['keyword'] ? params['keyword'] : null;
 
@@ -569,42 +626,70 @@ export class LandingShopComponent implements OnInit
                                 this.selectedCategory = null;
                             }
 
-                            this._productsService.getProducts(this.store.id, {
-                                name        : this.searchName,
-                                page        : this.searchName ? 0 : this.oldPaginationIndex, 
-                                size        : 12,
-                                sortByCol   : this.searchName ? 'created' : this.sortName, 
-                                sortingOrder: this.searchName ? 'DESC' : this.sortOrder, 
-                                status      : 'ACTIVE,OUTOFSTOCK',
-                                categoryId  : this.selectedCategory ? this.selectedCategory.id : null
-                            }, false)
-                            .pipe(takeUntil(this._unsubscribeAll))
-                            .subscribe(()=>{
-
+                            this.products =  this.filterProducts(this.selectedCategory ? this.selectedCategory.id : null);
+                            // console.log('this.products', this.products);
+                            // console.log('this.viewMoreItems', this.viewMoreItems);
+                            
+                            setTimeout(() => {
                                 // set loading to false
                                 this.isLoading = false;
                                 this._spinner.hide();
                                 
-                                if (this.catId) {
-                                    // Scroll selected category into view - only for search function
-                                    setTimeout(() => {
-                                        
-                                        const locateButton = this._document.getElementById(this.catId) as HTMLInputElement;
-                                        locateButton.scrollIntoView({
-                                            behavior: 'smooth',
-                                            block: 'nearest', 
-                                            inline: 'start'
-                                        });
-                                        
-                                        this.catId = '';
+                            }, 100);
 
-                                    }, 200);
-                                }
+                            if (this.catId) {
+
+                                // Scroll selected category into view - only for search function
+                                setTimeout(() => {
+
+                                    const locateButton = this._document.getElementById(this.catId) as HTMLInputElement;
+                                    locateButton.scrollIntoView({
+                                        behavior: 'smooth',
+                                        block: 'nearest', 
+                                        inline: 'start'
+                                    });
+
+                                    this.catId = '';
+
+                                }, 200);
+                            }
+                            
+                            // this._productsService.getProducts(this.store.id, {
+                            //     name        : this.searchName,
+                            //     page        : this.searchName ? 0 : this.oldPaginationIndex, 
+                            //     size        : 12,
+                            //     sortByCol   : this.searchName ? 'created' : this.sortName, 
+                            //     sortingOrder: this.searchName ? 'DESC' : this.sortOrder, 
+                            //     status      : 'ACTIVE,OUTOFSTOCK',
+                            //     categoryId  : this.selectedCategory ? this.selectedCategory.id : null
+                            // }, false)
+                            // .pipe(takeUntil(this._unsubscribeAll))
+                            // .subscribe(()=>{
+
+                            //     // set loading to false
+                            //     this.isLoading = false;
+                            //     this._spinner.hide();
+                                
+                            //     if (this.catId) {
+                            //         // Scroll selected category into view - only for search function
+                            //         setTimeout(() => {
+                                        
+                            //             const locateButton = this._document.getElementById(this.catId) as HTMLInputElement;
+                            //             locateButton.scrollIntoView({
+                            //                 behavior: 'smooth',
+                            //                 block: 'nearest', 
+                            //                 inline: 'start'
+                            //             });
+                                        
+                            //             this.catId = '';
+
+                            //         }, 200);
+                            //     }
 
                                 
-                                // Mark for check
-                                this._changeDetectorRef.markForCheck();
-                            });
+                            //     // Mark for check
+                            //     this._changeDetectorRef.markForCheck();
+                            // });
 
                             // Mark for check
                             this._changeDetectorRef.markForCheck();
@@ -621,9 +706,6 @@ export class LandingShopComponent implements OnInit
 
                 
         // });
-
-        // Get the products
-        this.products$ = this._productsService.products$;  
 
         this._productsService.selectedProduct$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -712,7 +794,7 @@ export class LandingShopComponent implements OnInit
             this._productsService.getProducts(this.store.id, {
                 name        : this.searchName, 
                 page        : (this.pageOfItems['currentPage'] - 1) < 0 ? 0 : (this.pageOfItems['currentPage'] - 1), 
-                size        : this.pageOfItems['pageSize'], 
+                pageSize    : this.pageOfItems['pageSize'], 
                 sortByCol   : this.sortName, 
                 sortingOrder: this.sortOrder, 
                 status      : "ACTIVE,OUTOFSTOCK" , 
@@ -759,6 +841,16 @@ export class LandingShopComponent implements OnInit
         // set loading to true
         this.isLoading = true;
         this._spinner.show();
+
+        // Scroll to top when change category
+        setTimeout(() => {
+            const top = this._document.getElementById('top') as HTMLInputElement;            
+            top.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start', 
+                inline: 'nearest'
+            });
+        }, 0);
     }
 
     displayStoreLogo(storeAssets: StoreAssets[]) {
@@ -1090,6 +1182,135 @@ export class LandingShopComponent implements OnInit
 
     clearSearch() {
         this.searchControl.reset();
+    }
+
+    filterProducts(
+        categoryId: string, sortName: string = this.sortName, 
+        sortOrder: boolean = this.reverseSortOrder, pageSize: number = this.viewMorePageSize 
+        ): Product[]
+    {
+        const sortedProducts = arraySort(this.allProducts, sortName, {reverse: sortOrder})
+        
+        if (categoryId) {
+            const filteredProducts = sortedProducts.reduce((accumulator, currentValue) => {
+                if (currentValue.categoryId === categoryId) {
+                  return [...accumulator, currentValue];
+                }
+                return accumulator;
+              }, [])
+            
+            // Show/hide View More button
+            setTimeout(() => {
+                let element = this._document.getElementById('view-more-button');
+                if (filteredProducts.length > pageSize) 
+                    element.style.visibility = 'visible';
+                else 
+                    element.style.visibility = 'hidden';
+            }, 0);
+
+            return filteredProducts.slice(0, pageSize);
+        }
+        // 'All' category
+        else {
+
+            if (this.searchName) {
+                const searched = sortedProducts.reduce((accumulator, currentValue) => {
+                    if (currentValue.name.toLocaleLowerCase().includes(this.searchName.toLocaleLowerCase().trim())) {
+                      return [...accumulator, currentValue];
+                    }
+                    return accumulator;
+                  }, [])
+                
+                return searched;
+            }
+            else {
+
+                // Show/hide View More button for 'all' category
+                if (this.selectedCustomCategory === 'all') {
+                    setTimeout(() => {
+                        let element = this._document.getElementById('view-more-button');
+                        if (sortedProducts.length > pageSize) 
+                            element.style.visibility = 'visible';
+                        else 
+                            element.style.visibility = 'hidden';
+                    }, 0);
+                }
+                return sortedProducts.slice(0, pageSize);
+            }
+        }
+    }
+
+    viewMore() {
+        
+        const sortedProducts = arraySort(this.allProducts, this.sortName, {reverse: this.reverseSortOrder})        
+
+        // Select category
+        if (this.selectedCategory) {
+            const filteredProducts = sortedProducts.reduce((accumulator, currentValue) => {
+                if (currentValue.categoryId === this.selectedCategory.id) {
+                  return [...accumulator, currentValue];
+                }
+                return accumulator;
+              }, [])
+
+            const newProducts = filteredProducts.slice(this.products.length, this.products.length + this.viewMorePageSize);
+
+            this.products.push(...newProducts)
+            
+            // Show/hide View More button
+            setTimeout(() => {
+                let element = this._document.getElementById('view-more-button');
+                if (filteredProducts.length > this.products.length) 
+                    element.style.visibility = 'visible';
+                else 
+                    element.style.visibility = 'hidden';
+            }, 0);
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+
+        }
+        // 'all' category
+        else {
+
+            const newProducts = sortedProducts.slice(this.products.length, this.products.length + this.viewMorePageSize);
+
+            this.products.push(...newProducts)
+
+            // Show/hide View More button for 'all' category
+            setTimeout(() => {
+                let element = this._document.getElementById('view-more-button');
+                if (sortedProducts.length > this.products.length) 
+                    element.style.visibility = 'visible';
+                else 
+                    element.style.visibility = 'hidden';
+            }, 0);
+        }
+
+    }
+
+    isProductHasStock(product: Product): boolean
+    {
+        if (product.allowOutOfStockPurchases === true) {
+            return true;
+        } else {
+            if (product.productInventories.length > 0) {
+                let productInventoryQuantities = product.productInventories.map(item => item.quantity);
+                let totalProductInventoryQuantity = productInventoryQuantities.reduce((partialSum, a) => partialSum + a, 0);
+    
+                if (totalProductInventoryQuantity > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    } 
+
+    onScrollDown() {
+        
     }
     
 }

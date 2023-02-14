@@ -55,7 +55,8 @@ export class StoresResolver implements Resolve<any>
                     return forkJoin(
                         [
                             this._locationService.getFamousProduct(store ? store.id : null),
-                            this._storesService.getStoreCategories(store ? store.id : null)
+                            this._storesService.getStoreCategories(store ? store.id : null),
+                            this._productsService.getProducts(store ? store.id : null)
                         ])
                 })
             );
