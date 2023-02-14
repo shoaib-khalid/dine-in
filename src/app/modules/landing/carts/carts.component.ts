@@ -388,6 +388,20 @@ export class CartListComponent implements OnInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
             });
 
+        this._locationService.tags$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((response: Tag[]) => {
+                
+                if (response && response.length) {
+                    let index = response[0].tagConfig.findIndex(item => item.property === "type");
+                    if (index > -1) {
+                        this.tagType = response[0].tagConfig[index].content;
+                    }
+                }
+                // Mark for check 
+                this._changeDetectorRef.markForCheck();
+            })
+
         // Get List of stores
         this._locationService.storesDetails$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -404,6 +418,13 @@ export class CartListComponent implements OnInit, OnDestroy
                     // If all stores are set to ONLINEPAYMENT
                     this.enableOnlinePayment = stores.every(store => store.dineInPaymentType === 'ONLINEPAYMENT');
                     this.paymentMethod = this.enableOnlinePayment ? 'ONLINE' : 'CASH';
+
+                    if (this.tagType === 'restaurant') {
+                        if (this.carts.length > 0 && this.carts[0].store.dineInConsolidatedOrder === true) {
+                            this.enableOnlinePayment = false;
+                            this.paymentMethod = this.enableOnlinePayment ? 'ONLINE' : 'CASH';
+                        }
+                    }
                 }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -748,27 +769,6 @@ export class CartListComponent implements OnInit, OnDestroy
             // Mark for check 
             this._changeDetectorRef.markForCheck();
         });
-
-        this._locationService.tags$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((response: Tag[]) => {
-                if (response && response.length) {
-                    let index = response[0].tagConfig.findIndex(item => item.property === "type");
-                    if (index > -1) {
-                        this.tagType = response[0].tagConfig[index].content;
-                        
-                        if (this.tagType === 'restaurant') {
-                            if (this.carts.length > 0 && this.carts[0].store.dineInConsolidatedOrder === true) {
-                                this.enableOnlinePayment = false;
-                                this.paymentMethod = this.enableOnlinePayment ? 'ONLINE' : 'CASH';
-                            }
-                        }
-                    }
-                }
-                // Mark for check 
-                this._changeDetectorRef.markForCheck();
-
-            })
 
         this._analyticService.customerActivity$
             .pipe(takeUntil(this._unsubscribeAll))
