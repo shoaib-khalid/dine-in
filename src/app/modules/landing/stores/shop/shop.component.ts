@@ -627,8 +627,6 @@ export class LandingShopComponent implements OnInit
                             }
 
                             this.products =  this.filterProducts(this.selectedCategory ? this.selectedCategory.id : null);
-                            // console.log('this.products', this.products);
-                            // console.log('this.viewMoreItems', this.viewMoreItems);
                             
                             setTimeout(() => {
                                 // set loading to false
