@@ -20,7 +20,7 @@
                 <h2 class="text-xl text-white sm:text-2xl">{{category ? category.parentName : 'Category'}}</h2>
                 <h2 *ngIf="location" class="text-lg text-white sm:text-xl">{{location.cityDetails.name}}</h2>
                 <div class="border-t w-40 border-white"></div>
-                <div class="max-w-2xl mt-2 sm:text-xl text-center text-secondary text-white">
+                <div class="max-w-2xl mt-2 sm:text-xl text-center text-secondary">
                     <!-- Stores -->
                     <span>
                         {{ storesDetailsPagination && storesDetailsPagination.length > 0 ? (storesDetailsPagination.length === 1 ? storesDetailsPagination.length + ' store' : storesDetailsPagination.length + ' stores') : '' }} 

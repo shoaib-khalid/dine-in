@@ -217,7 +217,7 @@ export class CartListComponent implements OnInit, OnDestroy
 
     customerId: string = '';
 
-    paymentDetails: CartDiscount = {
+    paymentDetails: Partial<CartDiscount> = {
         cartSubTotal: 0,
         subTotalDiscount: 0,
         subTotalDiscountDescription: null,
@@ -641,34 +641,54 @@ export class CartListComponent implements OnInit, OnDestroy
         // Reset Payment Details
         this._cartService.cartSummary = null;
 
-        // Get cartSummary data
-        this._cartService.cartSummary$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((response: DiscountOfCartGroup)=>{
-                if (response) {
-                    this.paymentDetails.cartSubTotal = response.sumCartSubTotal === null ? 0 : response.sumCartSubTotal;
-                    this.paymentDetails.deliveryCharges = response.sumCartDeliveryCharge === null ? 0 : response.sumCartDeliveryCharge;
-                    this.paymentDetails.cartGrandTotal = response.sumCartGrandTotal === null ? 0 : response.sumCartGrandTotal;
-                    this.paymentDetails.platformVoucherSubTotalDiscount = response.platformVoucherSubTotalDiscount === null ? 0 : response.platformVoucherSubTotalDiscount;
-                    this.paymentDetails.platformVoucherDeliveryDiscount = response.platformVoucherDeliveryDiscount === null ? 0 : response.platformVoucherDeliveryDiscount;
-                    this.paymentDetails.deliveryDiscount = response.sumDeliveryDiscount === null ? 0 : response.sumDeliveryDiscount;
-                    this.paymentDetails.subTotalDiscount = response.sumSubTotalDiscount === null ? 0 : response.sumSubTotalDiscount;
-                    this.paymentDetails.storeServiceCharge = response.sumServiceCharge === null ? 0 : response.sumServiceCharge;
-                    this.paymentDetails.storeDiscountList = response.storeDiscountList;
+        // Get cart summary
+        this._checkoutService.cartSummary$
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((response: DiscountOfCartGroup) => {
+            if (response) {
+                // Use destructuring to extract the properties from the response object
+                const {
+                    sumCartSubTotal,
+                    sumCartDeliveryCharge,
+                    sumCartGrandTotal,
+                    platformVoucherSubTotalDiscount,
+                    platformVoucherDeliveryDiscount,
+                    sumDeliveryDiscount,
+                    sumSubTotalDiscount,
+                    sumServiceCharge,
+                    storeDiscountList
+                } = response;
 
-                    response.storeDiscountList.forEach(item => {
-                        let selectedCartIndex = this.selectedCart.carts.findIndex(cart => cart.id === item.cartId);
+                // Use the nullish coalescing operator (??) to set default values of 0 for any properties that are null or undefined
+                this.paymentDetails = {
+                    cartSubTotal: sumCartSubTotal ?? 0,
+                    deliveryCharges: sumCartDeliveryCharge ?? 0,
+                    cartGrandTotal: sumCartGrandTotal ?? 0,
+                    platformVoucherSubTotalDiscount: platformVoucherSubTotalDiscount ?? 0,
+                    platformVoucherDeliveryDiscount: platformVoucherDeliveryDiscount ?? 0,
+                    deliveryDiscount: sumDeliveryDiscount ?? 0,
+                    subTotalDiscount: sumSubTotalDiscount ?? 0,
+                    storeServiceCharge: sumServiceCharge ?? 0,
+                    storeDiscountList
+                };
+
+                for (const item of response.storeDiscountList) {
+                    const selectedCart = this.selectedCart.carts.find(cart => cart.id === item.cartId);
+                  
+                    if (selectedCart) {
                         
-                        if (selectedCartIndex > -1) {
-                            this.selectedCart.carts[selectedCartIndex].deliveryPrice.discountAmount = item.deliveryDiscount;
-                            this.selectedCart.carts[selectedCartIndex].deliveryPrice.discountedPrice = item.cartDeliveryCharge - item.deliveryDiscount;
-                        }
-                    })
-                }
+                        // Use destructuring to extract the deliveryDiscount and cartDeliveryCharge properties from the item object
+                        const { deliveryDiscount, cartDeliveryCharge } = item;
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
+                        selectedCart.deliveryPrice.discountAmount = deliveryDiscount;
+                        selectedCart.deliveryPrice.discountedPrice = cartDeliveryCharge - deliveryDiscount;
+                    }
+                  }
+            }
+
+            // Mark for check
+            this._changeDetectorRef.markForCheck();
+        });
 
         // once selectCart() is triggered, it will set isLoading to true
         // this function will wait for both cartsWithDetails$ & cartSummary$ result first
